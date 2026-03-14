@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>More – Spark TV</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-database.js"></script>
+<style>
+:root{--spark:#ff4d00;--spark2:#ff7b2e;--sg:rgba(255,77,0,.22);--accent:#00c8ff;--gold:#f5c842;--bg:#080b14;--bg2:#10141f;--card:#141926;--card2:#1c2236;--b2:rgba(255,255,255,.07);--t1:#eef1fc;--t2:#8e9abf;--mt:#4a5278;--green:#00e676;--red:#ff3d3d;--nh:60px;--bh:60px;--r:14px;}
+[data-theme="light"]{--bg:#f2f4fb;--bg2:#e6eaf6;--card:#fff;--card2:#f4f6fb;--b2:rgba(0,0,0,.07);--t1:#0d0f1a;--t2:#3a4060;--mt:#8a94b8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t1);overflow-x:hidden;}
+h1,h2,h3{font-family:'Syne',sans-serif;}
+.topnav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nh);background:rgba(8,11,20,.95);border-bottom:1px solid var(--b2);display:flex;align-items:center;padding:0 16px;gap:10px;backdrop-filter:blur(20px);}
+[data-theme="light"] .topnav{background:rgba(242,244,251,.97);}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--spark),var(--spark2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;}
+.brand-name{font-size:19px;font-weight:800;background:linear-gradient(135deg,var(--spark),var(--spark2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-sp{flex:1;}
+.nb{width:34px;height:34px;border-radius:50%;border:1px solid var(--b2);background:var(--card2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:13px;transition:all .18s;}
+.nb:hover{border-color:var(--spark);color:var(--spark);}
+.main{padding:calc(var(--nh)+14px) 14px calc(var(--bh)+14px);}
+.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:16px;}
+.more-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+.more-card{background:var(--card);border:1px solid var(--b2);border-radius:var(--r);padding:20px 14px;text-align:center;cursor:pointer;transition:border-color .2s,transform .2s;text-decoration:none;color:var(--t1);display:flex;flex-direction:column;align-items:center;gap:10px;}
+.more-card:hover{border-color:rgba(255,77,0,.45);transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,77,0,.12);}
+.mc-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.mc-name{font-size:13px;font-weight:700;}
+.mc-sub{font-size:10px;color:var(--mt);font-weight:600;}
+.sec-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.sec-title i{color:var(--spark);}
+.info-card{background:var(--card);border:1px solid var(--b2);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.info-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b2);}
+.info-row:last-child{border-bottom:none;}
+.info-row i{width:30px;height:30px;border-radius:8px;background:rgba(255,77,0,.1);display:flex;align-items:center;justify-content:center;color:var(--spark);font-size:12px;flex-shrink:0;}
+.info-row span{font-size:12px;font-weight:600;}
+.info-row .info-val{margin-left:auto;font-size:12px;font-weight:700;color:var(--t2);}
+.app-version{text-align:center;font-size:11px;color:var(--mt);margin-top:16px;padding:12px;border-top:1px solid var(--b2);}
+.bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;height:var(--bh);background:rgba(8,11,20,.97);border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:space-around;backdrop-filter:blur(20px);}
+[data-theme="light"] .bot-nav{background:rgba(242,244,251,.97);}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--mt);transition:color .18s;flex:1;padding:6px 0;text-decoration:none;}
+.bn.active{color:var(--spark);}
+.bn i{font-size:18px;}
+.bn span{font-size:9px;font-weight:700;white-space:nowrap;}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="sparktv.html">
+    <div class="brand-icon">S</div>
+    <span class="brand-name">Spark TV</span>
+  </a>
+  <div class="nav-sp"></div>
+  <div class="nb" id="theme-toggle"><i class="fa fa-moon" id="th-ic"></i></div>
+</nav>
+
+<div class="main">
+  <div class="page-title">More</div>
+  
+  <div class="sec-title"><i class="fa fa-grid-2"></i> Quick Access</div>
+  <div class="more-grid">
+    <a class="more-card" href="sparktv.html">
+      <div class="mc-icon" style="background:rgba(255,77,0,.12);color:var(--spark);"><i class="fa fa-tv"></i></div>
+      <div><div class="mc-name">Live TV</div><div class="mc-sub">All channels</div></div>
+    </a>
+    <a class="more-card" href="movies.html">
+      <div class="mc-icon" style="background:rgba(245,200,66,.12);color:var(--gold);"><i class="fa fa-film"></i></div>
+      <div><div class="mc-name">Movies</div><div class="mc-sub">VOD library</div></div>
+    </a>
+    <a class="more-card" href="weather.html">
+      <div class="mc-icon" style="background:rgba(0,200,255,.12);color:var(--accent);"><i class="fa fa-cloud-sun"></i></div>
+      <div><div class="mc-name">Weather</div><div class="mc-sub">Forecasts</div></div>
+    </a>
+    <a class="more-card" href="news.html">
+      <div class="mc-icon" style="background:rgba(0,230,118,.12);color:var(--green);"><i class="fa fa-newspaper"></i></div>
+      <div><div class="mc-name">News</div><div class="mc-sub">Latest news</div></div>
+    </a>
+    <a class="more-card" href="sparktv.html" onclick="setTimeout(()=>{ if(window.switchSection) switchSection('profile'); },200)">
+      <div class="mc-icon" style="background:rgba(138,43,226,.12);color:#a855f7;"><i class="fa fa-circle-user"></i></div>
+      <div><div class="mc-name">Profile</div><div class="mc-sub">My account</div></div>
+    </a>
+    <div class="more-card" onclick="toggleTheme()">
+      <div class="mc-icon" style="background:rgba(255,255,255,.06);color:var(--t2);" id="theme-mc-icon"><i class="fa fa-moon"></i></div>
+      <div><div class="mc-name" id="theme-mc-txt">Dark Mode</div><div class="mc-sub">Toggle theme</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><i class="fa fa-circle-info"></i> App Info</div>
+  <div class="info-card">
+    <div class="info-row">
+      <i class="fa fa-star"></i>
+      <span>App Name</span>
+      <span class="info-val">Spark TV</span>
+    </div>
+    <div class="info-row">
+      <i class="fa fa-code"></i>
+      <span>Version</span>
+      <span class="info-val">2.0.0</span>
+    </div>
+    <div class="info-row">
+      <i class="fa fa-database"></i>
+      <span>Content Source</span>
+      <span class="info-val">M3U Playlist</span>
+    </div>
+    <div class="info-row">
+      <i class="fa fa-shield"></i>
+      <span>Auth</span>
+      <span class="info-val">Firebase</span>
+    </div>
+    <div class="info-row">
+      <i class="fa fa-play"></i>
+      <span>Player</span>
+      <span class="info-val">Plyr + HLS.js</span>
+    </div>
+  </div>
+
+  <div class="sec-title"><i class="fa fa-headset"></i> Support</div>
+  <div class="info-card">
+    <div class="info-row">
+      <i class="fa fa-envelope"></i>
+      <span>Contact</span>
+      <span class="info-val">support@sparktv.app</span>
+    </div>
+    <div class="info-row">
+      <i class="fa fa-brands fa-telegram"></i>
+      <span>Telegram</span>
+      <span class="info-val">@database_sparktv</span>
+    </div>
+  </div>
+
+  <div class="app-version">Spark TV v2.0 — Premium Streaming Hub</div>
+</div>
+
+<nav class="bot-nav">
+  <a class="bn" href="sparktv.html"><i class="fa fa-house"></i><span>Home</span></a>
+  <a class="bn" href="movies.html"><i class="fa fa-film"></i><span>Movies</span></a>
+  <a class="bn" href="weather.html"><i class="fa fa-cloud-sun"></i><span>Weather</span></a>
+  <a class="bn" href="news.html"><i class="fa fa-newspaper"></i><span>News</span></a>
+  <a class="bn active" href="more.html"><i class="fa fa-grid-2"></i><span>More</span></a>
+  <a class="bn" href="sparktv.html"><i class="fa fa-circle-user"></i><span>Profile</span></a>
+</nav>
+
+<script>
+let isDark=localStorage.getItem("sparktv-theme")!=="light";
+applyTheme(isDark);
+function applyTheme(d){isDark=d;document.documentElement.setAttribute("data-theme",d?"dark":"light");document.getElementById("th-ic").className=d?"fa fa-sun":"fa fa-moon";document.getElementById("theme-mc-icon").innerHTML=`<i class="fa fa-${d?"sun":"moon"}"></i>`;document.getElementById("theme-mc-txt").textContent=d?"Light Mode":"Dark Mode";localStorage.setItem("sparktv-theme",d?"dark":"light");}
+document.getElementById("theme-toggle").addEventListener("click",()=>applyTheme(!isDark));
+window.toggleTheme=function(){applyTheme(!isDark);};
+</script>
+</body>
+</html>

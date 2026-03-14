@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Spark TV — My Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{
+  --spark:#ff4d00;--spark2:#ff7b2e;--sg:rgba(255,77,0,.22);
+  --accent:#00c8ff;--gold:#f5c842;--purple:#a855f7;
+  --bg:#080b14;--bg2:#10141f;--bg3:#181d2d;
+  --card:#141926;--card2:#1c2236;--card3:#232c42;
+  --b1:rgba(255,77,0,.18);--b2:rgba(255,255,255,.07);
+  --t1:#eef1fc;--t2:#8e9abf;--mt:#4a5278;--mt2:#222840;
+  --green:#00e676;--red:#ff3d3d;--sh:rgba(0,0,0,.7);
+  --nh:60px;--r:14px;--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+[data-theme="light"]{
+  --bg:#f2f4fb;--bg2:#e6eaf6;--bg3:#d9dfee;
+  --card:#fff;--card2:#f4f6fb;--card3:#eaecf6;
+  --b1:rgba(255,77,0,.2);--b2:rgba(0,0,0,.07);
+  --t1:#0d0f1a;--t2:#3a4060;--mt:#8a94b8;--mt2:#d0d4e8;--sh:rgba(0,0,30,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t1);overflow-x:hidden;font-size:15px;line-height:1.55;}
+h1,h2,h3,.brand-name{font-family:'Syne',sans-serif;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--mt2);border-radius:2px;}
+a{color:inherit;text-decoration:none;}
+input,select,textarea,button{font-family:'Nunito',sans-serif;}
+.topnav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nh);background:rgba(8,11,20,.95);border-bottom:1px solid var(--b2);display:flex;align-items:center;padding:0 16px;gap:10px;backdrop-filter:blur(20px);}
+[data-theme="light"] .topnav{background:rgba(242,244,251,.97);}
+.brand{display:flex;align-items:center;gap:8px;}
+.brand-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--spark),var(--spark2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;}
+.brand-name{font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--spark),var(--spark2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-sp{flex:1;}
+.nb{width:32px;height:32px;border-radius:50%;border:1px solid var(--b2);background:var(--card2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:12px;transition:all .18s;}
+.nb:hover{border-color:var(--spark);color:var(--spark);}
+.back-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:22px;border:1px solid var(--b2);background:var(--card2);font-size:12px;font-weight:700;cursor:pointer;color:var(--t2);transition:all .18s;}
+.back-btn:hover{border-color:var(--spark);color:var(--spark);}
+.nav-bal-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:18px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.25);font-size:11px;font-weight:800;color:var(--green);}
+.main{padding-top:calc(var(--nh) + 16px);padding-bottom:calc(var(--safe-bottom) + 80px);min-height:100vh;}
+.container{max-width:780px;margin:0 auto;padding:0 16px;}
+.profile-tabs{display:flex;background:var(--card);border:1px solid var(--b2);border-radius:var(--r);padding:4px;margin-bottom:20px;gap:4px;overflow-x:auto;}
+.profile-tabs::-webkit-scrollbar{display:none;}
+.ptab{flex:1;padding:9px 10px;border-radius:10px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;color:var(--t2);transition:all .2s;white-space:nowrap;min-width:62px;display:flex;align-items:center;justify-content:center;gap:5px;}
+.ptab:hover{color:var(--t1);background:var(--card2);}
+.ptab.active{background:linear-gradient(135deg,var(--spark),var(--spark2));color:#fff;}
+.ptab i{font-size:11px;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.card{background:var(--card);border:1px solid var(--b2);border-radius:var(--r);padding:20px;margin-bottom:16px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;display:flex;align-items:center;gap:7px;}
+.card-title i{color:var(--spark);font-size:13px;}
+.profile-hero{background:linear-gradient(135deg,rgba(255,77,0,.15),rgba(0,200,255,.08));border:1px solid rgba(255,77,0,.2);border-radius:20px;padding:28px 24px;margin-bottom:20px;position:relative;overflow:hidden;}
+.profile-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,77,0,.12),transparent 70%);}
+.hero-top{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;}
+.hero-av-wrap{position:relative;width:90px;height:90px;flex-shrink:0;}
+.hero-av{width:90px;height:90px;border-radius:50%;border:3px solid var(--spark);background:linear-gradient(135deg,var(--spark),var(--accent));display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;color:#fff;overflow:hidden;}
+.hero-av img{width:100%;height:100%;object-fit:cover;}
+.av-edit-btn{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(--spark);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:10px;}
+.hero-details{flex:1;min-width:160px;}
+.hero-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:2px;}
+.hero-username,.hero-email{font-size:12px;color:var(--t2);margin-bottom:3px;}
+.hero-bio{font-size:12px;color:var(--t2);margin-bottom:10px;font-style:italic;opacity:.8;}
+.hero-badges{display:flex;gap:6px;flex-wrap:wrap;}
+.hbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:18px;font-size:10px;font-weight:800;}
+.hbadge.active{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.hbadge.inactive{background:rgba(255,61,61,.12);color:var(--red);border:1px solid rgba(255,61,61,.3);}
+.hbadge.plan{background:rgba(0,200,255,.12);color:var(--accent);border:1px solid rgba(0,200,255,.3);}
+.hbadge.verified{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.3);}
+.hbadge.country{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.3);}
+.hbadge.currency{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;border-top:1px solid var(--b2);padding-top:16px;}
+.hstat{text-align:center;}
+.hstat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+.hstat-lbl{font-size:10px;color:var(--mt);font-weight:700;margin-top:2px;}
+.completion-wrap{margin-top:14px;}
+.completion-label{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;}
+.completion-label span:last-child{color:var(--spark);}
+.completion-bar{height:6px;background:var(--card3);border-radius:3px;overflow:hidden;}
+.completion-fill{height:100%;background:linear-gradient(90deg,var(--spark),var(--gold));border-radius:3px;transition:width .8s ease;}
+.field-group{margin-bottom:14px;}
+.field-group label{display:block;font-size:10px;font-weight:800;color:var(--mt);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.field-group input,.field-group select,.field-group textarea{width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--b2);border-radius:10px;font-size:13px;color:var(--t1);outline:none;transition:border-color .2s,box-shadow .2s;}
+.field-group input:focus,.field-group select:focus,.field-group textarea:focus{border-color:var(--spark);box-shadow:0 0 0 3px var(--sg);}
+.field-group input::placeholder,.field-group textarea::placeholder{color:var(--mt);}
+.field-group select option{background:var(--bg2);color:var(--t1);}
+.field-group textarea{resize:vertical;min-height:80px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.field-hint{font-size:10px;color:var(--mt);margin-top:5px;font-weight:600;}
+.info-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--b2);}
+.info-row:last-child{border-bottom:none;}
+.info-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,77,0,.1);display:flex;align-items:center;justify-content:center;color:var(--spark);font-size:11px;flex-shrink:0;}
+.info-key{font-size:10px;color:var(--mt);font-weight:700;flex-shrink:0;width:100px;text-transform:uppercase;letter-spacing:.04em;}
+.info-val{font-size:12px;font-weight:700;color:var(--t1);flex:1;word-break:break-all;}
+.info-val.ok{color:var(--green);}
+.info-val.warn{color:var(--gold);}
+.info-val.err{color:var(--red);}
+.info-val.muted{color:var(--mt);}
+.info-copy{margin-left:auto;width:24px;height:24px;border-radius:6px;border:1px solid var(--b2);background:var(--card2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:9px;flex-shrink:0;}
+.info-copy:hover{border-color:var(--spark);color:var(--spark);}
+.sec-head{font-size:11px;font-weight:800;color:var(--mt);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--b2);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;border:none;}
+.btn-primary{background:linear-gradient(135deg,var(--spark),var(--spark2));color:#fff;}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);}
+.btn-secondary{background:var(--card2);border:1px solid var(--b2);color:var(--t2);}
+.btn-secondary:hover{border-color:var(--spark);color:var(--spark);}
+.btn-green{background:linear-gradient(135deg,var(--green),#00aa55);color:#fff;}
+.btn-red{background:rgba(255,61,61,.12);border:1px solid rgba(255,61,61,.3);color:var(--red);}
+.btn-red:hover{background:rgba(255,61,61,.22);}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#0088cc);color:#fff;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#e0a800);color:#000;}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;}
+.btn-full{width:100%;}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;}
+.btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.btn-sm{padding:7px 14px;font-size:12px;}
+.toggle-field{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--b2);}
+.toggle-field:last-child{border-bottom:none;}
+.toggle-info label{font-size:13px;font-weight:700;color:var(--t1);display:block;}
+.toggle-info small{font-size:11px;color:var(--mt);}
+.toggle-sw{width:42px;height:22px;border-radius:11px;background:rgba(255,255,255,.12);border:1px solid var(--b2);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle-sw.on{background:var(--green);border-color:var(--green);}
+.toggle-sw::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s;}
+.toggle-sw.on::after{left:23px;}
+/* WALLET */
+.wallet-hero{background:linear-gradient(135deg,rgba(0,230,118,.12),rgba(0,200,255,.06));border:1px solid rgba(0,230,118,.25);border-radius:16px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
+.wallet-amount-big{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--green);line-height:1;}
+.wallet-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
+.w-action{background:var(--card2);border:1px solid var(--b2);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .18s;}
+.w-action:hover{border-color:var(--spark);}
+.w-action i{font-size:18px;color:var(--spark);display:block;margin-bottom:4px;}
+.w-action span{font-size:10px;font-weight:700;color:var(--t2);}
+/* WITHDRAW BALANCE */
+.withdraw-hero{background:linear-gradient(135deg,rgba(245,200,66,.1),rgba(168,85,247,.06));border:1px solid rgba(245,200,66,.25);border-radius:16px;padding:20px;margin-bottom:14px;}
+.withdraw-amount-big{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--gold);line-height:1;}
+/* FUND GRID */
+.fund-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;}
+.fund-amt{padding:12px 8px;border-radius:10px;border:1px solid var(--b2);background:var(--card2);text-align:center;cursor:pointer;transition:all .18s;}
+.fund-amt:hover,.fund-amt.sel{background:linear-gradient(135deg,var(--spark),var(--spark2));border-color:var(--spark);color:#fff;}
+.fund-amt .fa-value{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;display:block;}
+.fund-amt .fa-label{font-size:9px;font-weight:700;opacity:.8;margin-top:2px;display:block;}
+/* PLAN CARDS */
+.plan-grid{display:flex;flex-direction:column;gap:10px;margin:14px 0;}
+.plan-card{border:1px solid var(--b2);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .18s;background:var(--card2);position:relative;}
+.plan-card:hover{border-color:rgba(255,77,0,.4);}
+.plan-card.selected{border-color:var(--spark);background:rgba(255,77,0,.08);}
+.plan-card.active-plan{border-color:var(--green);background:rgba(0,230,118,.06);}
+.plan-card.queued-plan{border-color:var(--gold);background:rgba(245,200,66,.06);}
+.plan-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.plan-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;}
+.plan-price{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--spark);}
+.plan-desc{font-size:11px;color:var(--mt);font-weight:600;}
+.plan-badge{position:absolute;top:-8px;right:10px;padding:3px 10px;border-radius:7px;font-size:9px;font-weight:800;}
+.plan-badge.gold{background:var(--gold);color:#000;}
+.plan-badge.green{background:var(--green);color:#000;}
+.plan-badge.blue{background:var(--accent);color:#000;}
+/* DATE PICKER */
+.date-picker-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;}
+.date-sel{padding:10px 8px;background:var(--bg2);border:1px solid var(--b2);border-radius:10px;font-size:12px;color:var(--t1);font-weight:700;}
+.date-sel:focus{border-color:var(--spark);outline:none;}
+.date-calc-result{background:rgba(0,200,255,.07);border:1px solid rgba(0,200,255,.2);border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.6;margin-top:10px;display:none;}
+/* TRANSFER */
+.transfer-search{display:flex;gap:8px;margin-bottom:12px;}
+.transfer-search input{flex:1;padding:11px 14px;background:var(--bg2);border:1px solid var(--b2);border-radius:10px;font-size:13px;color:var(--t1);outline:none;}
+.transfer-search input:focus{border-color:var(--accent);}
+.transfer-search button{padding:11px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),#0088cc);color:#fff;font-size:13px;font-weight:700;cursor:pointer;}
+.user-result{background:var(--card2);border:1px solid var(--b2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;transition:border-color .18s;}
+.user-result.selected-user{border-color:var(--accent);background:rgba(0,200,255,.07);}
+.ur-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--spark),var(--accent));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
+.ur-av img{width:100%;height:100%;object-fit:cover;}
+.ur-name{font-size:13px;font-weight:800;}
+.ur-email{font-size:11px;color:var(--mt);}
+/* TX */
+.tx-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--b2);}
+.tx-item:last-child{border-bottom:none;}
+.tx-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.tx-icon.credit{background:rgba(0,230,118,.12);color:var(--green);}
+.tx-icon.debit{background:rgba(255,61,61,.12);color:var(--red);}
+.tx-icon.pending{background:rgba(245,200,66,.12);color:var(--gold);}
+.tx-info{flex:1;min-width:0;}
+.tx-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tx-date{font-size:10px;color:var(--mt);font-weight:600;margin-top:2px;}
+.tx-amount{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;flex-shrink:0;}
+.tx-amount.credit{color:var(--green);}
+.tx-amount.debit{color:var(--red);}
+.tx-status{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;display:block;margin-top:3px;text-align:right;}
+.tx-status.success{background:rgba(0,230,118,.12);color:var(--green);}
+.tx-status.pending{background:rgba(245,200,66,.12);color:var(--gold);}
+.tx-status.failed{background:rgba(255,61,61,.12);color:var(--red);}
+/* NOTIF */
+.notif-item{display:flex;gap:12px;padding:14px;background:var(--card2);border:1px solid var(--b2);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;}
+.notif-item.unread{border-color:rgba(0,200,255,.25);background:rgba(0,200,255,.04);}
+.notif-emoji{font-size:24px;flex-shrink:0;line-height:1;}
+.notif-content{flex:1;min-width:0;}
+.notif-title{font-size:13px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.notif-body{font-size:12px;color:var(--t2);line-height:1.6;}
+.notif-time{font-size:10px;color:var(--mt);font-weight:600;margin-top:5px;}
+.progress-bar{width:100%;height:8px;background:var(--card3);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--spark),var(--gold));transition:width .6s ease;}
+.activity-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--b2);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.activity-dot.green{background:var(--green);}
+.activity-dot.spark{background:var(--spark);}
+.activity-dot.accent{background:var(--accent);}
+.activity-dot.gold{background:var(--gold);}
+.activity-text{font-size:12px;color:var(--t2);flex:1;}
+.activity-time{font-size:10px;color:var(--mt);font-weight:600;}
+/* REFERRAL */
+.referral-box{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(0,200,255,.06));border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:18px;margin-bottom:14px;text-align:center;}
+.referral-code{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--purple);letter-spacing:4px;margin:10px 0;}
+.referral-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;}
+.ref-stat{background:var(--card2);border-radius:10px;padding:10px;text-align:center;}
+.ref-stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--purple);}
+.ref-stat-lbl{font-size:9px;color:var(--mt);font-weight:700;margin-top:2px;text-transform:uppercase;}
+.rate-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);font-size:10px;font-weight:700;color:var(--green);}
+.rate-badge.loading{color:var(--mt);background:var(--card2);border-color:var(--b2);}
+.amount-input-wrap{position:relative;margin-bottom:14px;}
+.amount-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--spark);}
+.amount-input{padding-left:40px!important;}
+.uid-display{background:var(--bg2);border:1px dashed var(--b2);border-radius:8px;padding:8px 12px;font-family:monospace;font-size:11px;color:var(--t2);display:flex;align-items:center;justify-content:space-between;gap:8px;word-break:break-all;}
+.uid-display button{background:var(--card2);border:1px solid var(--b2);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;color:var(--t2);white-space:nowrap;flex-shrink:0;}
+.uid-display button:hover{border-color:var(--spark);color:var(--spark);}
+.support-option{display:flex;align-items:center;gap:14px;padding:14px;background:var(--card2);border:1px solid var(--b2);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .18s;}
+.support-option:hover{border-color:var(--spark);transform:translateY(-1px);}
+.support-option-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.support-option-title{font-size:13px;font-weight:800;}
+.support-option-desc{font-size:11px;color:var(--mt);}
+.best-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:var(--green);color:#000;margin-left:8px;}
+.dialog-ov{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.88);backdrop-filter:blur(18px);display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+.dialog-ov.open{display:flex;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.dialog-card{background:var(--card);border-radius:20px;padding:26px 22px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 40px 80px rgba(0,0,0,.6);animation:slideUp .22s cubic-bezier(.22,1,.36,1);}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.dialog-card.wide{max-width:560px;}
+.dialog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.dialog-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.dialog-title i{color:var(--spark);}
+.dialog-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:var(--card2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:12px;}
+.dialog-close:hover{border-color:var(--red);color:var(--red);}
+.confirm-emoji{font-size:50px;text-align:center;margin-bottom:14px;}
+.confirm-msg{font-size:13px;color:var(--t2);text-align:center;line-height:1.7;margin-bottom:20px;}
+.confirm-btns{display:flex;gap:10px;}
+.toast{position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(80px);z-index:1000;padding:11px 22px;border-radius:26px;font-size:12px;font-weight:700;background:var(--card3);border:1px solid var(--b2);opacity:0;transition:all .26s cubic-bezier(.22,1,.36,1);pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(0,230,118,.4);color:var(--green);}
+.toast.err{border-color:rgba(255,61,61,.4);color:var(--red);}
+.toast.info{border-color:rgba(0,200,255,.4);color:var(--accent);}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .55s linear infinite;vertical-align:middle;}
+@keyframes rot{to{transform:rotate(360deg);}}
+.spin-dark{border-color:rgba(0,0,0,.2);border-top-color:var(--spark);}
+.empty-state{text-align:center;padding:40px 20px;color:var(--mt);}
+.empty-state i{font-size:44px;margin-bottom:14px;display:block;}
+.empty-state h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t2);margin-bottom:6px;}
+.empty-state p{font-size:12px;}
+.stream-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.stream-stat{background:var(--card2);border:1px solid var(--b2);border-radius:10px;padding:12px;text-align:center;}
+.stream-stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--accent);}
+.stream-stat-lbl{font-size:9px;color:var(--mt);font-weight:700;text-transform:uppercase;margin-top:2px;}
+.device-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border:1px solid var(--b2);border-radius:10px;margin-bottom:8px;}
+.device-icon{width:36px;height:36px;border-radius:8px;background:rgba(0,200,255,.1);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:16px;flex-shrink:0;}
+.device-name{font-size:13px;font-weight:700;}
+.device-meta{font-size:10px;color:var(--mt);font-weight:600;margin-top:2px;}
+.device-active{font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.email-option{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--b2);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .18s;}
+.email-option:hover,.email-option.selected{border-color:var(--spark);background:rgba(255,77,0,.06);}
+.email-option-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.email-option-addr{font-size:13px;font-weight:800;font-family:monospace;}
+.email-option-tag{font-size:10px;color:var(--mt);}
+/* Queue banner */
+.queue-banner{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--gold);margin-bottom:14px;}
+@media(max-width:500px){
+  .field-row{grid-template-columns:1fr;}
+  .field-row-3{grid-template-columns:1fr 1fr;}
+  .date-picker-wrap{grid-template-columns:1fr 1fr;}
+  .fund-grid{grid-template-columns:repeat(2,1fr);}
+  .dialog-card{padding:20px 16px;}
+  .hero-stats{grid-template-columns:repeat(2,1fr);}
+  .wallet-actions{grid-template-columns:1fr 1fr;}
+  .referral-stats{grid-template-columns:1fr;}
+  .stream-stat-row{grid-template-columns:1fr 1fr;}
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">
+    <div class="brand-icon">S</div>
+    <div class="brand-name">Spark TV</div>
+  </a>
+  <div class="nav-sp"></div>
+  <div class="nav-bal-pill" id="nav-bal-pill" style="display:none;"><i class="fa fa-wallet"></i> <span id="nav-bal-text">₦0</span></div>
+  <div class="nb" id="theme-toggle" title="Toggle Theme"><i class="fa fa-moon" id="th-ic"></i></div>
+  <a class="back-btn" href="index.html"><i class="fa fa-arrow-left"></i> Home</a>
+</nav>
+
+<div class="main"><div class="container">
+  <div id="loading-wrap" style="text-align:center;padding:80px 20px;">
+    <div style="width:60px;height:60px;border-radius:15px;background:linear-gradient(135deg,var(--spark),var(--spark2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;margin:0 auto 16px;animation:pulse 1.5s infinite;">S</div>
+    <div style="color:var(--t2);font-size:14px;font-weight:700;">Loading your profile…</div>
+  </div>
+  <div id="signout-wrap" style="display:none;text-align:center;padding:80px 20px;">
+    <div class="empty-state"><i class="fa fa-user-lock" style="color:var(--spark);"></i><h3>Sign In Required</h3><p>Please sign in to access your Spark TV profile.</p>
+      <a href="index.html" class="btn btn-primary" style="margin-top:20px;display:inline-flex;"><i class="fa fa-arrow-left"></i> Go to Spark TV</a>
+    </div>
+  </div>
+
+  <div id="profile-content" style="display:none;">
+    <!-- HERO -->
+    <div class="profile-hero" id="profile-hero">
+      <div class="hero-top">
+        <div class="hero-av-wrap">
+          <div class="hero-av" id="hero-av"></div>
+          <div class="av-edit-btn" onclick="openDialog('dlg-photo')"><i class="fa fa-camera"></i></div>
+        </div>
+        <div class="hero-details">
+          <div class="hero-name" id="hero-name">Loading…</div>
+          <div class="hero-username" id="hero-username"></div>
+          <div class="hero-email" id="hero-email"></div>
+          <div class="hero-bio" id="hero-bio" style="display:none;"></div>
+          <div class="hero-badges" id="hero-badges"></div>
+        </div>
+      </div>
+      <div class="completion-wrap">
+        <div class="completion-label"><span>Profile Completion</span><span id="completion-pct">0%</span></div>
+        <div class="completion-bar"><div class="completion-fill" id="completion-fill" style="width:0%"></div></div>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-val" id="hs-days">—</div><div class="hstat-lbl">Days Left</div></div>
+        <div class="hstat"><div class="hstat-val" id="hs-plan">—</div><div class="hstat-lbl">Current Plan</div></div>
+        <div class="hstat"><div class="hstat-val" id="hs-bal">₦0</div><div class="hstat-lbl">Wallet</div></div>
+        <div class="hstat"><div class="hstat-val" id="hs-refs">0</div><div class="hstat-lbl">Referrals</div></div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="profile-tabs">
+      <div class="ptab active" onclick="switchTab('personal')"><i class="fa fa-user"></i> Profile</div>
+      <div class="ptab" onclick="switchTab('subscription')"><i class="fa fa-star"></i> Plans</div>
+      <div class="ptab" onclick="switchTab('wallet')"><i class="fa fa-wallet"></i> Wallet</div>
+      <div class="ptab" onclick="switchTab('notifications')"><i class="fa fa-bell"></i> Alerts</div>
+      <div class="ptab" onclick="switchTab('settings')"><i class="fa fa-gear"></i> Settings</div>
+      <div class="ptab" onclick="switchTab('transactions')"><i class="fa fa-receipt"></i> History</div>
+      <div class="ptab" onclick="switchTab('referral')"><i class="fa fa-gift"></i> Refer</div>
+      <div class="ptab" onclick="switchTab('support')"><i class="fa fa-headset"></i> Support</div>
+    </div>
+
+    <!-- TAB: PERSONAL -->
+    <div class="tab-pane active" id="pane-personal">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-chart-bar"></i> Streaming Stats</div></div>
+        <div class="stream-stat-row">
+          <div class="stream-stat"><div class="stream-stat-val" id="stat-hours">0h</div><div class="stream-stat-lbl">Watch Time</div></div>
+          <div class="stream-stat"><div class="stream-stat-val" id="stat-sessions">0</div><div class="stream-stat-lbl">Sessions</div></div>
+          <div class="stream-stat"><div class="stream-stat-val" id="stat-subs">0</div><div class="stream-stat-lbl">Plans Used</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-id-card"></i> Personal Info</div>
+          <button class="btn btn-secondary btn-sm" onclick="openDialog('dlg-edit-personal')"><i class="fa fa-pen"></i> Edit</button>
+        </div>
+        <div id="personal-info-rows"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-location-dot"></i> Contact & Location</div>
+          <button class="btn btn-secondary btn-sm" onclick="openDialog('dlg-edit-personal')"><i class="fa fa-pen"></i> Edit</button>
+        </div>
+        <div id="contact-info-rows"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-fingerprint"></i> Account Identity</div></div>
+        <div id="account-identity-rows"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-display"></i> Devices</div>
+          <button class="btn btn-secondary btn-sm" onclick="registerCurrentDevice()"><i class="fa fa-plus"></i> Add</button>
+        </div>
+        <div id="device-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-lock"></i> Security</div></div>
+        <div id="security-rows"></div>
+        <div class="btn-row">
+          <button class="btn btn-secondary btn-sm" onclick="openDialog('dlg-change-password')"><i class="fa fa-key"></i> Change Password</button>
+          <button class="btn btn-secondary btn-sm" onclick="openDialog('dlg-change-email')"><i class="fa fa-envelope"></i> Update Email</button>
+          <button class="btn btn-red btn-full" onclick="confirmLogout()"><i class="fa fa-right-from-bracket"></i> Sign Out</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-chart-line"></i> Account Activity</div></div>
+        <div id="activity-log"></div>
+      </div>
+    </div>
+
+    <!-- TAB: SUBSCRIPTION -->
+    <div class="tab-pane" id="pane-subscription">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa fa-star"></i> Current Plan</div>
+          <div id="sub-status-badge" style="font-size:11px;font-weight:800;padding:4px 12px;border-radius:14px;"></div>
+        </div>
+        <div id="sub-current-info"></div>
+      </div>
+      <!-- QUEUED PLAN -->
+      <div id="queued-plan-card" class="card" style="display:none;border-color:rgba(245,200,66,.3);">
+        <div class="card-header"><div class="card-title" style="color:var(--gold);"><i class="fa fa-clock" style="color:var(--gold);"></i> Queued Plan</div>
+          <button class="btn btn-sm" style="background:rgba(255,61,61,.1);border:1px solid rgba(255,61,61,.3);color:var(--red);font-size:11px;" onclick="cancelQueuedPlan()"><i class="fa fa-trash"></i> Cancel</button>
+        </div>
+        <div class="queue-banner"><i class="fa fa-info-circle"></i> This plan will automatically activate when your current subscription expires.</div>
+        <div id="queued-plan-info"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa fa-layer-group"></i> Available Plans</div>
+          <div id="live-rate-badge" class="rate-badge loading"><i class="fa fa-circle-notch fa-spin"></i> Live</div>
+        </div>
+        <div id="plan-list"></div>
+        <div id="plan-activate-row" style="margin-top:14px;display:none;">
+          <button class="btn btn-primary btn-full" id="plan-activate-btn" onclick="activateSelectedPlan()"><i class="fa fa-play"></i> Activate Plan</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-calendar-days"></i> Custom Duration</div></div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px;">Pick an exact start and end date.</p>
+        <div class="date-picker-wrap">
+          <div><label style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;display:block;margin-bottom:5px;">Start</label>
+            <input type="date" class="date-sel" id="custom-start" onchange="calcCustomPlan()"/></div>
+          <div><label style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;display:block;margin-bottom:5px;">End</label>
+            <input type="date" class="date-sel" id="custom-end" onchange="calcCustomPlan()"/></div>
+          <div><label style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;display:block;margin-bottom:5px;">Type</label>
+            <select class="date-sel" id="custom-type" onchange="calcCustomPlan()">
+              <option value="full">Full HD</option><option value="limited">Basic SD</option>
+            </select></div>
+        </div>
+        <div class="date-calc-result" id="date-calc-result"></div>
+        <button class="btn btn-primary btn-full" id="custom-activate-btn" style="display:none;margin-top:12px;" onclick="activateCustomPlan()"><i class="fa fa-calendar-check"></i> Activate Custom Plan</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-envelope"></i> Contact Admin for Subscription</div></div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.7;">Have a payment issue or need manual activation? Contact our admin directly.</p>
+        <div class="support-option" onclick="openEmailSupport('primary','subscription')">
+          <div class="support-option-icon" style="background:rgba(255,77,0,.1);color:var(--spark);"><i class="fa fa-envelope"></i></div>
+          <div style="flex:1;"><div class="support-option-title">ngs.spark.tv0@gmail.com <span class="best-badge">FASTEST</span></div><div class="support-option-desc">Admin · Subscription activation within 1 hour</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </div>
+        <div class="support-option" onclick="openDialog('dlg-contact-support')">
+          <div class="support-option-icon" style="background:rgba(168,85,247,.1);color:var(--purple);"><i class="fa fa-ticket"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Submit a Ticket</div><div class="support-option-desc">Describe your subscription issue</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </div>
+        <a href="chat.html" class="support-option" style="text-decoration:none;">
+          <div class="support-option-icon" style="background:rgba(0,200,255,.1);color:var(--accent);"><i class="fa fa-comments"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Live Chat Admin</div><div class="support-option-desc">Message admin directly from the app</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- TAB: WALLET -->
+    <div class="tab-pane" id="pane-wallet">
+      <!-- MAIN WALLET -->
+      <div class="wallet-hero">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:11px;color:var(--t2);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">Wallet Balance</div>
+            <div class="wallet-amount-big" id="wallet-amount-display">₦0</div>
+            <div style="font-size:11px;color:var(--t2);font-weight:600;margin-top:4px;" id="wallet-currency-lbl">Nigerian Naira (NGN)</div>
+            <div style="font-size:11px;color:var(--mt);margin-top:8px;font-weight:600;" id="wallet-rate-info">Loading…</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;color:var(--mt);font-weight:700;margin-bottom:4px;">USD VALUE</div>
+            <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--accent);" id="usd-equiv">$0.00</div>
+            <div style="font-size:10px;color:var(--mt);font-weight:700;margin-top:8px;">CURRENCY</div>
+            <div style="font-size:12px;font-weight:800;color:var(--gold);" id="wallet-currency-code">NGN</div>
+          </div>
+        </div>
+        <div class="wallet-actions">
+          <div class="w-action" onclick="scrollTo(0,document.getElementById('fund-card').offsetTop)"><i class="fa fa-plus-circle"></i><span>Fund</span></div>
+          <div class="w-action" onclick="scrollTo(0,document.getElementById('transfer-card').offsetTop)"><i class="fa fa-paper-plane"></i><span>Send</span></div>
+          <div class="w-action" onclick="switchTab('transactions')"><i class="fa fa-receipt"></i><span>History</span></div>
+          <div class="w-action" onclick="scrollTo(0,document.getElementById('withdraw-card').offsetTop)"><i class="fa fa-money-bill-transfer"></i><span>Withdraw</span></div>
+        </div>
+      </div>
+
+      <!-- WITHDRAWABLE BALANCE -->
+      <div class="withdraw-hero" id="withdraw-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">💰 Withdrawable Balance</div>
+            <div class="withdraw-amount-big" id="withdraw-amount-display">₦0</div>
+            <div style="font-size:11px;color:var(--t2);margin-top:4px;font-weight:600;">Earned from referrals & bonuses</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;color:var(--mt);font-weight:700;margin-bottom:4px;">TOTAL WITHDRAWN</div>
+            <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--t2);" id="total-withdrawn-display">₦0</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:14px;padding:10px;background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.15);border-radius:8px;">
+          <i class="fa fa-circle-info" style="color:var(--gold);"></i>
+          Withdraw to your local bank account in any country. Minimum withdrawal: <strong id="min-withdraw-text">₦500</strong>.
+        </div>
+        <button class="btn btn-gold btn-full" onclick="openDialog('dlg-withdraw')"><i class="fa fa-money-bill-transfer"></i> Withdraw to Bank Account</button>
+      </div>
+
+      <!-- FUND CARD -->
+      <div class="card" id="fund-card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-plus-circle"></i> Fund Wallet</div></div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:4px;">Select amount for your <strong id="fund-currency-label">NGN</strong> wallet:</p>
+        <div class="fund-grid" id="fund-grid"></div>
+        <div class="field-group">
+          <label>Or enter custom amount</label>
+          <div class="amount-input-wrap">
+            <span class="amount-prefix" id="custom-fund-prefix">₦</span>
+            <input type="number" class="amount-input" id="custom-fund-amount" placeholder="Enter amount…" oninput="onCustomFundInput(this.value)"/>
+          </div>
+        </div>
+        <button class="btn btn-green btn-full" onclick="openFundWallet()"><i class="fa fa-paper-plane"></i> Proceed to Payment</button>
+      </div>
+
+      <!-- TRANSFER CARD -->
+      <div class="card" id="transfer-card">
+        <div class="card-header"><div class="card-title"><i class="fa fa-paper-plane"></i> Send to User</div></div>
+        <div style="background:rgba(0,200,255,.06);border:1px solid rgba(0,200,255,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--t2);">
+          <i class="fa fa-circle-info" style="color:var(--accent);margin-right:6px;"></i>
+          Same currency only (<strong id="transfer-currency-note" style="color:var(--accent);">NGN</strong>).
+        </div>
+        <div class="transfer-search">
+          <input type="text" id="transfer-search-input" placeholder="Email, username or User ID…" onkeydown="if(event.key==='Enter')searchTransferUser()"/>
+          <button onclick="searchTransferUser()"><i class="fa fa-search"></i></button>
+        </div>
+        <div id="transfer-user-result"></div>
+        <div id="transfer-amount-wrap" style="display:none;">
+          <div class="field-group">
+            <label>Amount to send</label>
+            <div class="amount-input-wrap">
+              <span class="amount-prefix" id="transfer-prefix">₦</span>
+              <input type="number" class="amount-input" id="transfer-amount" placeholder="0"/>
+            </div>
+          </div>
+          <div class="field-group"><label>Note (optional)</label><input type="text" id="transfer-note" placeholder="What's this for?"/></div>
+          <button class="btn btn-accent btn-full" onclick="initiateTransfer()"><i class="fa fa-arrow-right"></i> Send Money</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: NOTIFICATIONS -->
+    <div class="tab-pane" id="pane-notifications">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;flex-wrap:wrap;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;">Notifications</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="markAllRead()"><i class="fa fa-check-double"></i> Mark all read</button>
+          <button class="btn btn-red btn-sm" onclick="clearAllNotifications()"><i class="fa fa-trash"></i> Clear</button>
+        </div>
+      </div>
+      <div id="notif-list"><div class="empty-state"><i class="fa fa-bell"></i><h3>No notifications</h3><p>You're all caught up!</p></div></div>
+    </div>
+
+    <!-- TAB: SETTINGS -->
+    <div class="tab-pane" id="pane-settings">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px;"><i class="fa fa-sliders"></i> Preferences</div>
+        <div class="toggle-field"><div class="toggle-info"><label>Show Ads</label><small>Enable/disable ads during streaming</small></div><div class="toggle-sw" id="ads-toggle" onclick="toggleSetting('ads')"></div></div>
+        <div class="toggle-field"><div class="toggle-info"><label>Data Saver</label><small>Use lowest quality stream automatically</small></div><div class="toggle-sw" id="datasaver-toggle" onclick="toggleSetting('datasaver')"></div></div>
+        <div class="toggle-field"><div class="toggle-info"><label>Push Notifications</label><small>Receive in-app push messages</small></div><div class="toggle-sw" id="pushnotif-toggle" onclick="toggleSetting('pushnotif')"></div></div>
+        <div class="toggle-field"><div class="toggle-info"><label>Email Notifications</label><small>Activity updates via email</small></div><div class="toggle-sw" id="emailnotif-toggle" onclick="toggleSetting('emailnotif')"></div></div>
+        <div class="toggle-field"><div class="toggle-info"><label>Dark Theme</label><small>Switch dark/light interface</small></div><div class="toggle-sw" id="theme-sw" onclick="toggleSetting('theme')"></div></div>
+        <div class="toggle-field"><div class="toggle-info"><label>Auto-renew Subscription</label><small>Auto-renew from wallet balance</small></div><div class="toggle-sw" id="autorenew-toggle" onclick="toggleSetting('autorenew')"></div></div>
+        <div class="toggle-field"><div class="toggle-info"><label>Allow Profile Discovery</label><small>Let others find you by email/username</small></div><div class="toggle-sw" id="discovery-toggle" onclick="toggleSetting('discovery')"></div></div>
+        <div class="toggle-field"><div class="toggle-info"><label>Two-Factor Auth (2FA)</label><small>Extra security at login (email OTP)</small></div><div class="toggle-sw" id="tfa-toggle" onclick="toggleSetting('tfa')"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px;"><i class="fa fa-video"></i> Video Quality</div>
+        <div class="field-group"><label>Default Quality</label>
+          <select id="quality-select" onchange="saveVideoQuality(this.value)">
+            <option value="auto">Auto (Recommended)</option>
+            <option value="4K">4K Ultra HD</option><option value="1080p">1080p HD</option>
+            <option value="720p">720p HD</option><option value="480p">480p SD</option>
+            <option value="360p">360p Low</option><option value="240p">240p Lowest</option>
+          </select></div>
+        <div class="field-group"><label>Preferred Language</label>
+          <select id="lang-select" onchange="savePref('language',this.value)">
+            <option value="en">English</option><option value="fr">French</option>
+            <option value="ar">Arabic</option><option value="yo">Yoruba</option>
+            <option value="ha">Hausa</option><option value="ig">Igbo</option>
+            <option value="sw">Swahili</option><option value="pt">Portuguese</option>
+            <option value="es">Spanish</option>
+          </select></div>
+        <div class="field-group"><label>Subtitle Language</label>
+          <select id="subtitle-select" onchange="savePref('subtitles',this.value)">
+            <option value="off">Off</option><option value="en">English</option>
+            <option value="fr">French</option><option value="ar">Arabic</option>
+          </select></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:4px;"><i class="fa fa-globe"></i> Region & Country</div>
+        <div style="font-size:11px;color:var(--mt);margin:10px 0 14px;padding:10px;background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:8px;">
+          <i class="fa fa-circle-info" style="color:var(--accent);"></i>
+          Changing country does <strong>not</strong> change your wallet currency. Contact support to change currency.
+        </div>
+        <div class="field-group"><label>Country</label><select id="settings-country" onchange="onSettingsCountryChange(this.value)"></select></div>
+        <div id="currency-preview" style="display:none;margin-top:8px;">
+          <div class="rate-badge"><i class="fa fa-coins"></i> <span id="currency-preview-text"></span></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="saveCountrySettings()" style="margin-top:12px;"><i class="fa fa-save"></i> Save Country</button>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px;"><i class="fa fa-palette"></i> Appearance</div>
+        <div class="field-group"><label>Font Size</label>
+          <select id="fontsize-select" onchange="savePref('font_size',this.value)">
+            <option value="small">Small</option><option value="medium" selected>Medium</option><option value="large">Large</option>
+          </select></div>
+        <div class="field-group"><label>Accent Color</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="color-picker">
+            <div class="color-opt" data-color="#ff4d00" style="width:28px;height:28px;border-radius:50%;background:#ff4d00;cursor:pointer;border:2px solid transparent;" title="Spark Orange"></div>
+            <div class="color-opt" data-color="#00c8ff" style="width:28px;height:28px;border-radius:50%;background:#00c8ff;cursor:pointer;border:2px solid transparent;" title="Accent Blue"></div>
+            <div class="color-opt" data-color="#00e676" style="width:28px;height:28px;border-radius:50%;background:#00e676;cursor:pointer;border:2px solid transparent;" title="Green"></div>
+            <div class="color-opt" data-color="#a855f7" style="width:28px;height:28px;border-radius:50%;background:#a855f7;cursor:pointer;border:2px solid transparent;" title="Purple"></div>
+            <div class="color-opt" data-color="#f5c842" style="width:28px;height:28px;border-radius:50%;background:#f5c842;cursor:pointer;border:2px solid transparent;" title="Gold"></div>
+          </div></div>
+      </div>
+      <div class="card" style="border-color:rgba(255,61,61,.2);">
+        <div class="card-title" style="margin-bottom:16px;color:var(--red);"><i class="fa fa-triangle-exclamation"></i> Danger Zone</div>
+        <button class="btn btn-red btn-full" onclick="confirmLogout()"><i class="fa fa-right-from-bracket"></i> Sign Out</button>
+        <button class="btn btn-secondary btn-full" onclick="confirmDeleteAccount()" style="margin-top:8px;"><i class="fa fa-user-slash"></i> Delete Account</button>
+      </div>
+    </div>
+
+    <!-- TAB: TRANSACTIONS -->
+    <div class="tab-pane" id="pane-transactions">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;">Transaction History</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <select id="tx-filter" onchange="filterTransactions(this.value)" style="padding:7px 12px;border-radius:10px;border:1px solid var(--b2);background:var(--card2);font-size:12px;color:var(--t1);font-weight:700;cursor:pointer;">
+            <option value="all">All</option><option value="success">Success</option>
+            <option value="pending">Pending</option><option value="failed">Failed</option>
+          </select>
+          <select id="tx-type-filter" onchange="filterTransactions(document.getElementById('tx-filter').value)" style="padding:7px 12px;border-radius:10px;border:1px solid var(--b2);background:var(--card2);font-size:12px;color:var(--t1);font-weight:700;cursor:pointer;">
+            <option value="all">All Types</option><option value="credit">Credits</option><option value="debit">Debits</option>
+          </select>
+        </div>
+      </div>
+      <div id="tx-summary" style="display:none;margin-bottom:12px;"></div>
+      <div id="tx-list"><div class="empty-state"><i class="fa fa-receipt"></i><h3>No transactions</h3><p>Your payment history will appear here.</p></div></div>
+    </div>
+
+    <!-- TAB: REFERRAL -->
+    <div class="tab-pane" id="pane-referral">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px;"><i class="fa fa-gift" style="color:var(--purple);"></i> Refer & Earn</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:16px;line-height:1.7;">Share your referral code or link. Earn wallet credits for every successful referral!</p>
+        <div class="referral-box">
+          <div style="font-size:11px;color:var(--t2);font-weight:700;">Your Referral Code</div>
+          <div class="referral-code" id="referral-code">SPARK-????</div>
+          <div style="font-size:11px;color:var(--mt);" id="ref-reward-text">Share to earn per friend who subscribes</div>
+        </div>
+        <!-- REFERRAL LINK -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;margin-bottom:6px;">Referral Link</div>
+          <div class="uid-display" id="ref-link-display">
+            <span id="ref-link-text" style="font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+            <button onclick="copyRefLink()">Copy Link</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="btn btn-gold" onclick="copyReferralCode()" style="flex:1;"><i class="fa fa-copy"></i> Copy Code</button>
+          <button class="btn btn-secondary" onclick="shareReferral()" style="flex:1;"><i class="fa fa-share-nodes"></i> Share Link</button>
+        </div>
+        <div class="referral-stats">
+          <div class="ref-stat"><div class="ref-stat-val" id="ref-total">0</div><div class="ref-stat-lbl">Total Refs</div></div>
+          <div class="ref-stat"><div class="ref-stat-val" id="ref-active">0</div><div class="ref-stat-lbl">Active</div></div>
+          <div class="ref-stat"><div class="ref-stat-val" id="ref-earned">₦0</div><div class="ref-stat-lbl">Earned</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;"><i class="fa fa-user-plus"></i> Enter Referral Code</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px;">If someone referred you, enter their code. Can only be applied once.</p>
+        <div id="ref-already-applied" style="display:none;padding:12px;background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:10px;margin-bottom:12px;font-size:12px;color:var(--green);">
+          <i class="fa fa-check-circle"></i> You have already applied a referral code.
+        </div>
+        <div id="ref-apply-form">
+          <div class="field-group"><label>Referral Code</label>
+            <input type="text" id="enter-ref-code" placeholder="SPARK-XXXXXX" style="text-transform:uppercase;letter-spacing:2px;"/></div>
+          <button class="btn btn-primary btn-full" onclick="applyReferralCode()"><i class="fa fa-check"></i> Apply Code</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SUPPORT -->
+    <div class="tab-pane" id="pane-support">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:6px;"><i class="fa fa-headset"></i> Contact Support</div>
+        <p style="font-size:12px;color:var(--t2);margin:10px 0 16px;line-height:1.7;">Our team is ready to help. Choose your preferred contact method.</p>
+        <div class="support-option" onclick="openEmailSupport('primary','general')">
+          <div class="support-option-icon" style="background:rgba(255,77,0,.1);color:var(--spark);"><i class="fa fa-envelope"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Email Support <span class="best-badge">FASTEST</span></div><div class="support-option-desc">ngs.spark.tv0@gmail.com · Usually within 1 hour</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </div>
+        <div class="support-option" onclick="openEmailSupport('secondary','general')">
+          <div class="support-option-icon" style="background:rgba(0,200,255,.1);color:var(--accent);"><i class="fa fa-envelope-open"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Backup Email</div><div class="support-option-desc">ng.spark.tv@gmail.com · Alternative contact</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </div>
+        <a href="chat.html" class="support-option" style="text-decoration:none;">
+          <div class="support-option-icon" style="background:rgba(0,200,255,.1);color:var(--accent);"><i class="fa fa-comments"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Live Chat with Admin</div><div class="support-option-desc">Direct messaging with our support team</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </a>
+        <a href="forum.html" class="support-option" style="text-decoration:none;">
+          <div class="support-option-icon" style="background:rgba(168,85,247,.1);color:var(--purple);"><i class="fa fa-users"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Community Forum</div><div class="support-option-desc">Chat with other Spark TV users</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </a>
+        <div class="support-option" onclick="openDialog('dlg-contact-support')">
+          <div class="support-option-icon" style="background:rgba(168,85,247,.1);color:var(--purple);"><i class="fa fa-ticket"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Submit a Ticket</div><div class="support-option-desc">Describe your issue with your preferred email</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </div>
+        <div class="support-option" onclick="openEmailSupport('primary','payment')">
+          <div class="support-option-icon" style="background:rgba(0,230,118,.1);color:var(--green);"><i class="fa fa-wallet"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Payment / Wallet Issue</div><div class="support-option-desc">Fund wallet, subscription, transfer issues</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </div>
+        <div class="support-option" onclick="openEmailSupport('primary','technical')">
+          <div class="support-option-icon" style="background:rgba(245,200,66,.1);color:var(--gold);"><i class="fa fa-wrench"></i></div>
+          <div style="flex:1;"><div class="support-option-title">Technical Issue</div><div class="support-option-desc">Streaming, buffering, login problems</div></div>
+          <i class="fa fa-chevron-right" style="color:var(--mt);font-size:12px;"></i>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;"><i class="fa fa-circle-question"></i> Quick FAQs</div>
+        <div class="activity-item" style="flex-direction:column;align-items:flex-start;gap:4px;"><div style="font-size:13px;font-weight:700;">How do I fund my wallet?</div><div style="font-size:12px;color:var(--t2);">Go to Wallet → Fund → Choose amount → Pay via email. We confirm and credit you.</div></div>
+        <div class="activity-item" style="flex-direction:column;align-items:flex-start;gap:4px;"><div style="font-size:13px;font-weight:700;">Subscription not activated yet?</div><div style="font-size:12px;color:var(--t2);">Email ngs.spark.tv0@gmail.com with your User ID and payment proof. Activated within 1 hour.</div></div>
+        <div class="activity-item" style="flex-direction:column;align-items:flex-start;gap:4px;"><div style="font-size:13px;font-weight:700;">How does subscription queue work?</div><div style="font-size:12px;color:var(--t2);">If you have an active plan, you can queue a new plan. It auto-activates when your current plan expires.</div></div>
+        <div class="activity-item" style="flex-direction:column;align-items:flex-start;gap:4px;"><div style="font-size:13px;font-weight:700;">How do I withdraw my balance?</div><div style="font-size:12px;color:var(--t2);">Go to Wallet → Withdraw. Enter your bank details and amount. Admin processes within 24 hours.</div></div>
+        <div class="activity-item" style="flex-direction:column;align-items:flex-start;gap:4px;border-bottom:none;"><div style="font-size:13px;font-weight:700;">Can I change my wallet currency?</div><div style="font-size:12px;color:var(--t2);">Yes, contact support with your User ID. Currency changes require manual verification.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;"><i class="fa fa-info-circle"></i> Account Info for Support</div>
+        <p style="font-size:11px;color:var(--t2);margin-bottom:12px;">Include this when contacting us:</p>
+        <div id="support-account-info"></div>
+        <button class="btn btn-secondary btn-full" style="margin-top:12px;" onclick="copyAccountInfoForSupport()"><i class="fa fa-copy"></i> Copy Account Info</button>
+      </div>
+    </div>
+  </div><!-- /profile-content -->
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- DIALOGS -->
+<!-- EDIT PERSONAL -->
+<div class="dialog-ov" id="dlg-edit-personal" style="border-color:rgba(255,77,0,.3);">
+  <div class="dialog-card wide">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-pen"></i> Edit Profile</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-edit-personal')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="sec-head">Basic Info</div>
+    <div class="field-row">
+      <div class="field-group"><label>First Name</label><input type="text" id="ep-firstname" placeholder="First name"/></div>
+      <div class="field-group"><label>Last Name</label><input type="text" id="ep-lastname" placeholder="Last name"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>Username</label><input type="text" id="ep-username" placeholder="@username"/></div>
+      <div class="field-group"><label>Display Name</label><input type="text" id="ep-displayname" placeholder="Display name"/></div>
+    </div>
+    <div class="field-group"><label>Bio</label><textarea id="ep-bio" placeholder="Tell us about yourself…" rows="2"></textarea></div>
+    <div class="sec-head">Contact</div>
+    <div class="field-group"><label>Email Address</label><input type="email" id="ep-email" readonly style="opacity:.6;cursor:not-allowed;"/><div class="field-hint">Change email via the Security section</div></div>
+    <div class="field-row">
+      <div class="field-group"><label>Phone</label><input type="tel" id="ep-phone" placeholder="+234 000 000 0000"/></div>
+      <div class="field-group"><label>WhatsApp</label><input type="tel" id="ep-whatsapp" placeholder="+234 000 000 0000"/></div>
+    </div>
+    <div class="field-group"><label>Website</label><input type="url" id="ep-website" placeholder="https://…"/></div>
+    <div class="sec-head">Personal</div>
+    <div class="field-row">
+      <div class="field-group"><label>Gender</label>
+        <select id="ep-gender"><option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option><option value="prefer_not">Prefer not to say</option></select>
+      </div>
+      <div class="field-group"><label>Date of Birth</label><input type="date" id="ep-dob"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>Occupation</label><input type="text" id="ep-occupation" placeholder="e.g. Engineer"/></div>
+      <div class="field-group"><label>Nationality</label><input type="text" id="ep-nationality" placeholder="e.g. Nigerian"/></div>
+    </div>
+    <div class="sec-head">Location</div>
+    <div class="field-row">
+      <div class="field-group"><label>Country</label><select id="ep-country"></select></div>
+      <div class="field-group"><label>State</label><input type="text" id="ep-state" placeholder="State or province"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>City</label><input type="text" id="ep-city" placeholder="City"/></div>
+      <div class="field-group"><label>Postal Code</label><input type="text" id="ep-postal" placeholder="Postal code"/></div>
+    </div>
+    <div class="field-group"><label>Address (optional)</label><input type="text" id="ep-address" placeholder="Street address"/></div>
+    <div class="sec-head">Streaming Preferences</div>
+    <div class="field-row">
+      <div class="field-group"><label>Favourite Genre</label>
+        <select id="ep-genre"><option value="">Select…</option><option>Action</option><option>Comedy</option><option>Drama</option><option>Sports</option><option>News</option><option>Kids</option><option>Documentary</option><option>Music</option><option>Reality TV</option><option>Sci-Fi</option><option>Thriller</option></select>
+      </div>
+      <div class="field-group"><label>Device Type</label>
+        <select id="ep-device"><option value="">Select…</option><option>Smart TV</option><option>Mobile Phone</option><option>Tablet</option><option>Laptop / PC</option><option>Fire Stick</option><option>Chromecast</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-edit-personal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="savePersonalInfo()" id="ep-save-btn" style="flex:2;"><i class="fa fa-check"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PHOTO -->
+<div class="dialog-ov" id="dlg-photo">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-camera"></i> Profile Photo</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-photo')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div style="text-align:center;padding:10px 0 20px;">
+      <div id="photo-preview" style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid var(--spark);margin:0 auto 16px;background:linear-gradient(135deg,var(--spark),var(--accent));display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;color:#fff;"></div>
+      <input type="file" id="photo-file" accept="image/*" style="display:none;" onchange="previewPhoto(this)"/>
+      <button class="btn btn-secondary" onclick="document.getElementById('photo-file').click()"><i class="fa fa-upload"></i> Choose Photo</button>
+    </div>
+    <div class="field-group"><label>Or paste image URL</label><input type="url" id="photo-url" placeholder="https://…" oninput="previewPhotoURL(this.value)"/></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-photo')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="savePhoto()" id="photo-save-btn" style="flex:2;"><i class="fa fa-check"></i> Save Photo</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD -->
+<div class="dialog-ov" id="dlg-change-password">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-key" style="color:var(--accent);"></i> Change Password</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-change-password')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="field-group"><label>Current Password</label><input type="password" id="cp-current" placeholder="Current password"/></div>
+    <div class="field-group"><label>New Password</label><input type="password" id="cp-new" placeholder="New password (min 8 chars)"/></div>
+    <div class="field-group"><label>Confirm New Password</label><input type="password" id="cp-confirm" placeholder="Repeat new password"/></div>
+    <div id="cp-strength" style="font-size:11px;font-weight:700;margin-bottom:10px;display:none;"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-change-password')" style="flex:1;">Cancel</button>
+      <button class="btn btn-accent" onclick="changePassword()" id="cp-btn" style="flex:2;"><i class="fa fa-lock"></i> Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE EMAIL -->
+<div class="dialog-ov" id="dlg-change-email">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-envelope" style="color:var(--accent);"></i> Update Email</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-change-email')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="field-group"><label>Current Password</label><input type="password" id="ce-password" placeholder="Your current password"/></div>
+    <div class="field-group"><label>New Email</label><input type="email" id="ce-email" placeholder="new@email.com"/></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-change-email')" style="flex:1;">Cancel</button>
+      <button class="btn btn-accent" onclick="changeEmail()" id="ce-btn" style="flex:2;"><i class="fa fa-check"></i> Update Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- FUND WALLET -->
+<div class="dialog-ov" id="dlg-fund">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-wallet" style="color:var(--green);"></i> Fund Wallet</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-fund')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div style="background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:11px;color:var(--t2);font-weight:700;">Amount to Fund</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green);" id="fund-confirm-amount">₦0</div></div>
+      <i class="fa fa-wallet" style="font-size:28px;color:rgba(0,230,118,.3);"></i>
+    </div>
+    <p style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:16px;">Send <strong id="fund-confirm-amount2" style="color:var(--green);">₦0</strong> via bank transfer, then contact us to confirm and we credit your wallet.</p>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:800;color:var(--mt);text-transform:uppercase;margin-bottom:8px;">Choose contact method:</div>
+      <div class="email-option selected" id="fund-email-opt-primary" onclick="selectFundEmail('primary')">
+        <div class="email-option-icon" style="background:rgba(255,77,0,.1);color:var(--spark);"><i class="fa fa-envelope"></i></div>
+        <div><div class="email-option-addr">ngs.spark.tv0@gmail.com</div><div class="email-option-tag">⚡ Primary — Fastest Reply</div></div>
+        <i class="fa fa-check-circle" style="color:var(--spark);margin-left:auto;font-size:16px;" id="fund-check-primary"></i>
+      </div>
+      <div class="email-option" id="fund-email-opt-secondary" onclick="selectFundEmail('secondary')">
+        <div class="email-option-icon" style="background:rgba(0,200,255,.1);color:var(--accent);"><i class="fa fa-envelope-open"></i></div>
+        <div><div class="email-option-addr">ng.spark.tv@gmail.com</div><div class="email-option-tag">Backup / Alternative</div></div>
+        <i class="fa fa-circle" style="color:var(--mt);margin-left:auto;font-size:16px;" id="fund-check-secondary"></i>
+      </div>
+    </div>
+    <div class="btn-row" style="flex-direction:column;gap:8px;">
+      <button class="btn btn-green btn-full" onclick="payViaEmail()"><i class="fa fa-envelope"></i> Open Email to Pay</button>
+      <button class="btn btn-accent btn-full" onclick="copyPaymentDetails()"><i class="fa fa-copy"></i> Copy Payment Details</button>
+      <button class="btn btn-secondary btn-full" onclick="closeDialog('dlg-fund')"><i class="fa fa-xmark"></i> Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAW DIALOG -->
+<div class="dialog-ov" id="dlg-withdraw">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-money-bill-transfer" style="color:var(--gold);"></i> Withdraw Balance</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-withdraw')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.25);border-radius:10px;padding:12px 14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:11px;color:var(--t2);font-weight:700;">Available to Withdraw</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--gold);" id="dlg-withdraw-bal">₦0</div></div>
+      <i class="fa fa-piggy-bank" style="font-size:28px;color:rgba(245,200,66,.3);"></i>
+    </div>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:14px;padding:10px;background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:8px;">
+      <i class="fa fa-circle-info" style="color:var(--accent);"></i>
+      Withdrawals are processed within 24 hours. You'll be contacted via email to confirm.
+    </div>
+    <div class="field-group">
+      <label>Amount to Withdraw</label>
+      <div class="amount-input-wrap">
+        <span class="amount-prefix" id="withdraw-prefix">₦</span>
+        <input type="number" class="amount-input" id="withdraw-amount-input" placeholder="Enter amount…"/>
+      </div>
+    </div>
+    <div class="sec-head">Bank Details</div>
+    <div class="field-group"><label>Bank Name</label><input type="text" id="wd-bank-name" placeholder="e.g. First Bank, Barclays, Chase…"/></div>
+    <div class="field-group"><label>Account Number / IBAN</label><input type="text" id="wd-account-number" placeholder="Account number or IBAN"/></div>
+    <div class="field-group"><label>Account Holder Name</label><input type="text" id="wd-account-name" placeholder="Full name on account"/></div>
+    <div class="field-row">
+      <div class="field-group"><label>Country</label><select id="wd-country"></select></div>
+      <div class="field-group"><label>Swift/Sort Code (optional)</label><input type="text" id="wd-swift" placeholder="SWIFT or Sort code"/></div>
+    </div>
+    <div class="field-group"><label>Additional Notes (optional)</label><input type="text" id="wd-notes" placeholder="Any extra info for the transfer…"/></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-withdraw')" style="flex:1;">Cancel</button>
+      <button class="btn btn-gold" onclick="submitWithdrawal()" id="wd-submit-btn" style="flex:2;"><i class="fa fa-paper-plane"></i> Submit Withdrawal</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFER CONFIRM -->
+<div class="dialog-ov" id="dlg-transfer-confirm">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-paper-plane" style="color:var(--accent);"></i> Confirm Transfer</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-transfer-confirm')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div id="transfer-confirm-body" style="margin-bottom:20px;font-size:13px;color:var(--t2);line-height:1.7;"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-transfer-confirm')" style="flex:1;">Cancel</button>
+      <button class="btn btn-accent" onclick="confirmTransfer()" id="transfer-confirm-btn" style="flex:2;"><i class="fa fa-check"></i> Confirm Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM (generic) -->
+<div class="dialog-ov" id="dlg-confirm">
+  <div class="dialog-card" style="max-width:360px;">
+    <div class="confirm-emoji" id="confirm-emoji">⚠️</div>
+    <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;text-align:center;margin-bottom:10px;" id="confirm-title">Are you sure?</div>
+    <div class="confirm-msg" id="confirm-msg">This action cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-confirm')" style="flex:1;">Cancel</button>
+      <button class="btn" id="confirm-ok-btn" style="flex:2;" onclick="confirmAction()"><i class="fa fa-check"></i> Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF VIEWER -->
+<div class="dialog-ov" id="dlg-notif-view">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-bell" style="color:var(--accent);"></i> <span id="dlg-notif-title">Notification</span></div>
+      <div class="dialog-close" onclick="closeDialog('dlg-notif-view')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div style="font-size:40px;text-align:center;margin-bottom:14px;" id="dlg-notif-emoji">📌</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:10px;" id="dlg-notif-body"></div>
+    <div style="font-size:11px;color:var(--mt);font-weight:600;" id="dlg-notif-time"></div>
+  </div>
+</div>
+
+<!-- PLAN SUCCESS -->
+<div class="dialog-ov" id="dlg-plan-success">
+  <div class="dialog-card" style="text-align:center;">
+    <div style="font-size:54px;margin-bottom:14px;">🎉</div>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;" id="plan-success-title">Plan Activated!</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px;" id="plan-success-msg"></div>
+    <button class="btn btn-green btn-full" onclick="closeDialog('dlg-plan-success');switchTab('subscription');"><i class="fa fa-tv"></i> Start Watching</button>
+  </div>
+</div>
+
+<!-- TRANSFER SUCCESS -->
+<div class="dialog-ov" id="dlg-transfer-success">
+  <div class="dialog-card" style="text-align:center;">
+    <div style="font-size:54px;margin-bottom:14px;">💸</div>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;">Transfer Sent!</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px;" id="transfer-success-msg"></div>
+    <button class="btn btn-primary btn-full" onclick="closeDialog('dlg-transfer-success')"><i class="fa fa-check"></i> Done</button>
+  </div>
+</div>
+
+<!-- CONTACT SUPPORT TICKET -->
+<div class="dialog-ov" id="dlg-contact-support">
+  <div class="dialog-card">
+    <div class="dialog-header">
+      <div class="dialog-title"><i class="fa fa-ticket" style="color:var(--purple);"></i> Submit Support Ticket</div>
+      <div class="dialog-close" onclick="closeDialog('dlg-contact-support')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="field-group"><label>Issue Category</label>
+      <select id="support-category">
+        <option value="subscription">Subscription / Activation</option>
+        <option value="payment">Payment / Wallet</option>
+        <option value="technical">Technical / Streaming</option>
+        <option value="transfer">Transfer Issue</option>
+        <option value="referral">Referral Problem</option>
+        <option value="withdrawal">Withdrawal Request</option>
+        <option value="account">Account Access</option>
+        <option value="other">Other</option>
+      </select></div>
+    <div class="field-group"><label>Describe your issue</label><textarea id="support-message" placeholder="Describe in detail…" rows="4"></textarea></div>
+    <div class="field-group"><label>Send To</label>
+      <div class="email-option selected" id="ticket-email-opt-primary" onclick="selectTicketEmail('primary')" style="margin-bottom:8px;">
+        <div class="email-option-icon" style="background:rgba(255,77,0,.1);color:var(--spark);font-size:14px;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa fa-envelope"></i></div>
+        <div><div style="font-size:12px;font-weight:800;">ngs.spark.tv0@gmail.com <span class="best-badge">RECOMMENDED</span></div><div style="font-size:10px;color:var(--mt);">Fastest response</div></div>
+        <i class="fa fa-check-circle" style="color:var(--spark);margin-left:auto;font-size:14px;" id="ticket-check-primary"></i>
+      </div>
+      <div class="email-option" id="ticket-email-opt-secondary" onclick="selectTicketEmail('secondary')">
+        <div class="email-option-icon" style="background:rgba(0,200,255,.1);color:var(--accent);font-size:14px;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa fa-envelope-open"></i></div>
+        <div><div style="font-size:12px;font-weight:800;">ng.spark.tv@gmail.com</div><div style="font-size:10px;color:var(--mt);">Backup</div></div>
+        <i class="fa fa-circle" style="color:var(--mt);margin-left:auto;font-size:14px;" id="ticket-check-secondary"></i>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDialog('dlg-contact-support')" style="flex:1;">Cancel</button>
+      <button class="btn btn-purple" onclick="submitSupportTicket()" id="ticket-submit-btn" style="flex:2;"><i class="fa fa-paper-plane"></i> Send Ticket</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-database.js"></script>
+<script>
+/* ─── FIREBASE ─── */
+firebase.initializeApp({
+  apiKey:"AIzaSyDAnOaWAy-bC435Fu0suYKIAmH4A3j-I_Y",
+  authDomain:"spark-tv-4ce3f.firebaseapp.com",
+  databaseURL:"https://spark-tv-4ce3f-default-rtdb.firebaseio.com",
+  projectId:"spark-tv-4ce3f",
+  storageBucket:"spark-tv-4ce3f.firebasestorage.app",
+  messagingSenderId:"1041124519612",
+  appId:"1:1041124519612:web:00a37105e3def9ef14aab9"
+});
+const _auth=firebase.auth(), _db=firebase.database();
+
+/* ─── CONFIG ─── */
+const EMAILS={primary:"ngs.spark.tv0@gmail.com",secondary:"ng.spark.tv@gmail.com"};
+const TG_TOKEN="8700685464:AAEHRfSlwS3kI_cwCmWpD1O5kwCmjxzmC74";
+const TG_CHAT="@database_sparktv";
+let selectedFundEmail="primary", selectedTicketEmail="primary";
+
+/* ─── COUNTRIES ─── */
+const COUNTRIES=[
+  {name:"Nigeria",code:"NG",currency:"NGN",symbol:"₦",monthly_full:5000,monthly_basic:3000,hourly:500},
+  {name:"United States",code:"US",currency:"USD",symbol:"$",monthly_full:5,monthly_basic:3,hourly:0.5},
+  {name:"United Kingdom",code:"GB",currency:"GBP",symbol:"£",monthly_full:4,monthly_basic:2.5,hourly:0.4},
+  {name:"Canada",code:"CA",currency:"CAD",symbol:"CA$",monthly_full:7,monthly_basic:4,hourly:0.7},
+  {name:"Australia",code:"AU",currency:"AUD",symbol:"A$",monthly_full:8,monthly_basic:5,hourly:0.8},
+  {name:"Germany",code:"DE",currency:"EUR",symbol:"€",monthly_full:5,monthly_basic:3,hourly:0.5},
+  {name:"France",code:"FR",currency:"EUR",symbol:"€",monthly_full:5,monthly_basic:3,hourly:0.5},
+  {name:"Italy",code:"IT",currency:"EUR",symbol:"€",monthly_full:5,monthly_basic:3,hourly:0.5},
+  {name:"Spain",code:"ES",currency:"EUR",symbol:"€",monthly_full:5,monthly_basic:3,hourly:0.5},
+  {name:"Netherlands",code:"NL",currency:"EUR",symbol:"€",monthly_full:5,monthly_basic:3,hourly:0.5},
+  {name:"Sweden",code:"SE",currency:"SEK",symbol:"kr",monthly_full:55,monthly_basic:33,hourly:5.5},
+  {name:"Norway",code:"NO",currency:"NOK",symbol:"kr",monthly_full:55,monthly_basic:33,hourly:5.5},
+  {name:"Switzerland",code:"CH",currency:"CHF",symbol:"Fr",monthly_full:5,monthly_basic:3,hourly:0.5},
+  {name:"Poland",code:"PL",currency:"PLN",symbol:"zł",monthly_full:20,monthly_basic:12,hourly:2},
+  {name:"Turkey",code:"TR",currency:"TRY",symbol:"₺",monthly_full:150,monthly_basic:90,hourly:15},
+  {name:"Ghana",code:"GH",currency:"GHS",symbol:"GH₵",monthly_full:60,monthly_basic:36,hourly:6},
+  {name:"Kenya",code:"KE",currency:"KES",symbol:"KSh",monthly_full:650,monthly_basic:390,hourly:65},
+  {name:"South Africa",code:"ZA",currency:"ZAR",symbol:"R",monthly_full:95,monthly_basic:57,hourly:9.5},
+  {name:"Egypt",code:"EG",currency:"EGP",symbol:"E£",monthly_full:160,monthly_basic:96,hourly:16},
+  {name:"India",code:"IN",currency:"INR",symbol:"₹",monthly_full:420,monthly_basic:252,hourly:42},
+  {name:"Pakistan",code:"PK",currency:"PKR",symbol:"₨",monthly_full:1400,monthly_basic:840,hourly:140},
+  {name:"Japan",code:"JP",currency:"JPY",symbol:"¥",monthly_full:750,monthly_basic:450,hourly:75},
+  {name:"China",code:"CN",currency:"CNY",symbol:"¥",monthly_full:36,monthly_basic:22,hourly:3.6},
+  {name:"South Korea",code:"KR",currency:"KRW",symbol:"₩",monthly_full:6700,monthly_basic:4020,hourly:670},
+  {name:"Indonesia",code:"ID",currency:"IDR",symbol:"Rp",monthly_full:80000,monthly_basic:48000,hourly:8000},
+  {name:"Malaysia",code:"MY",currency:"MYR",symbol:"RM",monthly_full:24,monthly_basic:14,hourly:2.4},
+  {name:"Singapore",code:"SG",currency:"SGD",symbol:"S$",monthly_full:7,monthly_basic:4,hourly:0.7},
+  {name:"Philippines",code:"PH",currency:"PHP",symbol:"₱",monthly_full:285,monthly_basic:171,hourly:28.5},
+  {name:"Brazil",code:"BR",currency:"BRL",symbol:"R$",monthly_full:26,monthly_basic:16,hourly:2.6},
+  {name:"Mexico",code:"MX",currency:"MXN",symbol:"$",monthly_full:88,monthly_basic:53,hourly:8.8},
+  {name:"Argentina",code:"AR",currency:"ARS",symbol:"$",monthly_full:4500,monthly_basic:2700,hourly:450},
+  {name:"Saudi Arabia",code:"SA",currency:"SAR",symbol:"ر.س",monthly_full:19,monthly_basic:11,hourly:1.9},
+  {name:"UAE",code:"AE",currency:"AED",symbol:"د.إ",monthly_full:19,monthly_basic:11,hourly:1.9},
+  {name:"Morocco",code:"MA",currency:"MAD",symbol:"د.م.",monthly_full:50,monthly_basic:30,hourly:5},
+  {name:"Other",code:"XX",currency:"USD",symbol:"$",monthly_full:5,monthly_basic:3,hourly:0.5}
+];
+
+const PLAN_DEFS=[
+  {id:"1hr",name:"1-Hour Pass",cycle:"hourly",days:0.042,type:"hourly",multiplier:1,discount:0,desc:"1 hour of HD streaming"},
+  {id:"1mo_lim",name:"1 Month Basic",cycle:"monthly",days:30,type:"basic",multiplier:1,discount:0,desc:"SD quality, limited channels"},
+  {id:"1mo_ful",name:"1 Month Full",cycle:"monthly",days:30,type:"full",multiplier:1,discount:0,desc:"All channels, HD quality",badge:"Best Value",badgeCls:"gold"},
+  {id:"3mo_ful",name:"3 Months Full",cycle:"quarterly",days:90,type:"full",multiplier:3,discount:0.1,desc:"All channels × 3 months",badge:"Save 10%",badgeCls:"gold"},
+  {id:"6mo_ful",name:"6 Months Full",cycle:"biannual",days:180,type:"full",multiplier:6,discount:0.15,desc:"All channels × 6 months",badge:"Save 15%",badgeCls:"gold"},
+  {id:"1yr_ful",name:"1 Year Full",cycle:"yearly",days:365,type:"full",multiplier:12,discount:0.2,desc:"All channels × 12 months",badge:"Best Deal",badgeCls:"gold"},
+];
+
+/* ─── HELPERS ─── */
+const xe=s=>{const d=document.createElement("div");d.textContent=String(s||"");return d.innerHTML;};
+const $=id=>document.getElementById(id);
+const gv=id=>($(`${id}`)?.value||"").trim();
+const set=(id,v)=>{const el=$(id);if(el)el.value=v||"";};
+const show=(id,d="block")=>{const el=$(id);if(el)el.style.display=d;};
+const hide=id=>{const el=$(id);if(el)el.style.display="none";};
+const getCInfo=name=>COUNTRIES.find(c=>c.name===name)||COUNTRIES[COUNTRIES.length-1];
+const getWInfo=()=>COUNTRIES.find(c=>c.currency===userWallet.currency)||getCInfo(userRecord?.personal?.country||"Nigeria");
+const planPrice=(plan,info)=>{
+  if(plan.type==="hourly") return Math.round(info.hourly);
+  const base=plan.type==="basic"?info.monthly_basic:info.monthly_full;
+  return Math.round(base*plan.multiplier*(1-plan.discount));
+};
+let _tt;
+const toast=(msg,type)=>{
+  const el=$("toast");el.className=`toast ${type||"info"} show`;el.textContent=msg;
+  clearTimeout(_tt);_tt=setTimeout(()=>{el.className="toast";},3800);
+};
+
+/* ─── STATE ─── */
+let currentUser=null,userRecord=null;
+let userWallet={balance:0,currency:"NGN",symbol:"₦"};
+let userWithdraw={balance:0,total_withdrawn:0};
+let exchangeRates={},liveRateLoaded=false;
+let selectedPlanId=null,selectedFundAmount=0,selectedTransferUser=null;
+let allTransactions=[],allNotifications=[];
+let pendingPhotoBase64="",pendingPhotoURL="";
+let confirmCallback=null;
+let isDark=localStorage.getItem("sparktv-theme")!=="light";
+let prefs={ads:true,datasaver:false,pushnotif:true,autorenew:false,emailnotif:true,discovery:true,tfa:false};
+let settingsPendingCountry="";
+let currentWorldTime=null;
+
+/* ─── THEME ─── */
+const applyTheme=d=>{
+  isDark=d;
+  document.documentElement.setAttribute("data-theme",d?"dark":"light");
+  $("th-ic").className=d?"fa fa-sun":"fa fa-moon";
+  const sw=$("theme-sw");if(sw)sw.className="toggle-sw"+(d?" on":"");
+  localStorage.setItem("sparktv-theme",d?"dark":"light");
+};
+applyTheme(isDark);
+$("theme-toggle").addEventListener("click",()=>applyTheme(!isDark));
+
+/* ─── AUTH ─── */
+_auth.onAuthStateChanged(async user=>{
+  if(user){currentUser=user;await loadUserData();showProfileContent();}
+  else{hide("loading-wrap");show("signout-wrap");}
+});
+
+async function loadUserData(){
+  try{
+    const snap=await _db.ref(`users/${currentUser.uid}`).once("value");
+    userRecord=snap.val()||{};
+    prefs={
+      ads:userRecord?.subscription?.ads_enabled!==false,
+      datasaver:userRecord?.preferences?.data_saver===true,
+      pushnotif:userRecord?.preferences?.push_notifications!==false,
+      autorenew:userRecord?.preferences?.auto_renew===true,
+      emailnotif:userRecord?.preferences?.email_notifications!==false,
+      discovery:userRecord?.preferences?.allow_discovery!==false,
+      tfa:userRecord?.preferences?.two_factor_auth===true,
+    };
+    const w=userRecord?.wallet;
+    if(w) userWallet={balance:Number(w.balance||0),currency:w.currency||"NGN",symbol:w.symbol||"₦"};
+    const wd=userRecord?.withdrawable;
+    if(wd) userWithdraw={balance:Number(wd.balance||0),total_withdrawn:Number(wd.total_withdrawn||0)};
+    _db.ref(`users/${currentUser.uid}/wallet`).on("value",snap=>{
+      const w=snap.val();if(!w)return;
+      userWallet={balance:Number(w.balance||0),currency:w.currency||"NGN",symbol:w.symbol||"₦"};
+      updateWalletDisplay();
+    });
+    _db.ref(`users/${currentUser.uid}/withdrawable`).on("value",snap=>{
+      const wd=snap.val();if(!wd)return;
+      userWithdraw={balance:Number(wd.balance||0),total_withdrawn:Number(wd.total_withdrawn||0)};
+      updateWithdrawDisplay();
+    });
+    _db.ref(`users/${currentUser.uid}/subscription`).on("value",snap=>{
+      const sub=snap.val();if(!sub)return;
+      if(!userRecord)userRecord={};
+      userRecord.subscription=sub;
+      checkSubQueueExpiry();
+      renderHero();renderSubscriptionTab();
+    });
+    await ensureUserKeys();
+  }catch(e){userRecord={};}
+  await getWorldTime();
+  fetchExchangeRates();
+}
+
+async function ensureUserKeys(){
+  if(!currentUser)return;
+  const p=userRecord?.personal||{};
+  const updates={};
+  if(!userRecord?.referral?.code){updates["referral/code"]="SPARK-"+currentUser.uid.substring(0,6).toUpperCase();updates["referral/total_referrals"]=0;updates["referral/active_referrals"]=0;updates["referral/total_earned"]=0;updates["referral/referred_by"]="";}
+  if(!p.joined_date)updates["personal/joined_date"]=new Date().toISOString();
+  if(!p.account_id)updates["personal/account_id"]="SPK-"+currentUser.uid.substring(0,8).toUpperCase();
+  updates["personal/last_login"]=new Date().toISOString();
+  if(!userRecord?.wallet?.currency)updates["wallet/currency"]="NGN";
+  if(!userRecord?.wallet?.symbol)updates["wallet/symbol"]="₦";
+  if(!userRecord?.withdrawable)updates["withdrawable"]={balance:0,total_withdrawn:0};
+  if(Object.keys(updates).length){
+    await _db.ref(`users/${currentUser.uid}`).update(updates).catch(()=>{});
+    const snap=await _db.ref(`users/${currentUser.uid}`).once("value").catch(()=>null);
+    if(snap)userRecord=snap.val()||userRecord;
+  }
+}
+
+async function getWorldTime(){
+  try{const r=await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC");if(r.ok){const d=await r.json();currentWorldTime=new Date(d.utc_datetime).getTime();}}
+  catch(e){currentWorldTime=Date.now();}
+}
+
+async function fetchExchangeRates(){
+  try{
+    const r=await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+    if(!r.ok)throw new Error();
+    exchangeRates=(await r.json()).rates||{};
+    liveRateLoaded=true;
+    const lb=$("live-rate-badge");if(lb){lb.className="rate-badge";lb.innerHTML='<i class="fa fa-circle" style="font-size:7px;color:var(--green);"></i> Live';}
+    updateWalletDisplay();renderPlanList();
+  }catch(e){
+    const lb=$("live-rate-badge");if(lb){lb.className="rate-badge loading";lb.innerHTML='<i class="fa fa-triangle-exclamation"></i> Offline';}
+  }
+}
+
+/* ─── CHECK QUEUE EXPIRY ─── */
+async function checkSubQueueExpiry(){
+  const sub=userRecord?.subscription||{};
+  const queued=sub.queued_plan;
+  if(!queued)return;
+  const now=currentWorldTime||Date.now();
+  const exp=typeof sub.expiry_date==="number"?sub.expiry_date:new Date(sub.expiry_date||0).getTime();
+  if(now>=exp){
+    // Activate queued plan
+    const qp=queued;
+    await _db.ref(`users/${currentUser.uid}/subscription`).update({
+      sub_status:"true",expiry_date:qp.expiry_date,plan_tier:qp.plan_tier,plan_id:qp.plan_id,
+      billing_cycle:qp.billing_cycle,watch_access:true,video_quality:qp.video_quality,
+      max_screens:qp.max_screens,ads_enabled:qp.ads_enabled,currency:qp.currency,
+      last_payment:qp.purchased_at,last_payment_amount:qp.amount,payment_method:qp.payment_method,
+      plan_type:qp.plan_type,queued_plan:null
+    }).catch(()=>{});
+    if(!userRecord.subscription)userRecord.subscription={};
+    Object.assign(userRecord.subscription,{sub_status:"true",expiry_date:qp.expiry_date,plan_tier:qp.plan_tier,queued_plan:null});
+    pushNotification("🎉","Queued Plan Activated!",`Your ${qp.plan_tier} has auto-activated!`);
+    sendTG(`🔄 *Queue Auto-Activated*\n👤 ${currentUser.email}\n📦 ${qp.plan_tier}\n🆔 ${currentUser.uid}`);
+  }
+}
+
+/* ─── SHOW CONTENT ─── */
+function showProfileContent(){
+  hide("loading-wrap");show("profile-content");
+  renderHero();renderPersonalInfo();buildCountrySelects();renderSubscriptionTab();
+  renderWalletTab();loadNotifications();loadTransactions();applySettings();
+  setTodayDates();renderReferralTab();initColorPicker();renderDevices();
+  renderStreamingStats();renderSupportAccountInfo();
+  show("nav-bal-pill","flex");
+}
+
+/* ─── HERO ─── */
+function renderHero(){
+  if(!currentUser)return;
+  const p=userRecord?.personal||{},sub=userRecord?.subscription||{};
+  const dn=p.display_name||currentUser.displayName||(p.first_name&&p.last_name?p.first_name+" "+p.last_name:p.first_name||p.last_name)||"User";
+  const photo=currentUser.photoURL||p.profile_url||"";
+  const init=dn.charAt(0).toUpperCase();
+  const isActive=sub.sub_status==="true"||sub.sub_status===true;
+  $("hero-name").textContent=dn;
+  $("hero-username").textContent=p.username?"@"+p.username:"";
+  $("hero-email").textContent=currentUser.isAnonymous?"Guest":(currentUser.email||"");
+  const bioEl=$("hero-bio");if(p.bio){bioEl.textContent=p.bio;bioEl.style.display="block";}else bioEl.style.display="none";
+  const av=$("hero-av");
+  av.innerHTML=photo?`<img src="${xe(photo)}" alt="" onerror="this.outerHTML='<span style=font-size:36px;font-weight:800;color:#fff>${init}</span>'">`:`<span style="font-size:36px;font-weight:800;color:#fff;">${init}</span>`;
+  let badges=`<div class="hbadge ${isActive?"active":"inactive"}">${isActive?'<i class="fa fa-check-circle"></i> Active':'<i class="fa fa-times-circle"></i> Inactive'}</div>`;
+  if(sub.plan_tier)badges+=`<div class="hbadge plan"><i class="fa fa-star"></i> ${xe(sub.plan_tier)}</div>`;
+  if(userWallet.currency)badges+=`<div class="hbadge currency"><i class="fa fa-coins"></i> ${xe(userWallet.currency)}</div>`;
+  if(p.country)badges+=`<div class="hbadge country"><i class="fa fa-globe"></i> ${xe(p.country)}</div>`;
+  $("hero-badges").innerHTML=badges;
+  if(isActive&&sub.expiry_date){const exp=typeof sub.expiry_date==="number"?sub.expiry_date:new Date(sub.expiry_date).getTime();$("hs-days").textContent=Math.max(0,Math.ceil((exp-(currentWorldTime||Date.now()))/86400000));}
+  else $("hs-days").textContent="—";
+  $("hs-plan").textContent=sub.plan_tier||"None";
+  $("hs-bal").textContent=userWallet.symbol+Number(userWallet.balance||0).toLocaleString();
+  $("hs-refs").textContent=userRecord?.referral?.total_referrals||0;
+  $("nav-bal-text").textContent=userWallet.symbol+Number(userWallet.balance||0).toLocaleString();
+  const fields=["first_name","last_name","username","phone","gender","dob","country","city","bio","profile_url","occupation","nationality"];
+  let filled=(photo?1:0)+(currentUser.email?1:0);fields.forEach(f=>{if(p[f])filled++;});
+  const pct=Math.round((filled/(fields.length+2))*100);
+  $("completion-pct").textContent=pct+"%";$("completion-fill").style.width=pct+"%";
+}
+
+/* ─── STREAMING STATS ─── */
+function renderStreamingStats(){
+  const txSubs=allTransactions.filter(t=>t.plan_tier&&t.status==="success"&&t.type==="debit").length;
+  $("stat-hours").textContent=(txSubs*30*1.5)+"h";
+  $("stat-sessions").textContent=Math.max(txSubs*12,0);
+  $("stat-subs").textContent=txSubs;
+}
+
+/* ─── INFO ROW ─── */
+const infoRow=(ico,key,val,copyable=false,valCls="")=>{
+  const v=String(val||"—");
+  const copy=copyable&&v&&v!=="—"?`<div class="info-copy" onclick="copyText(${JSON.stringify(v)},${JSON.stringify(key)})"><i class="fa fa-copy"></i></div>`:"";
+  return `<div class="info-row"><div class="info-icon"><i class="fa ${ico}"></i></div><span class="info-key">${key}</span><span class="info-val${valCls?" "+valCls:""}">${xe(v)}</span>${copy}</div>`;
+};
+
+/* ─── PERSONAL INFO ─── */
+function renderPersonalInfo(){
+  const p=userRecord?.personal||{};
+  $("personal-info-rows").innerHTML=[
+    ["fa-user","First Name",p.first_name||"—"],["fa-user","Last Name",p.last_name||"—"],
+    ["fa-at","Username",p.username?"@"+p.username:"—"],["fa-tag","Display Name",p.display_name||currentUser.displayName||"—"],
+    ["fa-venus-mars","Gender",p.gender||"—"],["fa-cake-candles","Date of Birth",p.dob?new Date(p.dob).toLocaleDateString():"—"],
+    ["fa-briefcase","Occupation",p.occupation||"—"],["fa-flag","Nationality",p.nationality||"—"],
+    ["fa-heart","Fav. Genre",p.favourite_genre||"—"],["fa-display","Device",p.device_type||"—"],
+  ].map(([i,k,v])=>infoRow(i,k,v)).join("");
+  $("contact-info-rows").innerHTML=[
+    ["fa-envelope","Email",currentUser.email||"—",true],["fa-phone","Phone",p.phone||"—",true],
+    ["fa-whatsapp","WhatsApp",p.whatsapp||"—"],["fa-globe","Country",p.country||"—"],
+    ["fa-map","State",p.state||"—"],["fa-city","City",p.city||"—"],
+  ].map(([i,k,v,c])=>infoRow(i,k,v,c)).join("");
+  const uid=currentUser.uid, acctId=p.account_id||"—", refCode=userRecord?.referral?.code||"—";
+  $("account-identity-rows").innerHTML=`
+    <div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;margin-bottom:6px;">User ID</div><div class="uid-display"><span>${xe(uid)}</span><button onclick="copyText('${uid}','User ID')">Copy</button></div></div>
+    <div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;margin-bottom:6px;">Account ID</div><div class="uid-display"><span>${xe(acctId)}</span><button onclick="copyText('${acctId}','Account ID')">Copy</button></div></div>
+    <div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;margin-bottom:6px;">Wallet Currency</div><div class="uid-display"><span>${xe(userWallet.currency)} (${xe(userWallet.symbol)})</span><button onclick="copyText('${userWallet.currency}','Currency')">Copy</button></div></div>
+    <div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--mt);font-weight:800;text-transform:uppercase;margin-bottom:6px;">Referral Code</div><div class="uid-display"><span>${xe(refCode)}</span><button onclick="copyText('${refCode}','Referral Code')">Copy</button></div></div>
+    ${infoRow("fa-calendar","Joined",p.joined_date?new Date(p.joined_date).toLocaleDateString():"—")}
+    ${infoRow("fa-clock","Last Login",p.last_login?new Date(p.last_login).toLocaleString():"—")}`;
+  $("security-rows").innerHTML=[
+    ["fa-envelope","Email",currentUser.email||"—"],
+    ["fa-shield-halved","Account Type",currentUser.isAnonymous?"Guest":"Registered"],
+    ["fa-check-circle","Email Verified",currentUser.emailVerified?"Yes":"Not verified","","",currentUser.emailVerified?"ok":"warn"],
+    ["fa-lock","2FA",prefs.tfa?"Enabled":"Disabled","","",prefs.tfa?"ok":"muted"],
+  ].map(([i,k,v,,c,vc])=>infoRow(i,k,v,c,vc)).join("");
+  $("activity-log").innerHTML=(()=>{
+    const sub=userRecord?.subscription||{};
+    const items=[];
+    if(sub.last_payment)items.push({dot:"spark",text:`Last payment — ${sub.plan_tier||""}`,time:new Date(sub.last_payment).toLocaleDateString()});
+    if(userRecord?.personal?.last_login)items.push({dot:"green",text:"Profile accessed",time:new Date(userRecord.personal.last_login).toLocaleString()});
+    if(userRecord?.personal?.joined_date)items.push({dot:"accent",text:"Account created",time:new Date(userRecord.personal.joined_date).toLocaleDateString()});
+    if(allTransactions.length)items.push({dot:"gold",text:`${allTransactions.length} total transactions`,time:""});
+    return items.length?items.map(i=>`<div class="activity-item"><div class="activity-dot ${i.dot}"></div><div class="activity-text">${xe(i.text)}</div>${i.time?`<div class="activity-time">${xe(i.time)}</div>`:""}</div>`).join(""):'<div class="empty-state" style="padding:20px 0;"><i class="fa fa-chart-line"></i><p>No activity yet</p></div>';
+  })();
+}
+
+/* ─── DEVICES ─── */
+function renderDevices(){
+  const devices=userRecord?.devices||{};
+  const devList=Object.entries(devices);
+  const wrap=$("device-list");
+  if(!devList.length){wrap.innerHTML='<div style="font-size:12px;color:var(--mt);padding:8px 0;">No devices registered. Tap "Add" to register this device.</div>';return;}
+  const icons={mobile:"fa-mobile-screen",tablet:"fa-tablet-screen-button",laptop:"fa-laptop",tv:"fa-tv",default:"fa-display"};
+  wrap.innerHTML=devList.map(([key,d])=>`<div class="device-item">
+    <div class="device-icon"><i class="fa ${icons[d.type]||icons.default}"></i></div>
+    <div style="flex:1;"><div class="device-name">${xe(d.name||"Unknown Device")}</div><div class="device-meta">${xe(d.browser||"Browser")} · ${d.last_seen?new Date(d.last_seen).toLocaleDateString():"Unknown"}</div></div>
+    <div style="cursor:pointer;color:var(--red);font-size:12px;" onclick="removeDevice('${key}')"><i class="fa fa-trash"></i></div></div>`).join("");
+}
+
+window.registerCurrentDevice=async function(){
+  const ua=navigator.userAgent;
+  const type=/iPad/.test(ua)?"tablet":/Mobi|Android/i.test(ua)?"mobile":"laptop";
+  const browser=ua.includes("Chrome")?"Chrome":ua.includes("Firefox")?"Firefox":ua.includes("Safari")?"Safari":"Browser";
+  const key=currentUser.uid.substring(0,8)+"_"+Date.now();
+  const d={name:`${type.charAt(0).toUpperCase()+type.slice(1)} · ${browser}`,type,browser,last_seen:Date.now(),added:Date.now()};
+  await _db.ref(`users/${currentUser.uid}/devices/${key}`).set(d);
+  if(!userRecord.devices)userRecord.devices={};
+  userRecord.devices[key]=d;renderDevices();toast("✓ Device registered!","ok");
+};
+
+window.removeDevice=async function(key){
+  showConfirm("🗑️","Remove Device?","Remove this device?","btn-red","Remove",async()=>{
+    await _db.ref(`users/${currentUser.uid}/devices/${key}`).remove();
+    if(userRecord.devices)delete userRecord.devices[key];
+    renderDevices();toast("✓ Device removed","ok");
+  });
+};
+
+/* ─── COUNTRY SELECTS ─── */
+function buildCountrySelects(){
+  ["ep-country","settings-country","wd-country"].forEach(id=>{
+    const el=$(id);if(!el)return;
+    el.innerHTML='<option value="">Select Country…</option>';
+    COUNTRIES.forEach(c=>{
+      const o=document.createElement("option");
+      o.value=c.name;o.textContent=c.name+" ("+c.currency+")";
+      if(userRecord?.personal?.country===c.name)o.selected=true;
+      el.appendChild(o);
+    });
+  });
+  prefillEditForm();
+}
+
+function prefillEditForm(){
+  const p=userRecord?.personal||{};
+  [["ep-firstname",p.first_name],["ep-lastname",p.last_name],["ep-username",p.username],
+   ["ep-displayname",p.display_name||currentUser.displayName],["ep-bio",p.bio],
+   ["ep-email",currentUser.email],["ep-phone",p.phone],["ep-whatsapp",p.whatsapp],
+   ["ep-website",p.website],["ep-gender",p.gender],["ep-dob",p.dob],
+   ["ep-occupation",p.occupation],["ep-nationality",p.nationality],
+   ["ep-city",p.city],["ep-state",p.state],["ep-postal",p.postal_code],
+   ["ep-address",p.address],["ep-genre",p.favourite_genre],["ep-device",p.device_type]
+  ].forEach(([id,v])=>set(id,v));
+  const ec=$("ep-country");if(ec&&p.country)ec.value=p.country;
+}
+
+/* ─── SAVE PERSONAL INFO ─── */
+async function savePersonalInfo(){
+  const btn=$("ep-save-btn");btn.innerHTML='<span class="spin"></span> Saving…';btn.disabled=true;
+  try{
+    const g=id=>gv(id);
+    const updates={first_name:g("ep-firstname"),last_name:g("ep-lastname"),username:g("ep-username"),display_name:g("ep-displayname"),bio:g("ep-bio"),phone:g("ep-phone"),whatsapp:g("ep-whatsapp"),website:g("ep-website"),gender:g("ep-gender"),dob:g("ep-dob"),occupation:g("ep-occupation"),nationality:g("ep-nationality"),country:g("ep-country"),state:g("ep-state"),city:g("ep-city"),postal_code:g("ep-postal"),address:g("ep-address"),favourite_genre:g("ep-genre"),device_type:g("ep-device")};
+    // ⚠️ Currency is NEVER changed here
+    await _db.ref(`users/${currentUser.uid}/personal`).update(updates);
+    const fullName=[updates.first_name,updates.last_name].filter(Boolean).join(" ")||updates.display_name;
+    if(fullName)await currentUser.updateProfile({displayName:fullName}).catch(()=>{});
+    if(!userRecord.personal)userRecord.personal={};Object.assign(userRecord.personal,updates);
+    renderHero();renderPersonalInfo();closeDialog("dlg-edit-personal");
+    toast("✓ Profile saved!","ok");
+    pushNotification("✏️","Profile Updated","Your personal information has been updated.");
+    sendTG(`✏️ *Profile Updated*\n👤 ${fullName||currentUser.email}\n🌍 ${updates.country}\n💱 Wallet currency unchanged: ${userWallet.currency}\n🆔 ${currentUser.uid}`);
+  }catch(e){toast("Unable to save profile. Please try again.","err");}
+  btn.innerHTML="<i class='fa fa-check'></i> Save Changes";btn.disabled=false;
+}
+
+/* ─── PHOTO ─── */
+window.previewPhoto=function(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{pendingPhotoBase64=e.target.result;pendingPhotoURL="";$("photo-preview").innerHTML=`<img src="${pendingPhotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;};
+  reader.readAsDataURL(file);
+};
+window.previewPhotoURL=function(url){
+  if(url.startsWith("http")){pendingPhotoURL=url;pendingPhotoBase64="";$("photo-preview").innerHTML=`<img src="${xe(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;};
+};
+async function savePhoto(){
+  const btn=$("photo-save-btn");btn.innerHTML='<span class="spin"></span> Uploading…';btn.disabled=true;
+  try{
+    let photoURL=pendingPhotoURL;
+    if(pendingPhotoBase64)photoURL=await uploadImgToTelegram(pendingPhotoBase64)||"";
+    if(!photoURL){toast("No photo selected","err");btn.innerHTML="<i class='fa fa-check'></i> Save Photo";btn.disabled=false;return;}
+    await currentUser.updateProfile({photoURL}).catch(()=>{});
+    await _db.ref(`users/${currentUser.uid}/personal/profile_url`).set(photoURL);
+    if(!userRecord.personal)userRecord.personal={};userRecord.personal.profile_url=photoURL;
+    renderHero();closeDialog("dlg-photo");toast("✓ Photo updated!","ok");
+  }catch(e){toast("Could not upload photo.","err");}
+  btn.innerHTML="<i class='fa fa-check'></i> Save Photo";btn.disabled=false;
+}
+
+/* ─── DIALOGS ─── */
+function openDialog(id){
+  if(id==="dlg-photo"){
+    pendingPhotoBase64="";pendingPhotoURL="";
+    const photo=currentUser.photoURL||userRecord?.personal?.profile_url||"";
+    const init=(userRecord?.personal?.display_name||currentUser.displayName||"U").charAt(0).toUpperCase();
+    $("photo-preview").innerHTML=photo?`<img src="${xe(photo)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`:init;
+    $("photo-url").value="";
+  }
+  if(id==="dlg-edit-personal")prefillEditForm();
+  if(id==="dlg-withdraw"){
+    const info=getWInfo();
+    $("dlg-withdraw-bal").textContent=info.symbol+Number(userWithdraw.balance||0).toLocaleString();
+    $("withdraw-prefix").textContent=info.symbol;
+  }
+  $(id).classList.add("open");
+}
+function closeDialog(id){$(id).classList.remove("open");}
+document.querySelectorAll(".dialog-ov").forEach(d=>{d.addEventListener("click",function(e){if(e.target===this)closeDialog(this.id);});});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".dialog-ov.open").forEach(d=>closeDialog(d.id));});
+
+/* ─── CHANGE PASSWORD ─── */
+$("cp-new").addEventListener("input",function(){
+  const v=this.value,el=$("cp-strength");if(!v){el.style.display="none";return;}
+  el.style.display="block";
+  el.textContent=v.length<6?"Weak password":v.length<8||!/[A-Z]/.test(v)||!/[0-9]/.test(v)?"Moderate password":"Strong password ✓";
+  el.style.color=v.length<6?"var(--red)":v.length<8?"var(--gold)":"var(--green)";
+});
+async function changePassword(){
+  const [cur,nw,conf]=[gv("cp-current"),gv("cp-new"),gv("cp-confirm")];
+  if(!cur||!nw||!conf){toast("Please fill all fields","err");return;}
+  if(nw!==conf){toast("Passwords don't match","err");return;}
+  if(nw.length<8){toast("Password must be at least 8 characters","err");return;}
+  const btn=$("cp-btn");btn.innerHTML='<span class="spin"></span> Updating…';btn.disabled=true;
+  try{
+    await currentUser.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(currentUser.email,cur));
+    await currentUser.updatePassword(nw);
+    closeDialog("dlg-change-password");toast("✓ Password updated!","ok");
+    ["cp-current","cp-new","cp-confirm"].forEach(id=>$(id).value="");
+    pushNotification("🔒","Password Changed","Your password has been updated.");
+  }catch(e){toast(e.code==="auth/wrong-password"?"Incorrect current password":"Something went wrong.","err");}
+  btn.innerHTML="<i class='fa fa-lock'></i> Update Password";btn.disabled=false;
+}
+
+/* ─── CHANGE EMAIL ─── */
+async function changeEmail(){
+  const [pwd,newEmail]=[gv("ce-password"),gv("ce-email")];
+  if(!pwd||!newEmail){toast("Fill all fields","err");return;}
+  const btn=$("ce-btn");btn.innerHTML='<span class="spin"></span> Updating…';btn.disabled=true;
+  try{
+    await currentUser.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd));
+    await currentUser.updateEmail(newEmail);
+    await _db.ref(`users/${currentUser.uid}/personal/email`).set(newEmail);
+    closeDialog("dlg-change-email");toast("✓ Email updated!","ok");renderPersonalInfo();
+  }catch(e){toast(e.code==="auth/wrong-password"?"Incorrect password":e.code==="auth/email-already-in-use"?"Email already in use":"Could not update email.","err");}
+  btn.innerHTML="<i class='fa fa-check'></i> Update Email";btn.disabled=false;
+}
+
+/* ─── SUBSCRIPTION — Queue Logic ─── */
+function renderSubscriptionTab(){
+  const sub=userRecord?.subscription||{};
+  const isActive=sub.sub_status==="true"||sub.sub_status===true;
+  const badge=$("sub-status-badge");
+  badge.style.cssText=isActive?"background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);":"background:rgba(255,61,61,.12);color:var(--red);border:1px solid rgba(255,61,61,.3);";
+  badge.textContent=isActive?"✓ Active":"✗ Inactive";
+  let html="";
+  if(isActive&&sub.expiry_date){
+    const exp=typeof sub.expiry_date==="number"?sub.expiry_date:new Date(sub.expiry_date).getTime();
+    const now=currentWorldTime||Date.now(),daysLeft=Math.max(0,Math.ceil((exp-now)/86400000));
+    const cycleDays={hourly:0.042,monthly:30,quarterly:90,biannual:180,yearly:365,custom:(sub.custom_days||30)}[sub.billing_cycle]||30;
+    const pct=Math.min(100,Math.max(0,Math.round(((exp-now)/(cycleDays*86400000))*100)));
+    const color=daysLeft<=1?"var(--red)":daysLeft<=3?"var(--gold)":"var(--green)";
+    html=`${infoRow("fa-star","Plan",sub.plan_tier||"—")}${infoRow("fa-rotate","Cycle",sub.billing_cycle||"—")}${infoRow("fa-calendar-xmark","Expires",new Date(exp).toLocaleString())}${infoRow("fa-clock","Remaining",daysLeft===0?"< 1 day":daysLeft+" day"+(daysLeft!==1?"s":"")+" left","",daysLeft<=1?"err":daysLeft<=3?"warn":"ok")}${infoRow("fa-video","Quality",sub.video_quality||"SD")}${infoRow("fa-display","Max Screens",String(sub.max_screens||1))}${infoRow("fa-dollar-sign","Last Payment",`${sub.currency||""} ${sub.last_payment_amount||"—"}`)}
+    <div style="margin-top:14px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);font-weight:700;margin-bottom:6px;"><span>Time remaining</span><span style="color:${color};">${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${color},var(--gold));"></div></div></div>`;
+  }else{
+    html='<div class="empty-state" style="padding:24px 0;"><i class="fa fa-satellite-dish" style="font-size:36px;color:var(--spark);"></i><h3>No Active Plan</h3><p>Choose a plan below to start streaming.</p></div>';
+  }
+  $("sub-current-info").innerHTML=html;
+
+  // Queued plan display
+  const queued=sub.queued_plan;
+  const qCard=$("queued-plan-card");
+  if(queued){
+    show("queued-plan-card");
+    $("queued-plan-info").innerHTML=`${infoRow("fa-star","Plan",queued.plan_tier||"—")}${infoRow("fa-calendar","Activates",sub.expiry_date?new Date(sub.expiry_date).toLocaleDateString()+" (when current expires)":"On current expiry")}${infoRow("fa-dollar-sign","Paid",`${queued.currency||""} ${queued.amount||"—"}`)}`;
+  }else{hide("queued-plan-card");}
+  renderPlanList();
+}
+
+function renderPlanList(){
+  const info=getWInfo();
+  const sub=userRecord?.subscription||{};
+  const isActive=sub.sub_status==="true"||sub.sub_status===true;
+  const activePlanId=sub.plan_id||"";
+  const queuedPlanId=sub.queued_plan?.plan_id||"";
+  const bal=Number(userWallet.balance||0);
+  $("plan-list").innerHTML=PLAN_DEFS.map(p=>{
+    const price=planPrice(p,info);
+    const canAfford=bal>=price;
+    const isCurrent=p.id===activePlanId&&isActive;
+    const isQueued=p.id===queuedPlanId;
+    let cls="plan-card";
+    if(p.id===selectedPlanId)cls+=" selected";
+    if(isCurrent)cls+=" active-plan";
+    if(isQueued)cls+=" queued-plan";
+    const badge=isCurrent?`<span class="plan-badge green">✓ Current</span>`:isQueued?`<span class="plan-badge blue">⏰ Queued</span>`:(p.badge?`<span class="plan-badge ${p.badgeCls||"gold"}">${p.badge}</span>`:"");
+    return `<div class="${cls}" id="plancard-${p.id}" onclick="selectPlan('${p.id}')">
+      ${badge}<div class="plan-header"><span class="plan-name">${xe(p.name)}</span><span class="plan-price">${info.symbol}${price.toLocaleString()}</span></div>
+      <div class="plan-desc">${xe(p.desc)}</div>
+      <div style="font-size:10px;font-weight:700;margin-top:4px;color:${canAfford?"var(--green)":"var(--mt)"};">${canAfford?`<i class="fa fa-wallet" style="font-size:9px;"></i> Can pay from wallet`:`Wallet: ${info.symbol}${bal.toLocaleString()} · Pay via transfer`}</div>
+    </div>`;
+  }).join("");
+}
+
+window.selectPlan=function(id){
+  selectedPlanId=id;
+  document.querySelectorAll(".plan-card").forEach(el=>el.classList.toggle("selected",el.id==="plancard-"+id));
+  const info=getWInfo(),plan=PLAN_DEFS.find(p=>p.id===id);if(!plan)return;
+  const price=planPrice(plan,info),bal=Number(userWallet.balance||0);
+  const btn=$("plan-activate-btn");show("plan-activate-row");
+  if(bal>=price){
+    btn.innerHTML=`<i class="fa fa-play"></i> Pay ${info.symbol}${price.toLocaleString()} from Wallet & Activate`;
+    btn.className="btn btn-primary btn-full";
+  }else{
+    btn.innerHTML=`<i class="fa fa-envelope"></i> Request via Email (${info.symbol}${price.toLocaleString()})`;
+    btn.className="btn btn-secondary btn-full";
+  }
+};
+
+async function activateSelectedPlan(){
+  if(!selectedPlanId){toast("Select a plan first","err");return;}
+  const info=getWInfo(),plan=PLAN_DEFS.find(p=>p.id===selectedPlanId);if(!plan)return;
+  const price=planPrice(plan,info);
+  const sub=userRecord?.subscription||{};
+  const isActive=sub.sub_status==="true"||sub.sub_status===true;
+  if(isActive&&sub.queued_plan){toast("You already have a queued plan. Cancel it first.","err");return;}
+  if(isActive&&Number(userWallet.balance||0)>=price){
+    showConfirm("⏰","Queue Plan?",`You have an active plan. "${plan.name}" will be QUEUED and auto-activate when your current plan expires. Continue?`,"btn-gold","Queue Plan",async()=>{await _doQueuePlan(plan,price,info);});
+    return;
+  }
+  await _doActivatePlan(plan,price,info);
+}
+
+async function _doQueuePlan(plan,price,info){
+  const btn=$("plan-activate-btn");btn.innerHTML='<span class="spin"></span> Queuing…';btn.disabled=true;
+  try{
+    await getWorldTime();
+    const now=currentWorldTime||Date.now();
+    const sub=userRecord?.subscription||{};
+    const currentExp=typeof sub.expiry_date==="number"?sub.expiry_date:new Date(sub.expiry_date||0).getTime();
+    const newExp=currentExp+(plan.days*86400000);
+    const newBal=Number(userWallet.balance||0)-price;
+    const queuedPlan={plan_id:plan.id,plan_tier:plan.name,billing_cycle:plan.cycle,days:plan.days,
+      video_quality:plan.type==="basic"?"SD":"HD",max_screens:plan.type==="basic"?1:2,
+      ads_enabled:plan.type==="basic",currency:info.currency,symbol:info.symbol,amount:price,
+      payment_method:"Wallet Balance",plan_type:plan.type,expiry_date:newExp,purchased_at:now};
+    await _db.ref(`users/${currentUser.uid}/subscription/queued_plan`).set(queuedPlan);
+    await _db.ref(`users/${currentUser.uid}/wallet`).update({balance:newBal,last_updated:firebase.database.ServerValue.TIMESTAMP});
+    const txKey=_db.ref(`transactions/${currentUser.uid}`).push().key;
+    await _db.ref(`transactions/${currentUser.uid}/${txKey}`).set({title:plan.name+" (Queued)",type:"debit",status:"success",amount:price,currency:info.currency,symbol:info.symbol,payment_method:"Wallet Balance",plan_tier:plan.name,timestamp:firebase.database.ServerValue.TIMESTAMP});
+    userWallet.balance=newBal;
+    if(!userRecord.subscription)userRecord.subscription={};userRecord.subscription.queued_plan=queuedPlan;
+    renderHero();renderSubscriptionTab();updateWalletDisplay();loadTransactions();
+    toast(`✓ ${plan.name} queued! Will activate on ${new Date(currentExp).toLocaleDateString()}`, "ok");
+    pushNotification("⏰","Plan Queued",`${plan.name} queued. Activates when current plan expires.`);
+    sendTG(`⏰ *Plan Queued*\n👤 ${currentUser.email}\n📦 ${plan.name}\n💰 ${info.symbol}${price}\n🆔 ${currentUser.uid}`);
+  }catch(e){toast("Queue failed. Please try again.","err");}
+  btn.innerHTML=`<i class="fa fa-play"></i> Activate Selected Plan`;btn.disabled=false;
+}
+
+window.cancelQueuedPlan=async function(){
+  showConfirm("🗑️","Cancel Queued Plan?","This will cancel the queued plan. The paid amount will be refunded to your wallet.","btn-red","Cancel Plan",async()=>{
+    const queued=userRecord?.subscription?.queued_plan;
+    if(!queued)return;
+    const newBal=Number(userWallet.balance||0)+Number(queued.amount||0);
+    await _db.ref(`users/${currentUser.uid}/subscription/queued_plan`).remove();
+    await _db.ref(`users/${currentUser.uid}/wallet`).update({balance:newBal,last_updated:firebase.database.ServerValue.TIMESTAMP});
+    const txKey=_db.ref(`transactions/${currentUser.uid}`).push().key;
+    await _db.ref(`transactions/${currentUser.uid}/${txKey}`).set({title:`Refund: ${queued.plan_tier} (Queue Cancelled)`,type:"credit",status:"success",amount:queued.amount||0,currency:queued.currency,symbol:queued.symbol,payment_method:"Refund",timestamp:firebase.database.ServerValue.TIMESTAMP});
+    userWallet.balance=newBal;
+    if(userRecord.subscription)delete userRecord.subscription.queued_plan;
+    renderHero();renderSubscriptionTab();updateWalletDisplay();loadTransactions();
+    toast("✓ Queued plan cancelled. Amount refunded.","ok");
+    pushNotification("↩️","Plan Cancelled & Refunded",`${queued.plan_tier} cancelled. ${queued.symbol||""}${queued.amount||""} refunded.`);
+  });
+};
+
+async function _doActivatePlan(plan,price,info){
+  const btn=$("plan-activate-btn");
+  const bal=Number(userWallet.balance||0);
+  if(bal>=price){
+    btn.innerHTML='<span class="spin"></span> Activating…';btn.disabled=true;
+    try{
+      await getWorldTime();
+      const now=currentWorldTime||Date.now(),exp=now+(plan.days*86400000),newBal=bal-price;
+      await _db.ref(`users/${currentUser.uid}/subscription`).update({sub_status:"true",expiry_date:exp,plan_tier:plan.name,plan_id:plan.id,billing_cycle:plan.cycle,watch_access:true,video_quality:plan.type==="basic"?"SD":"HD",max_screens:plan.type==="basic"?1:2,ads_enabled:plan.type==="basic",currency:info.currency,last_payment:now,last_payment_amount:price,payment_method:"Wallet Balance",plan_type:plan.type,queued_plan:null});
+      await _db.ref(`users/${currentUser.uid}/wallet`).update({balance:newBal,last_updated:firebase.database.ServerValue.TIMESTAMP});
+      const txKey=_db.ref(`transactions/${currentUser.uid}`).push().key;
+      await _db.ref(`transactions/${currentUser.uid}/${txKey}`).set({title:plan.name+" Subscription",type:"debit",status:"success",amount:price,currency:info.currency,symbol:info.symbol,payment_method:"Wallet Balance",plan_tier:plan.name,timestamp:firebase.database.ServerValue.TIMESTAMP});
+      if(!userRecord.subscription)userRecord.subscription={};Object.assign(userRecord.subscription,{sub_status:"true",expiry_date:exp,plan_tier:plan.name,plan_id:plan.id,queued_plan:null});
+      userWallet.balance=newBal;renderHero();renderSubscriptionTab();updateWalletDisplay();loadTransactions();
+      $("plan-success-title").textContent=`${plan.name} Activated! 🎉`;
+      $("plan-success-msg").textContent=`${info.symbol}${price.toLocaleString()} deducted. Expires ${new Date(exp).toLocaleString()}.`;
+      openDialog("dlg-plan-success");
+      pushNotification("✅",`${plan.name} Activated`,`${info.symbol}${price.toLocaleString()} deducted. Expires: ${new Date(exp).toLocaleString()}.`);
+      sendTG(`⚡ *Plan Activated*\n👤 ${currentUser.email}\n📦 ${plan.name}\n💰 ${info.symbol}${price}\n🆔 ${currentUser.uid}`);
+    }catch(e){toast("Activation failed. Please try again.","err");}
+    btn.innerHTML=`<i class="fa fa-play"></i> Activate Selected Plan`;btn.disabled=false;
+  }else{
+    const uid=currentUser.uid,name=userRecord?.personal?.display_name||currentUser.email||"User";
+    window.open(`mailto:${EMAILS.primary}?subject=Spark TV - ${encodeURIComponent(plan.name)} Subscription&body=Hello,%0A%0AName: ${encodeURIComponent(name)}%0AUser ID: ${uid}%0APlan: ${encodeURIComponent(plan.name)}%0AAmount: ${info.symbol}${price}%0ACurrency: ${info.currency}%0A%0APlease activate after payment.%0AThank you!`,"_blank");
+    _db.ref(`transactions/${currentUser.uid}/${_db.ref(`transactions/${currentUser.uid}`).push().key}`).set({title:plan.name+" Subscription",type:"debit",status:"pending",amount:price,currency:info.currency,symbol:info.symbol,payment_method:"Manual Transfer",plan_tier:plan.name,timestamp:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
+    toast(`📧 Email opened. We activate after payment!`,"info");loadTransactions();
+  }
+}
+
+/* ─── CUSTOM PLAN ─── */
+function setTodayDates(){
+  const today=new Date().toISOString().split("T")[0];
+  $("custom-start").value=today;
+  $("custom-end").value=new Date(Date.now()+86400000).toISOString().split("T")[0];
+  calcCustomPlan();
+}
+window.calcCustomPlan=function(){
+  const start=$("custom-start").value,end=$("custom-end").value,type=$("custom-type").value;
+  const result=$("date-calc-result"),btn=$("custom-activate-btn");
+  if(!start||!end){result.style.display="none";btn.style.display="none";return;}
+  const sMs=new Date(start).getTime(),eMs=new Date(end).getTime()+86399000;
+  if(eMs<=sMs){result.style.display="block";result.innerHTML="⚠️ End date must be after start date.";btn.style.display="none";return;}
+  const days=Math.ceil((eMs-sMs)/86400000);
+  const info=getWInfo();
+  const monthly=type==="full"?info.monthly_full:info.monthly_basic;
+  const dailyRate=monthly/30,price=Math.round(dailyRate*days);
+  result.style.display="block";
+  result.innerHTML=`<strong>${days} day${days!==1?"s":""}</strong> — ${new Date(sMs).toLocaleDateString()} → ${new Date(eMs).toLocaleDateString()}<br/>Type: <strong>${type==="full"?"Full HD":"Basic SD"}</strong><br/>Daily Rate: <strong>${info.symbol}${dailyRate.toFixed(2)}</strong><br/>Total: <strong style="color:var(--accent);font-size:15px;">${info.symbol}${price.toLocaleString()}</strong> ${Number(userWallet.balance)>=price?'<span style="color:var(--green);font-size:11px;">✓ Sufficient balance</span>':'<span style="color:var(--mt);font-size:11px;">Insufficient — pay via transfer</span>'}`;
+  btn.style.display="block";
+  Object.assign(btn.dataset,{days,price,type,startMs:sMs,endMs:eMs});
+};
+
+async function activateCustomPlan(){
+  const btn=$("custom-activate-btn");
+  const {days,price,type,startMs,endMs}=Object.fromEntries(Object.entries(btn.dataset).map(([k,v])=>[k,Number(v)||v]));
+  const info=getWInfo();const bal=Number(userWallet.balance||0);
+  const planName=`Custom ${days}d ${type==="full"?"Full HD":"Basic SD"}`;
+  if(bal>=price){
+    btn.innerHTML='<span class="spin"></span> Activating…';btn.disabled=true;
+    try{
+      await getWorldTime();const now=currentWorldTime||Date.now(),newBal=bal-price;
+      await _db.ref(`users/${currentUser.uid}/subscription`).update({sub_status:"true",expiry_date:endMs,plan_tier:planName,plan_id:"custom",billing_cycle:"custom",watch_access:true,video_quality:type==="full"?"HD":"SD",max_screens:type==="full"?2:1,ads_enabled:type!=="full",currency:info.currency,last_payment:now,last_payment_amount:price,payment_method:"Wallet Balance",custom_start:startMs,custom_end:endMs,custom_days:days});
+      await _db.ref(`users/${currentUser.uid}/wallet`).update({balance:newBal,last_updated:firebase.database.ServerValue.TIMESTAMP});
+      const txKey=_db.ref(`transactions/${currentUser.uid}`).push().key;
+      await _db.ref(`transactions/${currentUser.uid}/${txKey}`).set({title:planName,type:"debit",status:"success",amount:price,currency:info.currency,symbol:info.symbol,payment_method:"Wallet Balance",timestamp:firebase.database.ServerValue.TIMESTAMP});
+      userWallet.balance=newBal;
+      if(!userRecord.subscription)userRecord.subscription={};Object.assign(userRecord.subscription,{sub_status:"true",expiry_date:endMs,plan_tier:planName,plan_id:"custom"});
+      renderHero();renderSubscriptionTab();updateWalletDisplay();loadTransactions();
+      $("plan-success-title").textContent="Custom Plan Activated! 🎉";
+      $("plan-success-msg").textContent=`${days} days. ${info.symbol}${price.toLocaleString()} deducted. Expires ${new Date(endMs).toLocaleDateString()}.`;
+      openDialog("dlg-plan-success");
+      pushNotification("📅","Custom Plan Activated",`${days} days. ${info.symbol}${price.toLocaleString()} deducted.`);
+    }catch(e){toast("Activation failed. Please try again.","err");}
+    btn.innerHTML="<i class='fa fa-calendar-check'></i> Activate Custom Plan";btn.disabled=false;
+  }else{
+    window.open(`mailto:${EMAILS.primary}?subject=Spark TV Custom Plan&body=User ID: ${currentUser.uid}%0APlan: ${planName}%0AAmount: ${info.symbol}${price}%0ADays: ${days}%0AStart: ${new Date(startMs).toLocaleDateString()}%0AEnd: ${new Date(endMs).toLocaleDateString()}%0A%0APlease activate.`,"_blank");
+    toast("📧 Email opened!","info");
+  }
+}
+
+/* ─── WALLET ─── */
+function renderWalletTab(){
+  updateWalletDisplay();updateWithdrawDisplay();buildFundGrid();
+  $("custom-fund-prefix").textContent=userWallet.symbol;
+  $("transfer-prefix").textContent=userWallet.symbol;
+  $("transfer-currency-note").textContent=userWallet.currency;
+  $("fund-currency-label").textContent=userWallet.currency;
+  const info=getWInfo();
+  $("min-withdraw-text").textContent=info.symbol+(info.monthly_full*0.02).toLocaleString();
+  $("withdraw-prefix").textContent=info.symbol;
+}
+
+function updateWalletDisplay(){
+  const bal=Number(userWallet.balance||0);
+  $("wallet-amount-display").textContent=`${userWallet.symbol}${bal.toLocaleString()}`;
+  $("nav-bal-text").textContent=`${userWallet.symbol}${bal.toLocaleString()}`;
+  const info=getWInfo();
+  $("wallet-currency-lbl").textContent=`${info.currency} — ${info.name||""}`;
+  $("wallet-currency-code").textContent=info.currency;
+  const rateEl=$("wallet-rate-info"),usdEl=$("usd-equiv");
+  if(liveRateLoaded&&exchangeRates&&rateEl){
+    if(info.currency==="USD"){if(usdEl)usdEl.textContent=`$${bal.toFixed(2)}`;rateEl.innerHTML=`1 Month Full HD = <span style="color:var(--green);font-weight:800;">${info.symbol}${info.monthly_full}</span>`;}
+    else if(info.currency==="NGN"){if(usdEl)usdEl.textContent=`$${(bal/1600).toFixed(2)}`;rateEl.innerHTML=`1 Month Full HD = <span style="color:var(--green);font-weight:800;">₦${info.monthly_full.toLocaleString()}</span>`;}
+    else{const rate=exchangeRates[info.currency];if(rate){if(usdEl)usdEl.textContent=`$${(bal/rate).toFixed(2)}`;rateEl.innerHTML=`1 Month Full HD = <span style="color:var(--green);font-weight:800;">${info.symbol}${info.monthly_full}</span> · 1 USD = ${info.symbol}${rate}`;}}
+  }else if(rateEl){rateEl.innerHTML=`1 Month Full HD = <span style="color:var(--green);font-weight:800;">${info.symbol}${(info.monthly_full||5000).toLocaleString()}</span>`;}
+  if($("hs-bal"))$("hs-bal").textContent=userWallet.symbol+bal.toLocaleString();
+}
+
+function updateWithdrawDisplay(){
+  const info=getWInfo();
+  const bal=Number(userWithdraw.balance||0);
+  $("withdraw-amount-display").textContent=info.symbol+bal.toLocaleString();
+  $("total-withdrawn-display").textContent=info.symbol+Number(userWithdraw.total_withdrawn||0).toLocaleString();
+}
+
+function buildFundGrid(){
+  const info=getWInfo();
+  const tiers=[
+    {label:"1 Hour",amount:Math.round(info.hourly),sub:"Quick"},
+    {label:"1 Month Basic",amount:info.monthly_basic,sub:"SD Quality"},
+    {label:"1 Month Full",amount:info.monthly_full,sub:"HD All"},
+    {label:"3 Months",amount:Math.round(info.monthly_full*3*0.9),sub:"Save 10%"},
+    {label:"6 Months",amount:Math.round(info.monthly_full*6*0.85),sub:"Save 15%"},
+    {label:"1 Year",amount:Math.round(info.monthly_full*12*0.8),sub:"Save 20%"},
+  ];
+  $("fund-grid").innerHTML=tiers.map((t,i)=>`<div class="fund-amt${i===2?" sel":""}" onclick="selectFundAmt(this,${t.amount},'${info.symbol}')"><span class="fa-value">${info.symbol}${t.amount.toLocaleString()}</span><span class="fa-label">${t.label}${t.sub?" · "+t.sub:""}</span></div>`).join("");
+  selectedFundAmount=tiers[2].amount;
+}
+
+window.selectFundAmt=function(el,amount){selectedFundAmount=amount;document.querySelectorAll(".fund-amt").forEach(f=>f.classList.remove("sel"));el.classList.add("sel");$("custom-fund-amount").value="";};
+window.onCustomFundInput=function(val){if(val)selectedFundAmount=Number(val);document.querySelectorAll(".fund-amt").forEach(f=>f.classList.remove("sel"));};
+
+/* ─── EMAIL SELECTION ─── */
+const selectEmailOpt=(type,prefix)=>{
+  const setEmail=type==="fund"?v=>selectedFundEmail=v:v=>selectedTicketEmail=v;
+  setEmail(type==="fund"?arguments[1]:arguments[1]);
+  ["primary","secondary"].forEach(t=>{
+    const opt=$(`${prefix}-email-opt-${t}`),check=$(`${prefix}-check-${t}`);
+    if(!opt||!check)return;
+    const sel=t===(prefix==="fund"?selectedFundEmail:selectedTicketEmail);
+    opt.classList.toggle("selected",sel);
+    check.className=sel?"fa fa-check-circle":"fa fa-circle";
+    check.style.color=sel?"var(--spark)":"var(--mt)";
+  });
+};
+
+window.selectFundEmail=function(type){
+  selectedFundEmail=type;
+  ["primary","secondary"].forEach(t=>{
+    const opt=$(`fund-email-opt-${t}`),check=$(`fund-check-${t}`);if(!opt)return;
+    const sel=t===type;opt.classList.toggle("selected",sel);
+    check.className=sel?"fa fa-check-circle":"fa fa-circle";check.style.color=sel?"var(--spark)":"var(--mt)";
+  });
+};
+window.selectTicketEmail=function(type){
+  selectedTicketEmail=type;
+  ["primary","secondary"].forEach(t=>{
+    const opt=$(`ticket-email-opt-${t}`),check=$(`ticket-check-${t}`);if(!opt)return;
+    const sel=t===type;opt.classList.toggle("selected",sel);
+    check.className=sel?"fa fa-check-circle":"fa fa-circle";check.style.color=sel?"var(--spark)":"var(--mt)";
+  });
+};
+
+function openFundWallet(){
+  if(!selectedFundAmount||selectedFundAmount<=0){toast("Enter an amount first","err");return;}
+  const info=getWInfo();
+  $("fund-confirm-amount").textContent=`${info.symbol}${selectedFundAmount.toLocaleString()}`;
+  $("fund-confirm-amount2").textContent=`${info.symbol}${selectedFundAmount.toLocaleString()}`;
+  selectedFundEmail="primary";selectFundEmail("primary");
+  openDialog("dlg-fund");
+}
+
+window.payViaEmail=function(){
+  const info=getWInfo(),uid=currentUser.uid;
+  const name=userRecord?.personal?.display_name||currentUser.email||"User";
+  const emailAddr=EMAILS[selectedFundEmail]||EMAILS.primary;
+  window.open(`mailto:${emailAddr}?subject=Spark TV Wallet Fund Request&body=Hello,%0A%0AName: ${encodeURIComponent(name)}%0AUser ID: ${uid}%0AAmount: ${info.symbol}${selectedFundAmount}%0ACurrency: ${info.currency}%0A%0APlease credit my wallet after payment.%0AThank you!`,"_blank");
+  _db.ref(`transactions/${uid}/${_db.ref(`transactions/${uid}`).push().key}`).set({title:"Wallet Top-Up",type:"credit",status:"pending",amount:selectedFundAmount,currency:info.currency,symbol:info.symbol,payment_method:"Manual Transfer",timestamp:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
+  sendTG(`💳 *Fund Request*\n👤 ${name}\n💰 ${info.symbol}${selectedFundAmount}\n💱 ${info.currency}\n📧 ${emailAddr}\n🆔 ${uid}`);
+  closeDialog("dlg-fund");toast(`📧 Email opened to ${emailAddr}!`,"info");loadTransactions();
+};
+window.copyPaymentDetails=function(){
+  const info=getWInfo();
+  const emailAddr=EMAILS[selectedFundEmail]||EMAILS.primary;
+  navigator.clipboard.writeText(`Spark TV Wallet Fund\nUser ID: ${currentUser.uid}\nAmount: ${info.symbol}${selectedFundAmount}\nCurrency: ${info.currency}\nEmail: ${emailAddr}`).then(()=>toast("✓ Details copied!","ok")).catch(()=>toast("Copy failed","err"));
+};
+
+/* ─── WITHDRAW ─── */
+async function submitWithdrawal(){
+  const info=getWInfo();
+  const amount=Number($("withdraw-amount-input")?.value||0);
+  const bankName=gv("wd-bank-name"),accNum=gv("wd-account-number"),accName=gv("wd-account-name"),country=$("wd-country")?.value,swift=gv("wd-swift"),notes=gv("wd-notes");
+  const minAmount=Math.round(info.monthly_full*0.02);
+  if(amount<=0){toast("Enter a valid amount","err");return;}
+  if(amount<minAmount){toast(`Minimum withdrawal is ${info.symbol}${minAmount.toLocaleString()}`,"err");return;}
+  if(amount>Number(userWithdraw.balance||0)){toast("Amount exceeds withdrawable balance","err");return;}
+  if(!bankName||!accNum||!accName){toast("Please fill in all bank details","err");return;}
+  const btn=$("wd-submit-btn");btn.innerHTML='<span class="spin"></span> Submitting…';btn.disabled=true;
+  try{
+    const wdKey=_db.ref(`withdrawals/${currentUser.uid}`).push().key;
+    const wdData={amount,currency:info.currency,symbol:info.symbol,bank_name:bankName,account_number:accNum,account_name:accName,country,swift,notes,status:"pending",timestamp:firebase.database.ServerValue.TIMESTAMP,uid:currentUser.uid,email:currentUser.email};
+    await _db.ref(`withdrawals/${currentUser.uid}/${wdKey}`).set(wdData);
+    const newWdBal=Number(userWithdraw.balance||0)-amount;
+    const newTotalWd=Number(userWithdraw.total_withdrawn||0)+amount;
+    await _db.ref(`users/${currentUser.uid}/withdrawable`).update({balance:newWdBal,total_withdrawn:newTotalWd,last_updated:firebase.database.ServerValue.TIMESTAMP});
+    const txKey=_db.ref(`transactions/${currentUser.uid}`).push().key;
+    await _db.ref(`transactions/${currentUser.uid}/${txKey}`).set({title:"Withdrawal Request",type:"debit",status:"pending",amount,currency:info.currency,symbol:info.symbol,payment_method:"Bank Transfer",timestamp:firebase.database.ServerValue.TIMESTAMP});
+    const name=userRecord?.personal?.display_name||currentUser.email||"User";
+    window.open(`mailto:${EMAILS.primary}?subject=Spark TV Withdrawal Request&body=Name: ${encodeURIComponent(name)}%0AUser ID: ${currentUser.uid}%0AAmount: ${info.symbol}${amount}%0ACurrency: ${info.currency}%0ABank: ${encodeURIComponent(bankName)}%0AAccount: ${encodeURIComponent(accNum)}%0AHolder: ${encodeURIComponent(accName)}%0ACountry: ${encodeURIComponent(country)}%0ASwift: ${encodeURIComponent(swift)}%0ANotes: ${encodeURIComponent(notes)}%0A%0APlease process this withdrawal.`,"_blank");
+    sendTG(`💵 *Withdrawal Request*\n👤 ${name}\n💰 ${info.symbol}${amount}\n🏦 ${bankName}\n🔢 ${accNum}\n📛 ${accName}\n🌍 ${country}\n🆔 ${currentUser.uid}`);
+    userWithdraw={balance:newWdBal,total_withdrawn:newTotalWd};
+    updateWithdrawDisplay();closeDialog("dlg-withdraw");loadTransactions();
+    toast("✓ Withdrawal submitted! Processed within 24 hours.","ok");
+    pushNotification("💵","Withdrawal Submitted",`${info.symbol}${amount.toLocaleString()} withdrawal request submitted. Processing within 24 hours.`);
+    ["wd-bank-name","wd-account-number","wd-account-name","wd-swift","wd-notes","withdraw-amount-input"].forEach(id=>{const el=$(id);if(el)el.value="";});
+  }catch(e){toast("Withdrawal failed. Please try again.","err");}
+  btn.innerHTML="<i class='fa fa-paper-plane'></i> Submit Withdrawal";btn.disabled=false;
+}
+
+/* ─── SUPPORT ─── */
+window.openEmailSupport=function(emailType,category){
+  const emailAddr=EMAILS[emailType]||EMAILS.primary;
+  const uid=currentUser.uid,name=userRecord?.personal?.display_name||currentUser.email||"User";
+  const subj={general:"General Support",payment:"Payment/Wallet",technical:"Technical Issue",subscription:"Subscription Inquiry"}[category]||"Support";
+  window.open(`mailto:${emailAddr}?subject=Spark TV - ${encodeURIComponent(subj)}&body=Hello Spark TV Support,%0A%0AName: ${encodeURIComponent(name)}%0AUser ID: ${uid}%0AIssue: [Describe here]%0A%0AThank you!`,"_blank");
+  toast(`📧 Email opened to ${emailAddr}`,"info");
+};
+window.submitSupportTicket=function(){
+  const category=$("support-category").value,message=$("support-message").value.trim();
+  const emailAddr=EMAILS[selectedTicketEmail]||EMAILS.primary;
+  if(!message){toast("Please describe your issue","err");return;}
+  const uid=currentUser.uid,name=userRecord?.personal?.display_name||currentUser.email||"User";
+  const catMap={subscription:"Subscription/Activation",payment:"Payment/Wallet",technical:"Technical",transfer:"Transfer",referral:"Referral",withdrawal:"Withdrawal",account:"Account Access",other:"Other"};
+  window.open(`mailto:${emailAddr}?subject=Spark TV Support - ${encodeURIComponent(catMap[category]||category)}&body=Name: ${encodeURIComponent(name)}%0AUser ID: ${uid}%0ACategory: ${catMap[category]}%0A%0AIssue:%0A${encodeURIComponent(message)}`,"_blank");
+  sendTG(`🎫 *Support Ticket*\n👤 ${name}\n📋 ${catMap[category]}\n💬 ${message.substring(0,200)}\n📧 ${emailAddr}\n🆔 ${uid}`);
+  closeDialog("dlg-contact-support");toast(`✓ Ticket email opened!`,"ok");$("support-message").value="";
+};
+function renderSupportAccountInfo(){
+  const p=userRecord?.personal||{},name=p.display_name||currentUser.displayName||currentUser.email||"—";
+  $("support-account-info").innerHTML=[
+    ["fa-user","Name",name],["fa-fingerprint","User ID",currentUser.uid.substring(0,16)+"…"],
+    ["fa-id-card","Account ID",p.account_id||"—"],["fa-coins","Currency",userWallet.currency],["fa-globe","Country",p.country||"—"]
+  ].map(([i,k,v])=>infoRow(i,k,v)).join("");
+}
+window.copyAccountInfoForSupport=function(){
+  const p=userRecord?.personal||{};
+  navigator.clipboard.writeText(`Name: ${p.display_name||currentUser.email}\nUser ID: ${currentUser.uid}\nAccount ID: ${p.account_id||"—"}\nEmail: ${currentUser.email||"—"}\nCurrency: ${userWallet.currency}\nCountry: ${p.country||"—"}`).then(()=>toast("✓ Account info copied!","ok")).catch(()=>toast("Copy failed","err"));
+};
+
+/* ─── TRANSFER ─── */
+window.searchTransferUser=async function(){
+  const query=(($("transfer-search-input")?.value)||"").trim();
+  const resultEl=$("transfer-user-result"),amountWrap=$("transfer-amount-wrap");
+  selectedTransferUser=null;amountWrap.style.display="none";
+  if(!query){toast("Enter email, username, or User ID","err");return;}
+  resultEl.innerHTML='<div style="font-size:12px;color:var(--t2);padding:8px 0;"><span class="spin spin-dark"></span> Searching…</div>';
+  const myCurrency=userWallet.currency||"NGN";
+  try{
+    let results=[];
+    try{const s=await _db.ref(`users/${query}`).once("value");if(s.exists()&&query!==currentUser.uid)results.push({uid:query,...s.val()});}catch(e){}
+    if(!results.length){const s=await _db.ref("users").orderByChild("personal/email").equalTo(query).once("value");s.forEach(c=>{if(c.key!==currentUser.uid)results.push({uid:c.key,...c.val()});});}
+    if(!results.length){const s=await _db.ref("users").orderByChild("personal/username").equalTo(query).once("value");s.forEach(c=>{if(c.key!==currentUser.uid)results.push({uid:c.key,...c.val()});});}
+    if(!results.length){
+      const s=await _db.ref("users").once("value");
+      s.forEach(c=>{if(c.key===currentUser.uid)return;const p=c.val()?.personal||{};const q=query.toLowerCase();if((p.email||"").toLowerCase().includes(q)||(p.username||"").toLowerCase().includes(q)||((p.first_name||"")+" "+(p.last_name||"")).toLowerCase().includes(q))results.push({uid:c.key,...c.val()});});
+    }
+    if(!results.length){resultEl.innerHTML='<div style="font-size:12px;color:var(--red);padding:8px 0;"><i class="fa fa-user-slash"></i> No user found.</div>';return;}
+    const sameCurrency=results.filter(r=>(r.wallet?.currency||"NGN")===myCurrency);
+    const otherCount=results.length-sameCurrency.length;
+    if(!sameCurrency.length){resultEl.innerHTML=`<div style="font-size:12px;color:var(--red);padding:10px;background:rgba(255,61,61,.06);border:1px solid rgba(255,61,61,.2);border-radius:10px;"><i class="fa fa-triangle-exclamation"></i> ${results.length} user(s) found but different currency. You can only transfer to <strong>${myCurrency}</strong> users.</div>`;return;}
+    resultEl.innerHTML=(otherCount?`<div style="font-size:11px;color:var(--mt);margin-bottom:8px;">${sameCurrency.length} of ${results.length} results shown (${otherCount} excluded: different currency)</div>`:"")+sameCurrency.slice(0,5).map(r=>{
+      const p=r.personal||{};const name=p.display_name||p.username||((p.first_name||"")+" "+(p.last_name||"")).trim()||"Unknown";
+      return `<div style="background:var(--card2);border:1px solid var(--b2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;transition:all .18s;" onclick="selectTransferUser('${xe(r.uid)}','${xe(name)}','${xe(p.email||"")}','${xe(p.profile_url||"")}')">
+        <div class="ur-av">${p.profile_url?`<img src="${xe(p.profile_url)}" alt="" onerror="this.outerHTML='<span>${name.charAt(0)}</span>'"/>`:name.charAt(0)}</div>
+        <div style="flex:1;"><div class="ur-name">${xe(name)}</div><div class="ur-email">${xe(p.email||"")}</div></div>
+        <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);"><i class="fa fa-check"></i> ${r.wallet?.currency||"NGN"}</span>
+      </div>`;
+    }).join("");
+  }catch(e){resultEl.innerHTML='<div style="font-size:12px;color:var(--red);padding:8px 0;">Search failed. Check connection.</div>';}
+};
+
+window.selectTransferUser=function(uid,name,email,photo){
+  selectedTransferUser={uid,name,email,photo};
+  $("transfer-user-result").innerHTML=`<div class="user-result selected-user">
+    <div class="ur-av">${photo?`<img src="${xe(photo)}" alt="" style="width:100%;height:100%;object-fit:cover;"/>`:name.charAt(0)}</div>
+    <div><div class="ur-name">${xe(name)}</div><div class="ur-email">${xe(email||uid.substring(0,12)+"…")}</div></div>
+    <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:rgba(0,230,118,.12);color:var(--green);margin-left:auto;"><i class="fa fa-check-circle"></i> Same Currency</span>
+  </div>`;
+  show("transfer-amount-wrap");$("transfer-amount").focus();
+};
+
+window.initiateTransfer=function(){
+  if(!selectedTransferUser){toast("Search for a user first","err");return;}
+  const amount=Number($("transfer-amount")?.value||0),note=gv("transfer-note"),bal=Number(userWallet.balance||0);
+  if(amount<=0){toast("Enter a valid amount","err");return;}
+  if(amount>bal){toast("Insufficient wallet balance","err");return;}
+  $("transfer-confirm-body").innerHTML=`You are sending <strong style="color:var(--accent);font-size:16px;">${userWallet.symbol}${amount.toLocaleString()}</strong> to <strong>${xe(selectedTransferUser.name)}</strong>.<br/><br/>Your new balance: <strong>${userWallet.symbol}${(bal-amount).toLocaleString()}</strong><br/>${note?`<div style="font-size:12px;margin-top:8px;">Note: <em>"${xe(note)}"</em></div>`:""}<br/><span style="color:var(--red);font-size:11px;"><i class="fa fa-triangle-exclamation"></i> Transfers cannot be undone.</span>`;
+  openDialog("dlg-transfer-confirm");
+};
+
+window.confirmTransfer=async function(){
+  const btn=$("transfer-confirm-btn");
+  const amount=Number($("transfer-amount")?.value||0),note=gv("transfer-note");
+  btn.innerHTML='<span class="spin"></span> Sending…';btn.disabled=true;
+  try{
+    const myBal=Number(userWallet.balance||0);if(amount>myBal)throw new Error("Insufficient");
+    await _db.ref(`users/${currentUser.uid}/wallet`).update({balance:myBal-amount,last_updated:firebase.database.ServerValue.TIMESTAMP});
+    const receiverSnap=await _db.ref(`users/${selectedTransferUser.uid}/wallet`).once("value");
+    const rw=receiverSnap.val()||{balance:0};
+    await _db.ref(`users/${selectedTransferUser.uid}/wallet`).update({balance:Number(rw.balance||0)+amount,last_updated:firebase.database.ServerValue.TIMESTAMP});
+    const senderName=userRecord?.personal?.display_name||currentUser.email||"User";
+    const t1=_db.ref(`transactions/${currentUser.uid}`).push().key;
+    const t2=_db.ref(`transactions/${selectedTransferUser.uid}`).push().key;
+    const nk=_db.ref(`notifications/${selectedTransferUser.uid}`).push().key;
+    await Promise.all([
+      _db.ref(`transactions/${currentUser.uid}/${t1}`).set({title:`Transfer to ${selectedTransferUser.name}`,type:"debit",status:"success",amount,currency:userWallet.currency,symbol:userWallet.symbol,note,to_uid:selectedTransferUser.uid,payment_method:"Wallet Transfer",timestamp:firebase.database.ServerValue.TIMESTAMP}),
+      _db.ref(`transactions/${selectedTransferUser.uid}/${t2}`).set({title:`Received from ${senderName}`,type:"credit",status:"success",amount,currency:userWallet.currency,symbol:userWallet.symbol,note,from_uid:currentUser.uid,payment_method:"Wallet Transfer",timestamp:firebase.database.ServerValue.TIMESTAMP}),
+      _db.ref(`notifications/${selectedTransferUser.uid}/${nk}`).set({type:"transfer",emoji:"💸",title:"Money Received!",body:`You received ${userWallet.symbol}${amount.toLocaleString()} from ${senderName}.${note?" Note: "+note:""}`,timestamp:firebase.database.ServerValue.TIMESTAMP,read:false})
+    ]);
+    userWallet.balance=myBal-amount;updateWalletDisplay();closeDialog("dlg-transfer-confirm");loadTransactions();
+    $("transfer-success-msg").textContent=`${userWallet.symbol}${amount.toLocaleString()} sent to ${selectedTransferUser.name}!`;
+    openDialog("dlg-transfer-success");
+    pushNotification("💸","Transfer Sent",`${userWallet.symbol}${amount.toLocaleString()} sent to ${selectedTransferUser.name}.`);
+    sendTG(`💸 *Transfer*\nFrom: ${senderName}\nTo: ${selectedTransferUser.name}\n💰 ${userWallet.symbol}${amount}\n🆔 ${currentUser.uid} → ${selectedTransferUser.uid}`);
+    [$("transfer-amount"),$("transfer-note"),$("transfer-search-input")].forEach(el=>{if(el)el.value="";});
+    $("transfer-user-result").innerHTML="";hide("transfer-amount-wrap");selectedTransferUser=null;
+  }catch(e){toast("Transfer failed. Please try again.","err");}
+  btn.innerHTML="<i class='fa fa-check'></i> Confirm Send";btn.disabled=false;
+};
+
+/* ─── NOTIFICATIONS ─── */
+async function loadNotifications(){
+  if(!currentUser||currentUser.isAnonymous)return;
+  try{
+    const snap=await _db.ref(`notifications/${currentUser.uid}`).orderByChild("timestamp").limitToLast(60).once("value");
+    allNotifications=[];snap.forEach(c=>allNotifications.unshift({key:c.key,...c.val()}));
+    renderNotifications();
+    const updates={};allNotifications.filter(n=>!n.read).forEach(n=>{updates[`notifications/${currentUser.uid}/${n.key}/read`]=true;n.read=true;});
+    if(Object.keys(updates).length)_db.ref().update(updates).catch(()=>{});
+  }catch(e){}
+}
+function renderNotifications(){
+  const wrap=$("notif-list");
+  if(!allNotifications.length){wrap.innerHTML='<div class="empty-state"><i class="fa fa-bell-slash"></i><h3>No notifications</h3><p>You\'re all caught up!</p></div>';return;}
+  wrap.innerHTML=allNotifications.map(n=>`<div class="notif-item${n.read?"":" unread"}" onclick="viewNotification('${n.key}')">
+    <div class="notif-emoji">${n.emoji||"📌"}</div>
+    <div class="notif-content"><div class="notif-title">${xe(n.title||"Notification")}${!n.read?'<div class="notif-dot"></div>':''}</div>
+    <div class="notif-body">${xe((n.body||"").substring(0,90))}${(n.body||"").length>90?"…":""}</div>
+    <div class="notif-time">${n.timestamp?new Date(n.timestamp).toLocaleString():""}</div></div>
+  </div>`).join("");
+}
+window.viewNotification=function(key){
+  const n=allNotifications.find(x=>x.key===key);if(!n)return;
+  $("dlg-notif-title").textContent=n.title||"Notification";
+  $("dlg-notif-emoji").textContent=n.emoji||"📌";
+  $("dlg-notif-body").textContent=n.body||"";
+  $("dlg-notif-time").textContent=n.timestamp?new Date(n.timestamp).toLocaleString():"";
+  openDialog("dlg-notif-view");
+  _db.ref(`notifications/${currentUser.uid}/${key}/read`).set(true).catch(()=>{});
+  const item=allNotifications.find(x=>x.key===key);if(item)item.read=true;
+};
+window.markAllRead=async function(){
+  const updates={};allNotifications.forEach(n=>{updates[`notifications/${currentUser.uid}/${n.key}/read`]=true;n.read=true;});
+  await _db.ref().update(updates).catch(()=>{});renderNotifications();toast("✓ All marked as read","ok");
+};
+window.clearAllNotifications=async function(){
+  showConfirm("🗑️","Clear All?","Delete all notifications permanently?","btn-red","Clear All",async()=>{
+    await _db.ref(`notifications/${currentUser.uid}`).remove().catch(()=>{});
+    allNotifications=[];renderNotifications();toast("✓ Notifications cleared","ok");
+  });
+};
+async function pushNotification(emoji,title,body){
+  if(!currentUser||currentUser.isAnonymous)return;
+  try{
+    const nk=_db.ref(`notifications/${currentUser.uid}`).push().key;
+    await _db.ref(`notifications/${currentUser.uid}/${nk}`).set({emoji,title,body,type:"system",timestamp:firebase.database.ServerValue.TIMESTAMP,read:false});
+    allNotifications.unshift({key:nk,emoji,title,body,type:"system",read:false,timestamp:Date.now()});
+  }catch(e){}
+}
+
+/* ─── TRANSACTIONS ─── */
+async function loadTransactions(){
+  if(!currentUser||currentUser.isAnonymous)return;
+  try{
+    const snap=await _db.ref(`transactions/${currentUser.uid}`).orderByChild("timestamp").limitToLast(150).once("value");
+    allTransactions=[];snap.forEach(c=>allTransactions.unshift({key:c.key,...c.val()}));
+    renderTransactions("all");renderTxSummary();renderActivityLog();renderStreamingStats();
+  }catch(e){}
+}
+function renderTxSummary(){
+  const totalIn=allTransactions.filter(t=>t.type==="credit"&&t.status==="success").reduce((s,t)=>s+Number(t.amount||0),0);
+  const totalOut=allTransactions.filter(t=>t.type==="debit"&&t.status==="success").reduce((s,t)=>s+Number(t.amount||0),0);
+  const sym=userWallet.symbol,el=$("tx-summary");
+  if(allTransactions.length){el.style.display="grid";el.style.gridTemplateColumns="1fr 1fr";el.style.gap="8px";el.innerHTML=`<div style="background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:10px;color:var(--t2);font-weight:700;">Total In</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--green);">${sym}${totalIn.toLocaleString()}</div></div><div style="background:rgba(255,61,61,.07);border:1px solid rgba(255,61,61,.2);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:10px;color:var(--t2);font-weight:700;">Total Out</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--red);">${sym}${totalOut.toLocaleString()}</div></div>`;}
+}
+function renderTransactions(filter){
+  const typeFilter=$("tx-type-filter")?.value||"all";
+  let filtered=allTransactions;
+  if(filter!=="all")filtered=filtered.filter(t=>t.status===filter);
+  if(typeFilter!=="all")filtered=filtered.filter(t=>t.type===typeFilter);
+  const wrap=$("tx-list");
+  if(!filtered.length){wrap.innerHTML='<div class="empty-state"><i class="fa fa-receipt"></i><h3>No transactions</h3><p>No transactions matching this filter.</p></div>';return;}
+  wrap.innerHTML=filtered.map(t=>{
+    const isCredit=t.type==="credit",sym=t.symbol||userWallet.symbol;
+    const cls=t.status==="pending"?"pending":isCredit?"credit":"debit";
+    return `<div class="tx-item"><div class="tx-icon ${cls}"><i class="fa ${t.status==="pending"?"fa-clock":isCredit?"fa-arrow-down":"fa-arrow-up"}"></i></div>
+    <div class="tx-info"><div class="tx-title">${xe(t.title||"Transaction")}</div><div class="tx-date">${t.payment_method?xe(t.payment_method)+" · ":""}${t.timestamp?new Date(t.timestamp).toLocaleString():""}</div></div>
+    <div><div class="tx-amount ${isCredit?"credit":"debit"}">${isCredit?"+":"-"}${sym}${Number(t.amount||0).toLocaleString()}</div><span class="tx-status ${t.status||"success"}">${(t.status||"success").toUpperCase()}</span></div></div>`;
+  }).join("");
+}
+window.filterTransactions=function(filter){renderTransactions(filter);};
+
+/* ─── SETTINGS ─── */
+function applySettings(){
+  const setToggle=(id,on)=>{const el=$(id);if(el)el.className="toggle-sw"+(on?" on":"");};
+  setToggle("ads-toggle",prefs.ads);setToggle("datasaver-toggle",prefs.datasaver);
+  setToggle("pushnotif-toggle",prefs.pushnotif);setToggle("emailnotif-toggle",prefs.emailnotif);
+  setToggle("theme-sw",isDark);setToggle("autorenew-toggle",prefs.autorenew);
+  setToggle("discovery-toggle",prefs.discovery);setToggle("tfa-toggle",prefs.tfa);
+  const qs=$("quality-select");if(qs)qs.value=userRecord?.preferences?.video_quality||"auto";
+  const ls=$("lang-select");if(ls)ls.value=userRecord?.preferences?.language||"en";
+  const ss=$("subtitle-select");if(ss)ss.value=userRecord?.preferences?.subtitles||"off";
+  const sc=$("settings-country");if(sc&&userRecord?.personal?.country)sc.value=userRecord.personal.country;
+}
+
+window.toggleSetting=async function(key){
+  if(key==="theme"){applyTheme(!isDark);return;}
+  const prefMap={ads:"ads",datasaver:"datasaver",pushnotif:"pushnotif",emailnotif:"emailnotif",autorenew:"autorenew",discovery:"discovery",tfa:"tfa"};
+  const pkMap={ads:"subscription/ads_enabled",datasaver:"preferences/data_saver",pushnotif:"preferences/push_notifications",emailnotif:"preferences/email_notifications",autorenew:"preferences/auto_renew",discovery:"preferences/allow_discovery",tfa:"preferences/two_factor_auth"};
+  const toggleIds={ads:"ads-toggle",datasaver:"datasaver-toggle",pushnotif:"pushnotif-toggle",emailnotif:"emailnotif-toggle",autorenew:"autorenew-toggle",discovery:"discovery-toggle",tfa:"tfa-toggle"};
+  prefs[prefMap[key]]=!prefs[prefMap[key]];
+  const on=prefs[prefMap[key]];
+  const el=$(toggleIds[key]);if(el)el.className="toggle-sw"+(on?" on":"");
+  try{
+    const updates={};updates[pkMap[key]]=on;
+    await _db.ref(`users/${currentUser.uid}`).update(updates);
+    toast(`✓ ${key} ${on?"enabled":"disabled"}`,on?"ok":"info");
+  }catch(e){toast("Could not save setting","err");}
+};
+window.saveVideoQuality=async function(val){try{await _db.ref(`users/${currentUser.uid}/preferences/video_quality`).set(val);toast("✓ Quality saved","ok");}catch(e){}};
+window.savePref=async function(key,val){try{await _db.ref(`users/${currentUser.uid}/preferences/${key}`).set(val);toast("✓ Saved","ok");}catch(e){}};
+window.onSettingsCountryChange=function(val){
+  settingsPendingCountry=val;
+  if(!val){hide("currency-preview");return;}
+  const info=getCInfo(val);
+  $("currency-preview-text").textContent=`Pricing in ${val}: 1 Month Full HD = ${info.symbol}${info.monthly_full.toLocaleString()} ${info.currency}`;
+  show("currency-preview");
+};
+window.saveCountrySettings=async function(){
+  if(!settingsPendingCountry){toast("No country selected","err");return;}
+  try{
+    await _db.ref(`users/${currentUser.uid}/personal/country`).set(settingsPendingCountry);
+    if(!userRecord.personal)userRecord.personal={};
+    userRecord.personal.country=settingsPendingCountry;
+    renderHero();renderPersonalInfo();
+    toast("✓ Country updated! Wallet currency unchanged.","ok");
+    pushNotification("🌍","Country Updated",`Country set to ${settingsPendingCountry}. Wallet currency (${userWallet.currency}) unchanged.`);
+  }catch(e){toast("Could not save country","err");}
+};
+function initColorPicker(){
+  document.querySelectorAll(".color-opt").forEach(el=>{
+    el.addEventListener("click",()=>{
+      document.querySelectorAll(".color-opt").forEach(o=>o.style.border="2px solid transparent");
+      el.style.border="2px solid var(--t1)";
+      document.documentElement.style.setProperty("--spark",el.dataset.color);
+      toast("✓ Accent color updated","ok");
+    });
+  });
+}
+
+/* ─── REFERRAL ─── */
+function renderReferralTab(){
+  const ref=userRecord?.referral||{};
+  const code=ref.code||("SPARK-"+currentUser.uid.substring(0,6).toUpperCase());
+  const info=getWInfo();
+  const reward=Math.round(info.monthly_full*0.1);
+  $("referral-code").textContent=code;
+  $("ref-total").textContent=ref.total_referrals||0;
+  $("ref-active").textContent=ref.active_referrals||0;
+  $("ref-earned").textContent=`${info.symbol}${Number(ref.total_earned||0).toLocaleString()}`;
+  $("ref-reward-text").textContent=`Earn ${info.symbol}${reward.toLocaleString()} for every friend who subscribes`;
+  // Referral link
+  const refLink=`${window.location.origin}/index.html?ref=${code}`;
+  const linkEl=$("ref-link-text");if(linkEl)linkEl.textContent=refLink;
+  const alreadyApplied=ref.referred_by&&ref.referred_by!=="";
+  if(alreadyApplied){show("ref-already-applied");hide("ref-apply-form");}
+  else{hide("ref-already-applied");show("ref-apply-form");}
+}
+window.copyRefLink=function(){
+  const ref=userRecord?.referral||{};
+  const code=ref.code||("SPARK-"+currentUser.uid.substring(0,6).toUpperCase());
+  const refLink=`${window.location.origin}/index.html?ref=${code}`;
+  navigator.clipboard.writeText(refLink).then(()=>toast("✓ Referral link copied!","ok")).catch(()=>toast("Copy failed","err"));
+};
+window.copyReferralCode=function(){navigator.clipboard.writeText($("referral-code").textContent).then(()=>toast("✓ Code copied!","ok")).catch(()=>toast("Copy failed","err"));};
+window.shareReferral=function(){
+  const ref=userRecord?.referral||{};const code=ref.code||("SPARK-"+currentUser.uid.substring(0,6).toUpperCase());
+  const info=getWInfo();const reward=Math.round(info.monthly_full*0.1);
+  const url=`${window.location.origin}/index.html?ref=${code}`;
+  const text=`🎬 Join Spark TV! Use my code ${code} and I earn ${info.symbol}${reward}. Sign up: ${url}`;
+  if(navigator.share)navigator.share({title:"Join Spark TV",text,url}).catch(()=>{});
+  else navigator.clipboard.writeText(text).then(()=>toast("✓ Share text copied!","ok"));
+};
+window.applyReferralCode=async function(){
+  const code=($("enter-ref-code")?.value||"").trim().toUpperCase();
+  if(!code||!code.startsWith("SPARK-")||code.length<10){toast("Enter a valid code (e.g. SPARK-XXXXXX)","err");return;}
+  if(userRecord?.referral?.referred_by&&userRecord.referral.referred_by!==""){toast("You've already applied a referral code","err");return;}
+  const myCode=userRecord?.referral?.code||("SPARK-"+currentUser.uid.substring(0,6).toUpperCase());
+  if(code===myCode){toast("You cannot use your own code","err");return;}
+  toast("Checking code…","info");
+  try{
+    const snap=await _db.ref("users").orderByChild("referral/code").equalTo(code).once("value");
+    let refUid="",refData=null;
+    snap.forEach(c=>{if(c.key!==currentUser.uid){refUid=c.key;refData=c.val();}});
+    if(!refUid){toast("Referral code not found.","err");return;}
+    const refWalletCurrency=refData?.wallet?.currency||"NGN";
+    const refInfo=COUNTRIES.find(c=>c.currency===refWalletCurrency)||getCInfo("Nigeria");
+    const reward=Math.round(refInfo.monthly_full*0.1);
+    const refBal=Number(refData?.wallet?.balance||0)+reward;
+    await Promise.all([
+      _db.ref(`users/${refUid}/referral`).update({total_referrals:firebase.database.ServerValue.increment(1),active_referrals:firebase.database.ServerValue.increment(1),total_earned:firebase.database.ServerValue.increment(reward)}),
+      _db.ref(`users/${refUid}/wallet`).update({balance:refBal,last_updated:firebase.database.ServerValue.TIMESTAMP}),
+      // Also credit withdrawable balance for referrer
+      _db.ref(`users/${refUid}/withdrawable/balance`).transaction(v=>Number(v||0)+reward),
+      _db.ref(`users/${currentUser.uid}/referral`).update({referred_by:refUid,code_applied:code,applied_at:firebase.database.ServerValue.TIMESTAMP}),
+      _db.ref(`notifications/${refUid}/${_db.ref(`notifications/${refUid}`).push().key}`).set({emoji:"🎉",title:"New Referral!",body:`Someone used your code ${code}! You earned ${refInfo.symbol}${reward.toLocaleString()}!`,timestamp:firebase.database.ServerValue.TIMESTAMP,read:false}),
+      _db.ref(`transactions/${refUid}/${_db.ref(`transactions/${refUid}`).push().key}`).set({title:"Referral Reward",type:"credit",status:"success",amount:reward,currency:refInfo.currency,symbol:refInfo.symbol,payment_method:"Referral Program",timestamp:firebase.database.ServerValue.TIMESTAMP}),
+    ]);
+    if(!userRecord.referral)userRecord.referral={};userRecord.referral.referred_by=refUid;
+    $("enter-ref-code").value="";renderReferralTab();
+    toast(`✓ Referral applied! ${refData?.personal?.display_name||"Referrer"} earned ${refInfo.symbol}${reward}!`,"ok");
+    pushNotification("🎁","Referral Applied",`Code ${code} applied. Referrer has been credited.`);
+    sendTG(`🎁 *Referral Applied*\n👤 Referrer: ${refData?.personal?.display_name||refUid}\n💰 Reward: ${refInfo.symbol}${reward}\n📌 Code: ${code}\n🆔 ${currentUser.uid}`);
+  }catch(e){console.error(e);toast("Could not apply code. Please try again.","err");}
+};
+
+/* ─── CONFIRM ─── */
+function showConfirm(emoji,title,msg,btnCls,btnLabel,callback){
+  $("confirm-emoji").textContent=emoji;$("confirm-title").textContent=title;$("confirm-msg").textContent=msg;
+  const okBtn=$("confirm-ok-btn");okBtn.className=`btn ${btnCls||"btn-primary"}`;okBtn.innerHTML=`<i class="fa fa-check"></i> ${btnLabel||"Confirm"}`;
+  confirmCallback=callback;openDialog("dlg-confirm");
+}
+window.confirmAction=function(){closeDialog("dlg-confirm");if(confirmCallback){const cb=confirmCallback;confirmCallback=null;cb();}};
+window.confirmLogout=function(){showConfirm("🚪","Sign Out?","Are you sure you want to sign out?","btn-red","Sign Out",async()=>{await _auth.signOut();window.location.href="index.html";});};
+window.confirmDeleteAccount=function(){showConfirm("💀","Delete Account?","This permanently deletes your account. CANNOT be undone.","btn-red","Delete Forever",async()=>{try{await _db.ref(`users/${currentUser.uid}`).remove();await currentUser.delete();window.location.href="index.html";}catch(e){toast("Could not delete. Please reauthenticate.","err");}});};
+
+/* ─── TAB SWITCHING ─── */
+window.switchTab=function(name){
+  document.querySelectorAll(".tab-pane").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".ptab").forEach(t=>t.classList.remove("active"));
+  const pane=$("pane-"+name);if(pane)pane.classList.add("active");
+  const tabs={personal:0,subscription:1,wallet:2,notifications:3,settings:4,transactions:5,referral:6,support:7};
+  document.querySelectorAll(".ptab")[tabs[name]]?.classList.add("active");
+  const actions={wallet:renderWalletTab,notifications:loadNotifications,transactions:loadTransactions,settings:applySettings,referral:renderReferralTab,support:renderSupportAccountInfo};
+  if(actions[name])actions[name]();
+};
+
+/* ─── UTILITIES ─── */
+window.copyText=function(text,label){navigator.clipboard.writeText(text).then(()=>toast(`✓ ${label} copied!`,"ok")).catch(()=>toast("Copy failed","err"));};
+
+function sendTG(text){
+  fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TG_CHAT,text,parse_mode:"Markdown"})}).catch(()=>{});
+}
+
+async function uploadImgToTelegram(base64){
+  try{
+    const blob=await fetch(base64).then(r=>r.blob());
+    const fd=new FormData();fd.append("chat_id",TG_CHAT);fd.append("photo",blob,"profile.jpg");
+    const r=await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`,{method:"POST",body:fd});
+    const j=await r.json();if(!j.ok)return "";
+    const fileId=j.result.photo.pop().file_id;
+    const fr=await fetch(`https://api.telegram.org/bot${TG_TOKEN}/getFile?file_id=${fileId}`);
+    const fj=await fr.json();if(!fj.ok)return "";
+    return `https://api.telegram.org/file/bot${TG_TOKEN}/${fj.result.file_path}`;
+  }catch(e){return "";}
+}
+
+function renderActivityLog(){
+  const sub=userRecord?.subscription||{},items=[];
+  if(sub.last_payment)items.push({dot:"spark",text:`Last payment — ${sub.plan_tier||""}`,time:new Date(sub.last_payment).toLocaleDateString()});
+  if(userRecord?.personal?.last_login)items.push({dot:"green",text:"Profile accessed",time:new Date(userRecord.personal.last_login).toLocaleString()});
+  if(userRecord?.personal?.joined_date)items.push({dot:"accent",text:"Account created",time:new Date(userRecord.personal.joined_date).toLocaleDateString()});
+  if(allTransactions.length)items.push({dot:"gold",text:`${allTransactions.length} total transactions`,time:""});
+  const el=$("activity-log");if(!el)return;
+  el.innerHTML=items.length?items.map(i=>`<div class="activity-item"><div class="activity-dot ${i.dot}"></div><div class="activity-text">${xe(i.text)}</div>${i.time?`<div class="activity-time">${xe(i.time)}</div>`:""}</div>`).join(""):'<div class="empty-state" style="padding:20px 0;"><i class="fa fa-chart-line"></i><p>No activity yet</p></div>';
+}
+</script>
+</body>
+</html>

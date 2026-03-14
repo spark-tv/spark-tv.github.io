@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Spark TV — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-database.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════════ */
+:root{
+  --sp:#ff4d00;--sp2:#ff7b2e;--sg:rgba(255,77,0,.2);--sp3:rgba(255,77,0,.08);
+  --acc:#00c8ff;--gold:#f5c842;--green:#00e676;--red:#ff3d3d;--purple:#a78bfa;
+  --bg:#07090f;--bg2:#0d1018;--bg3:#121520;
+  --card:#131720;--card2:#191e2d;--card3:#1f2638;--card4:#252d40;
+  --b1:rgba(255,77,0,.15);--b2:rgba(255,255,255,.06);--b3:rgba(255,255,255,.1);
+  --t1:#eef0fc;--t2:#8b96c0;--mt:#4a5278;--mt2:#1e2438;
+  --sh:rgba(0,0,0,.8);--font:'Nunito',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:12px;--r2:18px;--r3:24px;--sw:240px;
+  --header-h:58px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t1);overflow-x:hidden;font-size:14px;line-height:1.6;}
+h1,h2,h3,h4,.brand{font-family:'Syne',sans-serif;}
+a{color:inherit;text-decoration:none;}
+button,input,select,textarea{font-family:var(--font);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--mt2);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--mt);}
+
+/* ═══════════════════════════════════════════
+   LOADING
+═══════════════════════════════════════════ */
+.ls{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s;}
+.ls.gone{opacity:0;pointer-events:none;}
+.ls-logo{width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,var(--sp),var(--sp2));display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;color:#fff;box-shadow:0 20px 50px var(--sg);animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+.ls-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--sp),var(--sp2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ls-sub{font-size:12px;color:var(--mt);font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.ls-bar{width:200px;height:2px;background:var(--card3);border-radius:2px;overflow:hidden;}
+.ls-prog{height:100%;background:linear-gradient(90deg,var(--sp),var(--sp2));border-radius:2px;width:0%;transition:width .3s;}
+
+/* ═══════════════════════════════════════════
+   AUTH GATE
+═══════════════════════════════════════════ */
+.auth-gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px;}
+.auth-gate.open{display:flex;}
+.auth-box{background:var(--card);border:1px solid var(--b1);border-radius:var(--r3);padding:36px 32px;max-width:400px;width:100%;text-align:center;box-shadow:0 40px 80px rgba(255,77,0,.12);}
+.auth-logo{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--sp),var(--sp2));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;margin:0 auto 16px;box-shadow:0 12px 32px var(--sg);}
+.auth-box h2{font-size:22px;margin-bottom:4px;}
+.auth-box .sub{font-size:12px;color:var(--t2);margin-bottom:24px;}
+.af{margin-bottom:12px;text-align:left;}
+.af label{display:block;font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.af input{width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--b2);border-radius:10px;color:var(--t1);font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s;}
+.af input:focus{border-color:var(--sp);box-shadow:0 0 0 3px var(--sg);}
+.af input::placeholder{color:var(--mt);}
+.auth-btn{width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--sp),var(--sp2));color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px var(--sg);transition:all .2s;}
+.auth-btn:hover{opacity:.9;transform:translateY(-1px);}
+.auth-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.auth-err{font-size:11px;color:var(--red);margin-top:8px;min-height:16px;font-weight:600;}
+.access-denied{background:rgba(255,61,61,.08);border:1px solid rgba(255,61,61,.25);border-radius:10px;padding:12px;margin-top:12px;font-size:12px;color:var(--red);display:none;}
+
+/* ═══════════════════════════════════════════
+   LAYOUT — SIDEBAR + MAIN
+═══════════════════════════════════════════ */
+.app{display:flex;min-height:100vh;}
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:var(--sw);z-index:200;
+  background:var(--bg2);border-right:1px solid var(--b2);
+  display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;border-bottom:1px solid var(--b2);flex-shrink:0;}
+.sb-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--sp),var(--sp2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;}
+.sb-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--sp),var(--sp2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sb-tag{font-size:9px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.1em;margin-top:-2px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 10px;}
+.sidebar-nav::-webkit-scrollbar{display:none;}
+.nav-section-label{font-size:9px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.1em;padding:12px 10px 6px;margin-top:4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r);cursor:pointer;color:var(--t2);font-size:13px;font-weight:600;transition:all .18s;position:relative;margin-bottom:2px;}
+.nav-item:hover{background:var(--card3);color:var(--t1);}
+.nav-item.active{background:linear-gradient(135deg,rgba(255,77,0,.18),rgba(255,77,0,.08));color:var(--sp);border:1px solid rgba(255,77,0,.2);}
+.nav-item i{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--sp);color:#fff;font-size:9px;font-weight:800;padding:1px 6px;border-radius:8px;}
+.sidebar-footer{padding:14px 14px;border-top:1px solid var(--b2);flex-shrink:0;}
+.admin-pill{display:flex;align-items:center;gap:8px;}
+.admin-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--sp),var(--acc));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;}
+.admin-info{flex:1;min-width:0;}
+.admin-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-role{font-size:10px;color:var(--sp);font-weight:700;}
+.logout-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--b2);background:none;color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .18s;flex-shrink:0;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+.content{margin-left:var(--sw);flex:1;min-height:100vh;}
+.content-header{position:sticky;top:0;z-index:100;height:var(--header-h);background:rgba(7,9,15,.93);border-bottom:1px solid var(--b2);backdrop-filter:blur(20px);display:flex;align-items:center;padding:0 24px;gap:14px;}
+.ch-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px;flex:1;}
+.ch-title i{color:var(--sp);font-size:16px;}
+.ch-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;background:rgba(255,77,0,.12);color:var(--sp);border:1px solid rgba(255,77,0,.2);}
+.hd-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .18s;}
+.hd-btn.pri{background:linear-gradient(135deg,var(--sp),var(--sp2));color:#fff;}
+.hd-btn.sec{background:var(--card2);border:1px solid var(--b2);color:var(--t2);}
+.hd-btn:hover{opacity:.9;transform:translateY(-1px);}
+.content-body{padding:24px;}
+
+/* ═══════════════════════════════════════════
+   PAGES
+═══════════════════════════════════════════ */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ═══════════════════════════════════════════
+   STAT CARDS
+═══════════════════════════════════════════ */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--b2);border-radius:var(--r2);padding:18px 20px;position:relative;overflow:hidden;transition:border-color .2s;}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;transform:translate(25px,-25px);opacity:.15;}
+.stat-card.orange::before{background:var(--sp);}
+.stat-card.blue::before{background:var(--acc);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.gold::before{background:var(--gold);}
+.stat-card.purple::before{background:var(--purple);}
+.stat-card:hover{border-color:var(--b3);}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;}
+.stat-icon.orange{background:rgba(255,77,0,.12);color:var(--sp);}
+.stat-icon.blue{background:rgba(0,200,255,.1);color:var(--acc);}
+.stat-icon.green{background:rgba(0,230,118,.1);color:var(--green);}
+.stat-icon.gold{background:rgba(245,200,66,.1);color:var(--gold);}
+.stat-icon.purple{background:rgba(167,139,250,.1);color:var(--purple);}
+.stat-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;margin-bottom:4px;}
+.stat-label{font-size:11px;color:var(--t2);font-weight:600;}
+.stat-change{font-size:10px;font-weight:700;margin-top:6px;}
+.stat-change.up{color:var(--green);}
+.stat-change.down{color:var(--red);}
+
+/* ═══════════════════════════════════════════
+   CARDS / PANELS
+═══════════════════════════════════════════ */
+.panel{background:var(--card);border:1px solid var(--b2);border-radius:var(--r2);margin-bottom:20px;}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.panel-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.panel-title i{color:var(--sp);font-size:13px;}
+.panel-body{padding:20px;}
+.panel-footer{padding:14px 20px;border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+
+/* ═══════════════════════════════════════════
+   TABLE
+═══════════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r2);border:1px solid var(--b2);}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl thead{background:var(--card2);}
+.tbl th{padding:10px 14px;text-align:left;font-size:10px;font-weight:800;color:var(--mt);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;border-bottom:1px solid var(--b2);}
+.tbl td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+.tbl tbody tr:hover{background:var(--card2);}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--sp),var(--acc));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
+.tbl-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-cell{display:flex;align-items:center;gap:9px;}
+.user-cell-info{min-width:0;}
+.user-cell-name{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.user-cell-email{font-size:10px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:8px;font-size:10px;font-weight:700;white-space:nowrap;}
+.badge.active{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.badge.inactive{background:rgba(255,61,61,.1);color:var(--red);border:1px solid rgba(255,61,61,.2);}
+.badge.admin{background:rgba(255,77,0,.12);color:var(--sp);border:1px solid rgba(255,77,0,.2);}
+.badge.warn{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.badge.blue{background:rgba(0,200,255,.08);color:var(--acc);border:1px solid rgba(0,200,255,.18);}
+.badge.purple{background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2);}
+.tbl-actions{display:flex;align-items:center;gap:5px;}
+.ta{width:28px;height:28px;border-radius:7px;border:1px solid var(--b2);background:var(--card3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:11px;transition:all .18s;}
+.ta:hover{border-color:var(--sp);color:var(--sp);}
+.ta.red:hover{border-color:var(--red);color:var(--red);}
+.ta.green:hover{border-color:var(--green);color:var(--green);}
+.ta.blue:hover{border-color:var(--acc);color:var(--acc);}
+
+/* ═══════════════════════════════════════════
+   FORMS
+═══════════════════════════════════════════ */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+.form-grid.two{grid-template-columns:1fr 1fr;}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.08em;}
+.fg label span{color:var(--sp);}
+.fg input,.fg select,.fg textarea{padding:9px 12px;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);color:var(--t1);font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--sp);box-shadow:0 0 0 3px var(--sg);}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--mt);}
+.fg textarea{resize:vertical;min-height:70px;}
+.fg select option{background:var(--bg2);color:var(--t1);}
+.fg .hint{font-size:10px;color:var(--mt);font-weight:500;}
+.form-section-title{font-size:11px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.1em;padding-bottom:8px;border-bottom:1px solid var(--b2);margin-bottom:14px;margin-top:4px;display:flex;align-items:center;gap:6px;}
+.form-section-title i{color:var(--sp);}
+.fg-full{grid-column:1/-1;}
+/* toggle switch */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info label{font-size:13px;font-weight:600;display:block;margin-bottom:2px;}
+.toggle-info small{font-size:10px;color:var(--mt);}
+.sw{width:40px;height:22px;border-radius:11px;background:var(--card3);border:1px solid var(--b2);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.sw.on{background:var(--green);border-color:var(--green);}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .18s;}
+.sw.on::after{left:21px;}
+
+/* ═══════════════════════════════════════════
+   MODAL / OVERLAY
+═══════════════════════════════════════════ */
+.modal-ov{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
+.modal-ov.open{display:flex;animation:mo .18s ease;}
+@keyframes mo{from{opacity:0;}to{opacity:1;}}
+.modal{background:var(--card);border:1px solid var(--b1);border-radius:var(--r3);width:100%;max-width:680px;box-shadow:0 40px 80px rgba(255,77,0,.12);margin:auto;}
+.modal.wide{max-width:880px;}
+.modal.narrow{max-width:480px;}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px;}
+.modal-title i{color:var(--sp);}
+.modal-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--b2);background:var(--card3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:13px;transition:all .18s;flex-shrink:0;}
+.modal-close:hover{border-color:var(--red);color:var(--red);}
+.modal-body{padding:22px 24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:flex-end;gap:9px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .18s;}
+.btn.pri{background:linear-gradient(135deg,var(--sp),var(--sp2));color:#fff;box-shadow:0 4px 14px var(--sg);}
+.btn.sec{background:var(--card2);border:1px solid var(--b2);color:var(--t2);}
+.btn.green{background:linear-gradient(135deg,var(--green),#00aa55);color:#fff;}
+.btn.red{background:linear-gradient(135deg,var(--red),#cc1111);color:#fff;}
+.btn.blue{background:linear-gradient(135deg,var(--acc),#007bb5);color:#fff;}
+.btn.gold{background:linear-gradient(135deg,var(--gold),#cc9900);color:#000;}
+.btn:hover:not(:disabled){opacity:.9;transform:translateY(-1px);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn.sm{padding:6px 13px;font-size:12px;}
+.btn.lg{padding:12px 24px;font-size:14px;}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .5s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg);}}
+
+/* ═══════════════════════════════════════════
+   SEARCH / FILTER BAR
+═══════════════════════════════════════════ */
+.filter-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:16px;}
+.srch-box{position:relative;flex:1;min-width:200px;}
+.srch-box input{width:100%;padding:8px 32px 8px 34px;background:var(--card2);border:1px solid var(--b2);border-radius:var(--r);color:var(--t1);font-size:13px;outline:none;transition:border-color .2s;}
+.srch-box input:focus{border-color:var(--sp);}
+.srch-box .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mt);font-size:12px;pointer-events:none;}
+.srch-box .sc{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--mt);font-size:11px;cursor:pointer;display:none;}
+.filter-sel{padding:8px 12px;background:var(--card2);border:1px solid var(--b2);border-radius:var(--r);color:var(--t1);font-size:12px;outline:none;cursor:pointer;flex-shrink:0;}
+.filter-sel:focus{border-color:var(--sp);}
+
+/* ═══════════════════════════════════════════
+   SUBSCRIPTION PICKER
+═══════════════════════════════════════════ */
+.dur-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:14px;}
+.dur-pill{padding:8px 4px;border-radius:var(--r);border:1px solid var(--b2);background:var(--card2);text-align:center;cursor:pointer;transition:all .15s;}
+.dur-pill:hover{border-color:var(--sp);background:var(--sp3);}
+.dur-pill.sel{background:linear-gradient(135deg,var(--sp),var(--sp2));border-color:var(--sp);color:#fff;}
+.dur-pill .dv{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;display:block;}
+.dur-pill .dl{font-size:9px;font-weight:600;opacity:.7;display:block;margin-top:1px;}
+.dur-custom{margin-top:10px;padding:14px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--b2);}
+.dur-custom label{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;}
+/* plan tiers */
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:14px;}
+.plan-card{padding:12px;border-radius:var(--r);border:1px solid var(--b2);background:var(--card2);cursor:pointer;text-align:center;transition:all .15s;}
+.plan-card:hover{border-color:var(--sp);}
+.plan-card.sel{border-color:var(--sp);background:var(--sp3);}
+.plan-card .pv{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--sp);}
+.plan-card .pl{font-size:10px;color:var(--t2);font-weight:600;margin-top:2px;}
+
+/* ═══════════════════════════════════════════
+   WALLET CREDIT
+═══════════════════════════════════════════ */
+.curr-info{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:var(--r);padding:12px 14px;margin-top:10px;display:none;}
+.curr-info .ci-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;}
+.curr-info .ci-amount{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green);}
+.curr-info .ci-label{font-size:11px;color:var(--t2);}
+
+/* ═══════════════════════════════════════════
+   ADS
+═══════════════════════════════════════════ */
+.ads-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.ad-card{background:var(--card2);border:1px solid var(--b2);border-radius:var(--r2);overflow:hidden;transition:border-color .2s;}
+.ad-card:hover{border-color:var(--b3);}
+.ad-img{width:100%;height:130px;background:var(--card3);position:relative;overflow:hidden;}
+.ad-img img{width:100%;height:100%;object-fit:cover;}
+.ad-img .ad-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--mt);}
+.ad-status-dot{position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;}
+.ad-status-dot.live{background:var(--green);box-shadow:0 0 0 3px rgba(0,230,118,.2);}
+.ad-status-dot.off{background:var(--red);}
+.ad-info{padding:12px 14px;}
+.ad-title{font-weight:700;font-size:13px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ad-desc{font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:10px;}
+.ad-meta{display:flex;align-items:center;justify-content:space-between;}
+.ad-dur{font-size:10px;color:var(--mt);}
+.ad-actions{display:flex;gap:6px;}
+
+/* ═══════════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════════ */
+.notif-list{display:flex;flex-direction:column;gap:8px;}
+.notif-item{background:var(--card2);border:1px solid var(--b2);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;}
+.notif-emoji{font-size:24px;flex-shrink:0;}
+.notif-content{flex:1;min-width:0;}
+.notif-title{font-weight:700;font-size:13px;}
+.notif-body{font-size:11px;color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.notif-time{font-size:10px;color:var(--mt);margin-top:4px;}
+.notif-type-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;flex-shrink:0;}
+.notif-type-badge.global{background:rgba(0,200,255,.1);color:var(--acc);border:1px solid rgba(0,200,255,.2);}
+.notif-type-badge.user{background:rgba(255,77,0,.1);color:var(--sp);border:1px solid rgba(255,77,0,.2);}
+
+/* ═══════════════════════════════════════════
+   CURRENCY RATE TABLE
+═══════════════════════════════════════════ */
+.rate-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.rate-row:last-child{border-bottom:none;}
+.rate-country{font-size:12px;font-weight:600;}
+.rate-val{font-family:var(--mono);font-size:12px;color:var(--acc);}
+
+/* ═══════════════════════════════════════════
+   USER DETAIL SECTION TABS
+═══════════════════════════════════════════ */
+.modal-tabs{display:flex;background:var(--bg2);border-radius:10px;padding:3px;margin-bottom:18px;gap:2px;}
+.mt{flex:1;padding:7px;border-radius:7px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;color:var(--t2);transition:all .2s;}
+.mt.active{background:linear-gradient(135deg,var(--sp),var(--sp2));color:#fff;}
+.modal-tab-pane{display:none;}
+.modal-tab-pane.active{display:block;}
+
+/* ═══════════════════════════════════════════
+   EMPTY / LOADING STATES
+═══════════════════════════════════════════ */
+.empty{text-align:center;padding:50px 20px;color:var(--mt);}
+.empty i{font-size:44px;display:block;margin-bottom:12px;color:var(--card3);}
+.empty h3{font-size:15px;color:var(--t2);margin-bottom:6px;font-family:'Syne',sans-serif;}
+.empty p{font-size:12px;}
+.sk-line{height:10px;border-radius:3px;background:linear-gradient(90deg,var(--card2) 25%,var(--card3) 50%,var(--card2) 75%);background-size:300%;animation:sh 1.8s infinite linear;}
+@keyframes sh{from{background-position:100%}to{background-position:-100%}}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+.toast{position:fixed;top:20px;right:20px;z-index:9999;padding:10px 18px;border-radius:var(--r3);font-size:12px;font-weight:700;background:var(--card);border:1px solid var(--b2);box-shadow:0 12px 32px var(--sh);opacity:0;transform:translateY(-12px);transition:all .26s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:320px;display:flex;align-items:center;gap:8px;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.ok{border-color:rgba(0,230,118,.3);color:var(--green);}
+.toast.err{border-color:rgba(255,61,61,.3);color:var(--red);}
+.toast.info{border-color:rgba(0,200,255,.3);color:var(--acc);}
+
+/* ═══════════════════════════════════════════
+   ACTIVITY LOG
+═══════════════════════════════════════════ */
+.log-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.log-item:last-child{border-bottom:none;}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.log-dot.green{background:var(--green);}
+.log-dot.orange{background:var(--sp);}
+.log-dot.blue{background:var(--acc);}
+.log-dot.red{background:var(--red);}
+.log-text{font-size:12px;flex:1;}
+.log-time{font-size:10px;color:var(--mt);font-family:var(--mono);flex-shrink:0;}
+
+/* ═══════════════════════════════════════════
+   PROGRESS BARS
+═══════════════════════════════════════════ */
+.prog-bar{background:var(--card3);border-radius:4px;height:6px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+
+/* ═══════════════════════════════════════════
+   MOBILE SIDEBAR TOGGLE
+═══════════════════════════════════════════ */
+.mob-toggle{display:none;width:36px;height:36px;border-radius:var(--r);border:1px solid var(--b2);background:var(--card2);align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:14px;}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.7);}
+.sidebar-overlay.open{display:block;}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:900px){
+  :root{--sw:0px;}
+  .sidebar{transform:translateX(-240px);width:240px;}
+  .sidebar.open{transform:translateX(0);}
+  .content{margin-left:0;}
+  .mob-toggle{display:flex;}
+  .dur-grid{grid-template-columns:repeat(4,1fr);}
+  .form-grid.three{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .dur-grid{grid-template-columns:repeat(3,1fr);}
+  .form-grid.two,.form-grid.three{grid-template-columns:1fr;}
+  .content-body{padding:14px;}
+  .modal-body{padding:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="ls" id="ls">
+  <div class="ls-logo">S</div>
+  <div class="ls-title">Spark TV Admin</div>
+  <div class="ls-sub">Loading dashboard…</div>
+  <div class="ls-bar"><div class="ls-prog" id="ls-prog"></div></div>
+</div>
+
+<!-- AUTH GATE -->
+<div class="auth-gate" id="auth-gate">
+  <div class="auth-box">
+    <div class="auth-logo">S</div>
+    <h2>Admin Access</h2>
+    <div class="sub">Sign in with your admin credentials</div>
+    <div class="af"><label>Email</label><input type="email" id="a-email" placeholder="admin@example.com"/></div>
+    <div class="af"><label>Password</label><input type="password" id="a-pass" placeholder="••••••••"/></div>
+    <button class="auth-btn" id="a-btn" onclick="doAdminLogin()">Sign In</button>
+    <div class="auth-err" id="a-err"></div>
+    <div class="access-denied" id="access-denied">
+      <i class="fa fa-shield-xmark"></i> Access denied. This account does not have admin privileges.
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sb-ov" onclick="closeSidebar()"></div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sb-icon">S</div>
+      <div>
+        <div class="sb-name">Spark TV</div>
+        <div class="sb-tag">Admin Console</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" onclick="nav('dashboard',this)"><i class="fa fa-gauge-high"></i> Dashboard</div>
+      <div class="nav-item" onclick="nav('activity',this)"><i class="fa fa-timeline"></i> Activity Log</div>
+
+      <div class="nav-section-label">Users</div>
+      <div class="nav-item" onclick="nav('users',this)"><i class="fa fa-users"></i> All Users <span class="nav-badge" id="nb-users">…</span></div>
+      <div class="nav-item" onclick="nav('subscriptions',this)"><i class="fa fa-star"></i> Subscriptions</div>
+      <div class="nav-item" onclick="nav('wallet',this)"><i class="fa fa-wallet"></i> Wallets &amp; Credits</div>
+      <div class="nav-item" onclick="nav('transactions',this)"><i class="fa fa-receipt"></i> Transactions</div>
+
+      <div class="nav-section-label">Content</div>
+      <div class="nav-item" onclick="nav('notifications',this)"><i class="fa fa-bell"></i> Push Notifications</div>
+      <div class="nav-item" onclick="nav('ads',this)"><i class="fa fa-rectangle-ad"></i> Advertisements</div>
+
+      <div class="nav-section-label">System</div>
+      <div class="nav-item" onclick="nav('currency',this)"><i class="fa fa-coins"></i> Currency Rates</div>
+      <div class="nav-item" onclick="nav('settings',this)"><i class="fa fa-gear"></i> App Settings</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-pill">
+        <div class="admin-av" id="admin-av">A</div>
+        <div class="admin-info">
+          <div class="admin-name" id="admin-name">Admin</div>
+          <div class="admin-role"><i class="fa fa-shield"></i> Super Admin</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Sign out"><i class="fa fa-right-from-bracket"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+    <!-- Header -->
+    <div class="content-header">
+      <div class="mob-toggle" onclick="openSidebar()"><i class="fa fa-bars"></i></div>
+      <div class="ch-title" id="ch-title"><i class="fa fa-gauge-high"></i> Dashboard <span class="ch-badge" id="ch-badge">Overview</span></div>
+      <div style="display:flex;align-items:center;gap:8px;" id="ch-actions"></div>
+    </div>
+
+    <div class="content-body">
+
+      <!-- ════════════════ DASHBOARD ════════════════ -->
+      <div class="page active" id="page-dashboard">
+        <div class="stat-grid" id="dash-stats">
+          <!-- populated by JS -->
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;" class="dash-two">
+          <!-- Recent Users -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title"><i class="fa fa-users"></i> Recent Signups</div>
+              <button class="btn sec sm" onclick="nav('users',document.querySelector('[onclick*=\"nav(\'users\'\"]'))">View All</button>
+            </div>
+            <div class="panel-body" style="padding:0;">
+              <div class="tbl-wrap" style="border:none;border-radius:0;">
+                <table class="tbl" id="dash-recent-users"><thead><tr><th>User</th><th>Country</th><th>Status</th><th>Joined</th></tr></thead><tbody id="dash-users-body"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--mt);">Loading…</td></tr></tbody></table>
+              </div>
+            </div>
+          </div>
+          <!-- Activity Feed -->
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title"><i class="fa fa-bolt"></i> Live Activity</div></div>
+            <div class="panel-body" id="dash-activity" style="max-height:320px;overflow-y:auto;">
+              <div style="color:var(--mt);font-size:12px;text-align:center;padding:20px;">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ USERS ════════════════ -->
+      <div class="page" id="page-users">
+        <div class="filter-row">
+          <div class="srch-box">
+            <i class="fa fa-magnifying-glass si"></i>
+            <input type="text" id="user-search" placeholder="Search by name, email, UID…" oninput="filterUsers(this.value)"/>
+            <i class="fa fa-xmark sc" id="user-sc" onclick="clearUserSearch()"></i>
+          </div>
+          <select class="filter-sel" id="user-filter" onchange="filterUsers(document.getElementById('user-search').value)">
+            <option value="all">All Users</option>
+            <option value="active">Active Sub</option>
+            <option value="inactive">No Sub</option>
+            <option value="admin">Admins</option>
+          </select>
+          <button class="btn pri sm" onclick="refreshUsers()"><i class="fa fa-rotate"></i> Refresh</button>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fa fa-users"></i> All Users</div>
+            <span id="users-count" class="ch-badge" style="margin:0;"></span>
+          </div>
+          <div class="panel-body" style="padding:0;">
+            <div class="tbl-wrap" style="border:none;border-radius:0;">
+              <table class="tbl">
+                <thead><tr><th>#</th><th>User</th><th>Country</th><th>Balance</th><th>Sub Status</th><th>Plan</th><th>Expires</th><th>Admin</th><th>Actions</th></tr></thead>
+                <tbody id="users-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <span id="users-showing" style="font-size:11px;color:var(--mt);flex:1;"></span>
+            <button class="btn sec sm" id="load-more-users" onclick="loadMoreUsers()" style="display:none;">Load More</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ SUBSCRIPTIONS ════════════════ -->
+      <div class="page" id="page-subscriptions">
+        <div class="filter-row">
+          <div class="srch-box">
+            <i class="fa fa-magnifying-glass si"></i>
+            <input type="text" id="sub-search" placeholder="Search user…" oninput="filterSubUsers(this.value)"/>
+          </div>
+          <select class="filter-sel" id="sub-filter" onchange="filterSubUsers(document.getElementById('sub-search').value)">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="expiring">Expiring Soon</option>
+          </select>
+          <button class="btn pri sm" onclick="openBulkSubModal()"><i class="fa fa-bolt"></i> Bulk Activate</button>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fa fa-star"></i> Subscriptions</div>
+            <div style="display:flex;gap:8px;">
+              <span id="sub-stats-active" class="badge active">0 Active</span>
+              <span id="sub-stats-inactive" class="badge inactive">0 Inactive</span>
+            </div>
+          </div>
+          <div class="panel-body" style="padding:0;">
+            <div class="tbl-wrap" style="border:none;border-radius:0;">
+              <table class="tbl">
+                <thead><tr><th>User</th><th>Plan</th><th>Status</th><th>Expires</th><th>Time Left</th><th>Quality</th><th>Screens</th><th>Actions</th></tr></thead>
+                <tbody id="subs-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ WALLET ════════════════ -->
+      <div class="page" id="page-wallet">
+        <div class="filter-row">
+          <div class="srch-box">
+            <i class="fa fa-magnifying-glass si"></i>
+            <input type="text" id="wallet-search" placeholder="Search user…" oninput="filterWalletUsers(this.value)"/>
+          </div>
+          <button class="btn green sm" onclick="openBulkCreditModal()"><i class="fa fa-coins"></i> Bulk Credit</button>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fa fa-wallet"></i> Wallets</div>
+          </div>
+          <div class="panel-body" style="padding:0;">
+            <div class="tbl-wrap" style="border:none;border-radius:0;">
+              <table class="tbl">
+                <thead><tr><th>User</th><th>Country</th><th>Currency</th><th>Balance</th><th>Actions</th></tr></thead>
+                <tbody id="wallets-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ TRANSACTIONS ════════════════ -->
+      <div class="page" id="page-transactions">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fa fa-receipt"></i> All Transactions</div>
+            <span id="tx-count" class="ch-badge" style="margin:0;"></span>
+          </div>
+          <div class="panel-body" style="padding:0;">
+            <div class="tbl-wrap" style="border:none;border-radius:0;">
+              <table class="tbl">
+                <thead><tr><th>User</th><th>Title</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+                <tbody id="tx-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ NOTIFICATIONS ════════════════ -->
+      <div class="page" id="page-notifications">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="notif-two">
+          <!-- Compose -->
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title"><i class="fa fa-paper-plane"></i> Send Push Notification</div></div>
+            <div class="panel-body">
+              <div class="form-section-title"><i class="fa fa-bullhorn"></i> Compose Message</div>
+              <div class="fg" style="margin-bottom:12px;">
+                <label>Target <span>*</span></label>
+                <select id="notif-target" onchange="onNotifTargetChange(this.value)">
+                  <option value="global">🌍 All Users (Global)</option>
+                  <option value="user">👤 Specific User</option>
+                </select>
+              </div>
+              <div class="fg" id="notif-user-sel" style="display:none;margin-bottom:12px;">
+                <label>Select User <span>*</span></label>
+                <input type="text" id="notif-user-input" placeholder="Search by name or email…" oninput="searchNotifUser(this.value)"/>
+                <div id="notif-user-dropdown" style="position:relative;"></div>
+                <input type="hidden" id="notif-user-uid"/>
+              </div>
+              <div class="fg" style="margin-bottom:12px;">
+                <label>Emoji</label>
+                <input type="text" id="notif-emoji" placeholder="📢" value="📢" style="max-width:80px;"/>
+              </div>
+              <div class="fg" style="margin-bottom:12px;">
+                <label>Title <span>*</span></label>
+                <input type="text" id="notif-title" placeholder="Notification title…"/>
+              </div>
+              <div class="fg" style="margin-bottom:14px;">
+                <label>Message <span>*</span></label>
+                <textarea id="notif-body" placeholder="Write your message here…" rows="4"></textarea>
+              </div>
+              <button class="btn pri" style="width:100%;" onclick="sendNotification()" id="notif-send-btn">
+                <i class="fa fa-paper-plane"></i> Send Now
+              </button>
+            </div>
+          </div>
+          <!-- Sent log -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title"><i class="fa fa-list"></i> Sent Notifications</div>
+              <button class="btn sec sm" onclick="loadSentNotifs()"><i class="fa fa-rotate"></i></button>
+            </div>
+            <div class="panel-body" id="sent-notifs" style="max-height:480px;overflow-y:auto;">
+              <div style="color:var(--mt);font-size:12px;text-align:center;padding:20px;">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ ADS ════════════════ -->
+      <div class="page" id="page-ads">
+        <div style="margin-bottom:16px;display:flex;gap:9px;flex-wrap:wrap;">
+          <button class="btn pri" onclick="openAdModal()"><i class="fa fa-plus"></i> New Ad</button>
+          <button class="btn sec" onclick="loadAds()"><i class="fa fa-rotate"></i> Refresh</button>
+        </div>
+        <div class="ads-grid" id="ads-grid">
+          <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mt);font-size:13px;">Loading ads…</div>
+        </div>
+      </div>
+
+      <!-- ════════════════ ACTIVITY ════════════════ -->
+      <div class="page" id="page-activity">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fa fa-timeline"></i> Activity Log</div>
+            <button class="btn sec sm" onclick="loadActivity()"><i class="fa fa-rotate"></i> Refresh</button>
+          </div>
+          <div class="panel-body" id="activity-log-body" style="max-height:70vh;overflow-y:auto;">
+            <div style="color:var(--mt);font-size:12px;text-align:center;padding:20px;">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ CURRENCY ════════════════ -->
+      <div class="page" id="page-currency">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title"><i class="fa fa-coins"></i> Live Exchange Rates (vs NGN)</div>
+              <button class="btn sec sm" onclick="loadRates()"><i class="fa fa-rotate"></i></button>
+            </div>
+            <div class="panel-body" id="rates-body" style="max-height:500px;overflow-y:auto;">Loading…</div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title"><i class="fa fa-calculator"></i> Currency Converter</div></div>
+            <div class="panel-body">
+              <div class="fg" style="margin-bottom:10px;"><label>Amount</label><input type="number" id="conv-amount" placeholder="500" value="500"/></div>
+              <div class="fg" style="margin-bottom:10px;"><label>From Currency</label>
+                <select id="conv-from"><option value="NGN">NGN – Nigerian Naira</option></select>
+              </div>
+              <div class="fg" style="margin-bottom:14px;"><label>To Currency</label>
+                <select id="conv-to"><option value="USD">USD – US Dollar</option></select>
+              </div>
+              <button class="btn pri sm" onclick="convertCurrency()" style="width:100%;"><i class="fa fa-arrow-right-arrow-left"></i> Convert</button>
+              <div id="conv-result" style="margin-top:14px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ SETTINGS ════════════════ -->
+      <div class="page" id="page-settings">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title"><i class="fa fa-sliders"></i> App Configuration</div></div>
+            <div class="panel-body">
+              <div class="form-section-title"><i class="fa fa-server"></i> Playlist Sources</div>
+              <div class="fg" style="margin-bottom:14px;"><label>M3U Source URL</label><textarea id="cfg-m3u" rows="3" placeholder="https://…"></textarea></div>
+              <div class="form-section-title" style="margin-top:14px;"><i class="fa fa-dollar-sign"></i> Subscription Prices</div>
+              <div class="form-grid two" style="margin-bottom:14px;">
+                <div class="fg"><label>NGN 1-Hour Price</label><input type="number" id="cfg-ngn-hour" placeholder="500"/></div>
+                <div class="fg"><label>USD 1-Hour Price</label><input type="number" id="cfg-usd-hour" placeholder="5"/></div>
+                <div class="fg"><label>NGN Monthly</label><input type="number" id="cfg-ngn-month" placeholder="3000"/></div>
+                <div class="fg"><label>USD Monthly</label><input type="number" id="cfg-usd-month" placeholder="5"/></div>
+              </div>
+              <button class="btn pri sm" onclick="saveAppConfig()" style="width:100%;"><i class="fa fa-save"></i> Save Config</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title"><i class="fa fa-user-shield"></i> Admin Management</div></div>
+            <div class="panel-body">
+              <div class="form-section-title"><i class="fa fa-crown"></i> Grant Admin Access</div>
+              <div class="fg" style="margin-bottom:10px;"><label>User UID or Email</label><input type="text" id="grant-uid" placeholder="User UID…"/></div>
+              <button class="btn gold sm" onclick="grantAdmin()" style="margin-bottom:20px;"><i class="fa fa-crown"></i> Grant Admin</button>
+              <button class="btn red sm" onclick="revokeAdmin()" style="margin-left:8px;"><i class="fa fa-ban"></i> Revoke Admin</button>
+              <div class="form-section-title" style="margin-top:20px;"><i class="fa fa-trash"></i> Danger Zone</div>
+              <button class="btn red sm" onclick="if(confirm('Delete ALL expired subscriptions?')) bulkDeactivateExpired()"><i class="fa fa-clock"></i> Deactivate All Expired</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-body -->
+  </main>
+</div><!-- /app -->
+
+<!-- ════════════════════════════════════════
+     MODALS
+════════════════════════════════════════ -->
+
+<!-- EDIT USER MODAL -->
+<div class="modal-ov" id="edit-user-modal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa fa-user-pen"></i> Edit User</div>
+      <div class="modal-close" onclick="closeModal('edit-user-modal')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tabs" id="edit-tabs">
+        <div class="mt active" onclick="switchEditTab('personal',this)">Personal</div>
+        <div class="mt" onclick="switchEditTab('subscription',this)">Subscription</div>
+        <div class="mt" onclick="switchEditTab('wallet',this)">Wallet</div>
+        <div class="mt" onclick="switchEditTab('preferences',this)">Preferences</div>
+        <div class="mt" onclick="switchEditTab('admin',this)">Admin</div>
+      </div>
+      <!-- Personal Tab -->
+      <div class="modal-tab-pane active" id="edit-tab-personal">
+        <div class="form-grid">
+          <div class="fg"><label>Full Name</label><input type="text" id="ep-full_name"/></div>
+          <div class="fg"><label>Username</label><input type="text" id="ep-username"/></div>
+          <div class="fg"><label>Email</label><input type="email" id="ep-email"/></div>
+          <div class="fg"><label>Phone</label><input type="tel" id="ep-phone"/></div>
+          <div class="fg"><label>Country</label><select id="ep-country"></select></div>
+          <div class="fg"><label>City</label><input type="text" id="ep-city"/></div>
+          <div class="fg"><label>Gender</label><select id="ep-gender"><option value="">—</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+          <div class="fg"><label>Language</label><input type="text" id="ep-language"/></div>
+          <div class="fg"><label>Timezone</label><input type="text" id="ep-timezone"/></div>
+          <div class="fg"><label>Device ID</label><input type="text" id="ep-device_id"/></div>
+          <div class="fg"><label>Profile URL</label><input type="text" id="ep-profile_url"/></div>
+          <div class="fg"><label>Is Verified</label><select id="ep-is_verified"><option value="false">No</option><option value="true">Yes</option></select></div>
+          <div class="fg fg-full"><label>Message for User</label><textarea id="ep-msg_for_user" placeholder="Admin message shown in subscription dialog…" rows="2"></textarea></div>
+          <div class="fg fg-full"><label>Bio</label><textarea id="ep-bio" rows="2"></textarea></div>
+        </div>
+      </div>
+      <!-- Subscription Tab -->
+      <div class="modal-tab-pane" id="edit-tab-subscription">
+        <div class="form-section-title"><i class="fa fa-star"></i> Quick Activate</div>
+        <div class="dur-grid" id="sub-dur-grid">
+          <div class="dur-pill" onclick="selectDur(0,this)"><span class="dv">1hr</span><span class="dl">Hour</span></div>
+          <div class="dur-pill" onclick="selectDur(1,this)"><span class="dv">1</span><span class="dl">Month</span></div>
+          <div class="dur-pill" onclick="selectDur(2,this)"><span class="dv">2</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(3,this)"><span class="dv">3</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(4,this)"><span class="dv">4</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(6,this)"><span class="dv">6</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(7,this)"><span class="dv">7</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(8,this)"><span class="dv">8</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(9,this)"><span class="dv">9</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(10,this)"><span class="dv">10</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(11,this)"><span class="dv">11</span><span class="dl">Months</span></div>
+          <div class="dur-pill" onclick="selectDur(12,this)"><span class="dv">12</span><span class="dl">Months</span></div>
+        </div>
+        <div class="dur-custom">
+          <label>Custom Expiry Date</label>
+          <input type="datetime-local" id="sub-custom-date" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--b3);border-radius:8px;color:var(--t1);font-size:13px;outline:none;margin-top:4px;"/>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn green" onclick="activateSubNow()" id="activate-sub-btn"><i class="fa fa-check-circle"></i> Activate Subscription</button>
+          <button class="btn red sm" onclick="deactivateSub()"><i class="fa fa-ban"></i> Deactivate</button>
+        </div>
+        <div class="form-section-title" style="margin-top:20px;"><i class="fa fa-sliders"></i> Subscription Fields</div>
+        <div class="form-grid">
+          <div class="fg"><label>Status</label><select id="es-sub_status"><option value="false">Inactive</option><option value="true">Active</option></select></div>
+          <div class="fg"><label>Plan ID</label><input type="text" id="es-plan_id"/></div>
+          <div class="fg"><label>Plan Tier</label><input type="text" id="es-plan_tier"/></div>
+          <div class="fg"><label>Billing Cycle</label><select id="es-billing_cycle"><option value="">—</option><option value="hourly">Hourly</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div>
+          <div class="fg"><label>Currency</label><input type="text" id="es-currency"/></div>
+          <div class="fg"><label>Video Quality</label><select id="es-video_quality"><option value="SD">SD</option><option value="HD">HD</option><option value="FHD">FHD</option><option value="4K">4K</option></select></div>
+          <div class="fg"><label>Max Screens</label><input type="number" id="es-max_screens" min="1" max="10"/></div>
+          <div class="fg"><label>Payment Method</label><input type="text" id="es-payment_method"/></div>
+          <div class="fg"><label>Trial Status</label><select id="es-trial_status"><option value="none">None</option><option value="active">Active</option><option value="used">Used</option></select></div>
+          <div class="fg"><label>Watch Access</label><select id="es-watch_access"><option value="false">No</option><option value="true">Yes</option></select></div>
+          <div class="fg"><label>Ads Enabled</label><select id="es-ads_enabled"><option value="true">Yes</option><option value="false">No</option></select></div>
+          <div class="fg"><label>Offline Access</label><select id="es-offline_access"><option value="false">No</option><option value="true">Yes</option></select></div>
+          <div class="fg"><label>Auto Renew</label><select id="es-auto_renew"><option value="false">No</option><option value="true">Yes</option></select></div>
+          <div class="fg fg-full"><label>Expiry Date (manual)</label><input type="datetime-local" id="es-expiry_date"/></div>
+          <div class="fg fg-full"><label>Cancel Reason</label><input type="text" id="es-cancel_reason"/></div>
+        </div>
+      </div>
+      <!-- Wallet Tab -->
+      <div class="modal-tab-pane" id="edit-tab-wallet">
+        <div class="form-section-title"><i class="fa fa-plus-circle"></i> Credit / Debit Wallet</div>
+        <div class="form-grid two" style="margin-bottom:14px;">
+          <div class="fg">
+            <label>Action</label>
+            <select id="wallet-action">
+              <option value="credit">Credit (Add funds)</option>
+              <option value="debit">Debit (Remove funds)</option>
+              <option value="set">Set exact balance</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Amount (in user's currency)</label>
+            <input type="number" id="wallet-amount" placeholder="500" min="0" oninput="updateWalletPreview()"/>
+          </div>
+        </div>
+        <div class="curr-info" id="wallet-preview">
+          <div class="ci-row">
+            <span class="ci-label">New Balance:</span>
+            <span class="ci-amount" id="wallet-preview-amt">—</span>
+          </div>
+        </div>
+        <button class="btn green" style="margin-top:14px;" onclick="applyWalletChange()"><i class="fa fa-coins"></i> Apply Change</button>
+        <div class="form-section-title" style="margin-top:20px;"><i class="fa fa-wallet"></i> Wallet Fields</div>
+        <div class="form-grid">
+          <div class="fg"><label>Balance</label><input type="number" id="ew-balance" step="0.01"/></div>
+          <div class="fg"><label>Currency</label><input type="text" id="ew-currency"/></div>
+          <div class="fg"><label>Symbol</label><input type="text" id="ew-symbol"/></div>
+        </div>
+      </div>
+      <!-- Preferences Tab -->
+      <div class="modal-tab-pane" id="edit-tab-preferences">
+        <div class="form-grid">
+          <div class="fg"><label>Data Saver</label><select id="pref-data_saver"><option value="false">Off</option><option value="true">On</option></select></div>
+          <div class="fg"><label>Theme</label><select id="pref-theme"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+          <div class="fg"><label>Notifications Enabled</label><select id="pref-notif"><option value="true">Yes</option><option value="false">No</option></select></div>
+          <div class="fg"><label>Autoplay</label><select id="pref-autoplay"><option value="true">On</option><option value="false">Off</option></select></div>
+        </div>
+      </div>
+      <!-- Admin Tab -->
+      <div class="modal-tab-pane" id="edit-tab-admin">
+        <div class="form-section-title"><i class="fa fa-shield"></i> Admin Privileges</div>
+        <div class="toggle-row">
+          <div class="toggle-info"><label>Is Admin</label><small>Grants full admin panel access</small></div>
+          <div class="sw" id="is-admin-sw" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><label>Is Verified</label><small>Verified badge on profile</small></div>
+          <div class="sw" id="is-verified-sw" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="fg" style="margin-top:16px;"><label>Admin Note (internal)</label><textarea id="admin-note" rows="3" placeholder="Internal notes about this user…"></textarea></div>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn red sm" onclick="if(confirm('Delete this user from database?')) deleteUser()"><i class="fa fa-trash"></i> Delete User Record</button>
+          <button class="btn blue sm" onclick="sendDirectNotif()"><i class="fa fa-bell"></i> Send Direct Notification</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn sec" onclick="closeModal('edit-user-modal')">Cancel</button>
+      <button class="btn pri" onclick="saveUserEdits()" id="save-user-btn"><i class="fa fa-save"></i> Save All Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUBSCRIBE MODAL (from users/subs list) -->
+<div class="modal-ov" id="quick-sub-modal">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa fa-star"></i> Manage Subscription</div>
+      <div class="modal-close" onclick="closeModal('quick-sub-modal')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--card2);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <div class="tbl-avatar" id="qs-av">U</div>
+        <div>
+          <div style="font-weight:700;font-size:13px;" id="qs-name">User</div>
+          <div style="font-size:11px;color:var(--t2);" id="qs-email">—</div>
+        </div>
+        <div style="margin-left:auto;" id="qs-status"></div>
+      </div>
+      <div class="form-section-title"><i class="fa fa-clock"></i> Duration</div>
+      <div class="dur-grid" id="qs-dur-grid">
+        <div class="dur-pill" onclick="selectQsDur(0,this)"><span class="dv">1hr</span><span class="dl">Hour</span></div>
+        <div class="dur-pill sel" onclick="selectQsDur(1,this)"><span class="dv">1</span><span class="dl">Month</span></div>
+        <div class="dur-pill" onclick="selectQsDur(2,this)"><span class="dv">2</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(3,this)"><span class="dv">3</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(4,this)"><span class="dv">4</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(6,this)"><span class="dv">6</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(7,this)"><span class="dv">7</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(8,this)"><span class="dv">8</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(9,this)"><span class="dv">9</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(10,this)"><span class="dv">10</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(11,this)"><span class="dv">11</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectQsDur(12,this)"><span class="dv">12</span><span class="dl">Months</span></div>
+      </div>
+      <div class="dur-custom">
+        <label>Or pick custom expiry date</label>
+        <input type="datetime-local" id="qs-custom-date" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--b3);border-radius:8px;color:var(--t1);font-size:13px;outline:none;margin-top:4px;"/>
+      </div>
+      <div class="fg" style="margin-top:14px;">
+        <label>Plan Tier Name</label>
+        <input type="text" id="qs-plan-name" value="Premium Plan"/>
+      </div>
+      <div class="form-grid two" style="margin-top:10px;">
+        <div class="fg"><label>Video Quality</label><select id="qs-quality"><option value="SD">SD</option><option value="HD">HD</option><option value="FHD">FHD</option><option value="4K">4K</option></select></div>
+        <div class="fg"><label>Max Screens</label><select id="qs-screens"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="5">5</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn red sm" onclick="qs_deactivate()"><i class="fa fa-ban"></i> Deactivate</button>
+      <button class="btn sec" onclick="closeModal('quick-sub-modal')">Cancel</button>
+      <button class="btn green" onclick="qs_activate()" id="qs-activate-btn"><i class="fa fa-check-circle"></i> Activate</button>
+    </div>
+  </div>
+</div>
+
+<!-- WALLET CREDIT MODAL -->
+<div class="modal-ov" id="wallet-credit-modal">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa fa-coins"></i> Credit Wallet</div>
+      <div class="modal-close" onclick="closeModal('wallet-credit-modal')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--card2);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <div class="tbl-avatar" id="wc-av">U</div>
+        <div>
+          <div style="font-weight:700;font-size:13px;" id="wc-name">User</div>
+          <div style="font-size:11px;color:var(--t2);" id="wc-email">—</div>
+        </div>
+        <div style="margin-left:auto;font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--green);" id="wc-current-bal">—</div>
+      </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <label>Action</label>
+        <select id="wc-action" onchange="updateWcPreview()">
+          <option value="credit">➕ Credit (Add)</option>
+          <option value="debit">➖ Debit (Remove)</option>
+          <option value="set">🎯 Set Exact Balance</option>
+        </select>
+      </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <label>Amount (in user's currency)</label>
+        <input type="number" id="wc-amount" placeholder="500" oninput="updateWcPreview()"/>
+      </div>
+      <div class="curr-info open" id="wc-preview" style="display:block;">
+        <div class="ci-row"><span class="ci-label">Current:</span><span style="font-weight:700;" id="wc-prev-cur">—</span></div>
+        <div class="ci-row" style="margin-top:6px;"><span class="ci-label">After Change:</span><span class="ci-amount" id="wc-prev-new">—</span></div>
+      </div>
+      <div class="fg" style="margin-top:12px;"><label>Note (optional)</label><input type="text" id="wc-note" placeholder="Top-up, refund, bonus…"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn sec" onclick="closeModal('wallet-credit-modal')">Cancel</button>
+      <button class="btn green" onclick="applyWalletCredit()" id="wc-apply-btn"><i class="fa fa-check"></i> Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- AD MODAL -->
+<div class="modal-ov" id="ad-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa fa-rectangle-ad"></i> <span id="ad-modal-title">New Advertisement</span></div>
+      <div class="modal-close" onclick="closeModal('ad-modal')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label>Title <span>*</span></label><input type="text" id="ad-title" placeholder="Ad headline…"/></div>
+        <div class="fg"><label>Description</label><input type="text" id="ad-desc" placeholder="Short description…"/></div>
+        <div class="fg fg-full"><label>Image URL <span>*</span></label><input type="url" id="ad-image" placeholder="https://…" oninput="previewAd()"/></div>
+        <div class="fg fg-full"><label>Link URL</label><input type="url" id="ad-link" placeholder="https://…"/></div>
+        <div class="fg"><label>Duration (seconds)</label><input type="number" id="ad-duration" value="10" min="5"/></div>
+        <div class="fg"><label>Skip After (seconds)</label><input type="number" id="ad-skip" value="5" min="0"/></div>
+        <div class="fg"><label>Status</label><select id="ad-active"><option value="true">Active (Live)</option><option value="false">Inactive</option></select></div>
+        <div class="fg"><label>Priority</label><input type="number" id="ad-priority" value="1" min="1"/></div>
+      </div>
+      <div id="ad-img-preview" style="margin-top:12px;display:none;"><img id="ad-prev-img" style="max-height:120px;border-radius:var(--r);border:1px solid var(--b2);" alt=""/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn sec" onclick="closeModal('ad-modal')">Cancel</button>
+      <button class="btn pri" onclick="saveAd()" id="save-ad-btn"><i class="fa fa-save"></i> Save Ad</button>
+    </div>
+  </div>
+</div>
+
+<!-- BULK SUB MODAL -->
+<div class="modal-ov" id="bulk-sub-modal">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa fa-bolt"></i> Bulk Activate Subscriptions</div>
+      <div class="modal-close" onclick="closeModal('bulk-sub-modal')"><i class="fa fa-xmark"></i></div>
+    </div>
+    <div class="modal-body">
+      <div style="background:rgba(255,77,0,.08);border:1px solid rgba(255,77,0,.2);border-radius:var(--r);padding:12px;margin-bottom:16px;font-size:12px;color:var(--t2);">
+        <i class="fa fa-triangle-exclamation" style="color:var(--sp);"></i> This will activate subscriptions for <strong id="bulk-target-count">all</strong> selected users.
+      </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <label>Apply To</label>
+        <select id="bulk-target">
+          <option value="all">All Users</option>
+          <option value="inactive">Inactive Users Only</option>
+        </select>
+      </div>
+      <div class="form-section-title"><i class="fa fa-clock"></i> Duration</div>
+      <div class="dur-grid">
+        <div class="dur-pill sel" onclick="selectBulkDur(1,this)"><span class="dv">1</span><span class="dl">Month</span></div>
+        <div class="dur-pill" onclick="selectBulkDur(3,this)"><span class="dv">3</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectBulkDur(6,this)"><span class="dv">6</span><span class="dl">Months</span></div>
+        <div class="dur-pill" onclick="selectBulkDur(12,this)"><span class="dv">12</span><span class="dl">Months</span></div>
+      </div>
+      <div class="fg" style="margin-top:10px;">
+        <label>Plan Name</label>
+        <input type="text" id="bulk-plan-name" value="Bulk Premium"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn sec" onclick="closeModal('bulk-sub-modal')">Cancel</button>
+      <button class="btn gold" onclick="executeBulkSub()" id="bulk-sub-exec-btn"><i class="fa fa-bolt"></i> Activate All</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   FIREBASE INIT
+═══════════════════════════════════════ */
+const FB_CFG = {
+  apiKey:"AIzaSyDAnOaWAy-bC435Fu0suYKIAmH4A3j-I_Y",
+  authDomain:"spark-tv-4ce3f.firebaseapp.com",
+  databaseURL:"https://spark-tv-4ce3f-default-rtdb.firebaseio.com",
+  projectId:"spark-tv-4ce3f",
+  storageBucket:"spark-tv-4ce3f.firebasestorage.app",
+  messagingSenderId:"1041124519612",
+  appId:"1:1041124519612:web:00a37105e3def9ef14aab9"
+};
+firebase.initializeApp(FB_CFG);
+const _auth = firebase.auth();
+const _db   = firebase.database();
+
+/* ═══════════════════════════════════════
+   COUNTRIES
+═══════════════════════════════════════ */
+const COUNTRIES = [
+  {name:"Nigeria",code:"NG",currency:"NGN",symbol:"₦",initial:500,hourly:500},
+  {name:"United States",code:"US",currency:"USD",symbol:"$",initial:5,hourly:5},
+  {name:"Canada",code:"CA",currency:"CAD",symbol:"CA$",initial:7,hourly:7},
+  {name:"Australia",code:"AU",currency:"AUD",symbol:"A$",initial:8,hourly:8},
+  {name:"United Kingdom",code:"GB",currency:"GBP",symbol:"£",initial:4,hourly:4},
+  {name:"Germany",code:"DE",currency:"EUR",symbol:"€",initial:5,hourly:5},
+  {name:"France",code:"FR",currency:"EUR",symbol:"€",initial:5,hourly:5},
+  {name:"Italy",code:"IT",currency:"EUR",symbol:"€",initial:5,hourly:5},
+  {name:"Spain",code:"ES",currency:"EUR",symbol:"€",initial:5,hourly:5},
+  {name:"Netherlands",code:"NL",currency:"EUR",symbol:"€",initial:5,hourly:5},
+  {name:"Ghana",code:"GH",currency:"GHS",symbol:"GH₵",initial:60,hourly:60},
+  {name:"Kenya",code:"KE",currency:"KES",symbol:"KSh",initial:650,hourly:650},
+  {name:"South Africa",code:"ZA",currency:"ZAR",symbol:"R",initial:95,hourly:95},
+  {name:"Egypt",code:"EG",currency:"EGP",symbol:"E£",initial:160,hourly:160},
+  {name:"India",code:"IN",currency:"INR",symbol:"₹",initial:420,hourly:420},
+  {name:"Japan",code:"JP",currency:"JPY",symbol:"¥",initial:750,hourly:750},
+  {name:"Saudi Arabia",code:"SA",currency:"SAR",symbol:"ر.س",initial:19,hourly:19},
+  {name:"UAE",code:"AE",currency:"AED",symbol:"د.إ",initial:19,hourly:19},
+  {name:"Brazil",code:"BR",currency:"BRL",symbol:"R$",initial:26,hourly:26},
+  {name:"Other",code:"XX",currency:"USD",symbol:"$",initial:5,hourly:5}
+];
+function getCI(name){return COUNTRIES.find(c=>c.name===name)||COUNTRIES[COUNTRIES.length-1];}
+function buildCountrySel(id,sel){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML='<option value="">— Select —</option>';
+  COUNTRIES.forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;if(sel&&c.name===sel)o.selected=true;el.appendChild(o);});
+}
+buildCountrySel("ep-country","");
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let adminUser=null, allUsers=[], filteredUsers=[], displayedUsers=[];
+let editUID=null, editUserData=null;
+let qsUID=null, qsUserData=null, qsDur=1;
+let wcUID=null, wcUserData=null;
+let selectedAdKey=null;
+let bulkDur=1;
+let liveRates={};
+const PAGE_SIZE_ADMIN = 50;
+let usersPage = 0;
+
+/* ═══════════════════════════════════════
+   LOADING
+═══════════════════════════════════════ */
+function prog(p,t){
+  document.getElementById("ls-prog").style.width=p+"%";
+  if(t) document.getElementById("ls").querySelector(".ls-sub").textContent=t;
+}
+
+/* ═══════════════════════════════════════
+   AUTH
+═══════════════════════════════════════ */
+prog(10,"Checking auth…");
+_auth.onAuthStateChanged(async user=>{
+  if(user){
+    prog(30,"Verifying admin…");
+    try{
+      const snap=await _db.ref(`users/${user.uid}/personal`).once("value");
+      const p=snap.val()||{};
+      const adminSnap=await _db.ref(`users/${user.uid}/is_admin`).once("value");
+      const isAdmin=adminSnap.val()===true;
+      if(!isAdmin){
+        // also check in personal
+        const p2=await _db.ref(`users/${user.uid}`).once("value");
+        const full=p2.val()||{};
+        if(!full.is_admin&&!full.personal?.is_admin){
+          await _auth.signOut();
+          showAuthGate("denied");return;
+        }
+      }
+      adminUser=user;
+      const init=(p.full_name||user.email||"A").charAt(0).toUpperCase();
+      document.getElementById("admin-av").textContent=init;
+      document.getElementById("admin-name").textContent=(p.full_name||user.email||"Admin").split(" ")[0];
+      await launchAdmin();
+    }catch(e){showAuthGate();}
+  }else{showAuthGate();}
+});
+
+async function launchAdmin(){
+  prog(50,"Loading users…");
+  document.getElementById("auth-gate").classList.remove("open");
+  document.getElementById("app").style.display="flex";
+  prog(70,"Fetching data…");
+  await Promise.all([loadUsers(),loadRates()]);
+  prog(90,"Building dashboard…");
+  buildDashboard();
+  loadAds();
+  loadSentNotifs();
+  loadActivity();
+  prog(100,"Ready!");
+  setTimeout(()=>document.getElementById("ls").classList.add("gone"),400);
+}
+
+function showAuthGate(reason){
+  document.getElementById("ls").classList.add("gone");
+  document.getElementById("auth-gate").classList.add("open");
+  if(reason==="denied") document.getElementById("access-denied").style.display="block";
+}
+
+window.doAdminLogin=async function(){
+  const em=document.getElementById("a-email").value.trim();
+  const pw=document.getElementById("a-pass").value;
+  if(!em||!pw){document.getElementById("a-err").textContent="Enter email & password.";return;}
+  const btn=document.getElementById("a-btn");
+  btn.innerHTML='<span class="spin"></span> Signing in…';btn.disabled=true;
+  document.getElementById("access-denied").style.display="none";
+  try{await _auth.signInWithEmailAndPassword(em,pw);}
+  catch(e){document.getElementById("a-err").textContent=e.message.replace("Firebase:","").replace(/\(.*?\)/,"").trim();}
+  btn.innerHTML="Sign In";btn.disabled=false;
+};
+document.getElementById("a-pass").addEventListener("keydown",e=>{if(e.key==="Enter")doAdminLogin();});
+
+window.doLogout=async function(){
+  if(!confirm("Sign out of Admin Panel?"))return;
+  await _auth.signOut();
+  location.reload();
+};
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+const PAGE_TITLES={dashboard:{t:"Dashboard",sub:"Overview",i:"fa-gauge-high"},users:{t:"Users",sub:"All Users",i:"fa-users"},subscriptions:{t:"Subscriptions",sub:"Manage Plans",i:"fa-star"},wallet:{t:"Wallets",sub:"Credits & Balances",i:"fa-wallet"},transactions:{t:"Transactions",sub:"Payment History",i:"fa-receipt"},notifications:{t:"Notifications",sub:"Push Messages",i:"fa-bell"},ads:{t:"Advertisements",sub:"Ad Management",i:"fa-rectangle-ad"},activity:{t:"Activity",sub:"Event Log",i:"fa-timeline"},currency:{t:"Currencies",sub:"Exchange Rates",i:"fa-coins"},settings:{t:"Settings",sub:"App Config",i:"fa-gear"}};
+
+window.nav=function(page,el){
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  if(el) el.classList.add("active");
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(`page-${page}`).classList.add("active");
+  const info=PAGE_TITLES[page]||{t:page,sub:"",i:"fa-circle"};
+  document.getElementById("ch-title").innerHTML=`<i class="fa ${info.i}"></i> ${info.t} <span class="ch-badge">${info.sub}</span>`;
+  document.getElementById("ch-actions").innerHTML="";
+  closeSidebar();
+  if(page==="subscriptions") loadSubsPage();
+  if(page==="wallet") loadWalletPage();
+  if(page==="transactions") loadTransactions();
+};
+
+/* ═══════════════════════════════════════
+   SIDEBAR MOBILE
+═══════════════════════════════════════ */
+window.openSidebar=()=>{document.getElementById("sidebar").classList.add("open");document.getElementById("sb-ov").classList.add("open");};
+window.closeSidebar=()=>{document.getElementById("sidebar").classList.remove("open");document.getElementById("sb-ov").classList.remove("open");};
+
+/* ═══════════════════════════════════════
+   LOAD ALL USERS
+═══════════════════════════════════════ */
+async function loadUsers(){
+  try{
+    const snap=await _db.ref("users").once("value");
+    allUsers=[];
+    snap.forEach(c=>{
+      const v=c.val();
+      if(v) allUsers.push({uid:c.key,...v});
+    });
+    allUsers.sort((a,b)=>(b.personal?.last_login||0)-(a.personal?.last_login||0));
+    filteredUsers=[...allUsers];
+    document.getElementById("nb-users").textContent=allUsers.length;
+    renderUsersTable();
+  }catch(e){toast("Error loading users: "+e.message,"err");}
+}
+
+window.refreshUsers=async function(){
+  document.getElementById("users-body").innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--mt);">Refreshing…</td></tr>';
+  await loadUsers();
+  toast("Users refreshed","ok");
+};
+
+function renderUsersTable(){
+  const body=document.getElementById("users-body");
+  usersPage=0;
+  displayedUsers=filteredUsers.slice(0,PAGE_SIZE_ADMIN);
+  body.innerHTML=displayedUsers.map((u,i)=>userRow(u,i+1)).join("")||'<tr><td colspan="9" class="empty"><i class="fa fa-users"></i> No users found</td></tr>';
+  document.getElementById("users-count").textContent=`${filteredUsers.length} users`;
+  document.getElementById("users-showing").textContent=`Showing ${displayedUsers.length} of ${filteredUsers.length}`;
+  document.getElementById("load-more-users").style.display=filteredUsers.length>PAGE_SIZE_ADMIN?"block":"none";
+}
+
+window.loadMoreUsers=function(){
+  usersPage++;
+  const slice=filteredUsers.slice(usersPage*PAGE_SIZE_ADMIN,(usersPage+1)*PAGE_SIZE_ADMIN);
+  displayedUsers=[...displayedUsers,...slice];
+  document.getElementById("users-body").innerHTML=displayedUsers.map((u,i)=>userRow(u,i+1)).join("");
+  document.getElementById("users-showing").textContent=`Showing ${displayedUsers.length} of ${filteredUsers.length}`;
+  document.getElementById("load-more-users").style.display=displayedUsers.length<filteredUsers.length?"block":"none";
+};
+
+function userRow(u,i){
+  const p=u.personal||{};const sub=u.subscription||{};const w=u.wallet||{};
+  const active=sub.sub_status==="true"||sub.sub_status===true;
+  const isAdmin=u.is_admin===true;
+  const photo=p.profile_url||"";
+  const init=(p.full_name||p.username||u.uid).charAt(0).toUpperCase();
+  const avHtml=photo?`<img src="${xe(photo)}" alt="" onerror="this.style.display='none'"/>`:`<span>${init}</span>`;
+  const expDate=sub.expiry_date?(typeof sub.expiry_date==="number"?new Date(sub.expiry_date).toLocaleDateString():new Date(sub.expiry_date).toLocaleDateString()):"—";
+  const bal=Number(w.balance||0).toLocaleString();
+  const sym=w.symbol||"₦";
+  return `<tr>
+    <td style="color:var(--mt);font-family:var(--mono);font-size:10px;">${i}</td>
+    <td><div class="user-cell">
+      <div class="tbl-avatar">${avHtml}</div>
+      <div class="user-cell-info">
+        <div class="user-cell-name">${xe(p.full_name||p.username||"—")}</div>
+        <div class="user-cell-email" style="font-family:var(--mono);">${xe(p.email||u.uid)}</div>
+      </div>
+    </div></td>
+    <td style="font-size:11px;">${p.country||"—"}</td>
+    <td style="font-family:var(--mono);font-size:12px;color:var(--green);">${sym}${bal}</td>
+    <td><span class="badge ${active?"active":"inactive"}">${active?"Active":"Inactive"}</span></td>
+    <td style="font-size:11px;">${sub.plan_tier||"—"}</td>
+    <td style="font-size:11px;font-family:var(--mono);">${expDate}</td>
+    <td>${isAdmin?'<span class="badge admin"><i class="fa fa-shield"></i> Admin</span>':"—"}</td>
+    <td><div class="tbl-actions">
+      <div class="ta" onclick="openEditUser('${u.uid}')" title="Edit User"><i class="fa fa-pen"></i></div>
+      <div class="ta green" onclick="openQuickSub('${u.uid}')" title="Manage Subscription"><i class="fa fa-star"></i></div>
+      <div class="ta blue" onclick="openWalletCredit('${u.uid}')" title="Credit Wallet"><i class="fa fa-coins"></i></div>
+      <div class="ta" onclick="openDirectNotif('${u.uid}')" title="Send Notification"><i class="fa fa-bell"></i></div>
+    </div></td>
+  </tr>`;
+}
+
+window.filterUsers=function(q){
+  const filter=document.getElementById("user-filter").value;
+  const lower=q.toLowerCase().trim();
+  document.getElementById("user-sc").style.display=lower?"block":"none";
+  filteredUsers=allUsers.filter(u=>{
+    const p=u.personal||{};const sub=u.subscription||{};
+    const active=sub.sub_status==="true"||sub.sub_status===true;
+    const matchFilter=filter==="all"||(filter==="active"&&active)||(filter==="inactive"&&!active)||(filter==="admin"&&u.is_admin===true);
+    if(!matchFilter) return false;
+    if(!lower) return true;
+    return (p.full_name||"").toLowerCase().includes(lower)||(p.email||"").toLowerCase().includes(lower)||(p.username||"").toLowerCase().includes(lower)||u.uid.includes(lower);
+  });
+  renderUsersTable();
+};
+window.clearUserSearch=function(){document.getElementById("user-search").value="";filterUsers("");};
+
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+function buildDashboard(){
+  const total=allUsers.length;
+  const active=allUsers.filter(u=>{const s=u.subscription||{};return s.sub_status==="true"||s.sub_status===true;}).length;
+  const admins=allUsers.filter(u=>u.is_admin===true).length;
+  const today=new Date().toDateString();
+  const newToday=allUsers.filter(u=>{
+    const j=u.personal?.joined_date;if(!j) return false;
+    return new Date(j).toDateString()===today;
+  }).length;
+  const totalBal=allUsers.reduce((sum,u)=>sum+Number(u.wallet?.balance||0),0);
+
+  document.getElementById("dash-stats").innerHTML=
+    statCard("orange","fa-users",total.toLocaleString(),"Total Users","↑ "+newToday+" today")+
+    statCard("green","fa-star",active.toLocaleString(),"Active Subscriptions",`${Math.round((active/Math.max(total,1))*100)}% of users`)+
+    statCard("blue","fa-times-circle",(total-active).toLocaleString(),"No Active Plan","")+
+    statCard("gold","fa-wallet","₦"+totalBal.toLocaleString(),"Total Wallet Balance","")+
+    statCard("purple","fa-shield",admins.toLocaleString(),"Admins","")+
+    statCard("blue","fa-calendar-day",newToday.toLocaleString(),"New Today","");
+
+  // Recent users table
+  const recent=allUsers.slice(0,8);
+  document.getElementById("dash-users-body").innerHTML=recent.map(u=>{
+    const p=u.personal||{};const sub=u.subscription||{};
+    const active=sub.sub_status==="true"||sub.sub_status===true;
+    return `<tr>
+      <td><div class="user-cell">
+        <div class="tbl-avatar">${(p.full_name||"U").charAt(0).toUpperCase()}</div>
+        <div class="user-cell-info"><div class="user-cell-name">${xe(p.full_name||p.username||"—")}</div><div class="user-cell-email">${xe(p.email||u.uid)}</div></div>
+      </div></td>
+      <td style="font-size:11px;">${p.country||"—"}</td>
+      <td><span class="badge ${active?"active":"inactive"}">${active?"Active":"No Plan"}</span></td>
+      <td style="font-size:11px;font-family:var(--mono);">${p.joined_date?new Date(p.joined_date).toLocaleDateString():"—"}</td>
+    </tr>`;
+  }).join("");
+
+  // Activity
+  const logs=[];
+  allUsers.slice(0,20).forEach(u=>{
+    const p=u.personal||{};
+    if(p.last_login) logs.push({time:p.last_login,text:`${p.username||p.email||"User"} logged in`,type:"blue"});
+    if(p.joined_date) logs.push({time:new Date(p.joined_date).getTime(),text:`${p.username||"New user"} signed up`,type:"green"});
+    const sub=u.subscription||{};
+    if(sub.sub_status==="true"||sub.sub_status===true) logs.push({time:sub.last_payment||p.last_login||0,text:`${p.username||"User"} subscription active`,type:"orange"});
+  });
+  logs.sort((a,b)=>b.time-a.time);
+  document.getElementById("dash-activity").innerHTML=logs.slice(0,20).map(l=>`
+    <div class="log-item">
+      <div class="log-dot ${l.type}"></div>
+      <div class="log-text">${xe(l.text)}</div>
+      <div class="log-time">${l.time?new Date(l.time).toLocaleTimeString():""}</div>
+    </div>`).join("")||'<div style="color:var(--mt);font-size:12px;text-align:center;">No activity.</div>';
+}
+
+function statCard(cls,ico,val,label,change){
+  return `<div class="stat-card ${cls}">
+    <div class="stat-icon ${cls}"><i class="fa ${ico}"></i></div>
+    <div class="stat-val">${val}</div>
+    <div class="stat-label">${label}</div>
+    ${change?`<div class="stat-change up">${change}</div>`:""}
+  </div>`;
+}
+
+/* ═══════════════════════════════════════
+   SUBSCRIPTIONS PAGE
+═══════════════════════════════════════ */
+function loadSubsPage(){
+  filterSubUsers(document.getElementById("sub-search").value);
+}
+
+window.filterSubUsers=function(q){
+  const filter=document.getElementById("sub-filter").value;
+  const lower=q.toLowerCase().trim();
+  const list=allUsers.filter(u=>{
+    const p=u.personal||{};const sub=u.subscription||{};
+    const active=sub.sub_status==="true"||sub.sub_status===true;
+    const exp=sub.expiry_date?(typeof sub.expiry_date==="number"?sub.expiry_date:new Date(sub.expiry_date).getTime()):0;
+    const soonExp=active&&exp&&(exp-Date.now())<3*24*60*60*1000;
+    const matchF=filter==="all"||(filter==="active"&&active)||(filter==="inactive"&&!active)||(filter==="expiring"&&soonExp);
+    if(!matchF) return false;
+    if(!lower) return true;
+    return (p.full_name||"").toLowerCase().includes(lower)||(p.email||"").toLowerCase().includes(lower)||u.uid.includes(lower);
+  });
+  const activeCount=list.filter(u=>{const s=u.subscription||{};return s.sub_status==="true"||s.sub_status===true;}).length;
+  document.getElementById("sub-stats-active").textContent=activeCount+" Active";
+  document.getElementById("sub-stats-inactive").textContent=(list.length-activeCount)+" Inactive";
+  document.getElementById("subs-body").innerHTML=list.map(u=>subRow(u)).join("")||'<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--mt);">No subscriptions found</td></tr>';
+};
+
+function subRow(u){
+  const p=u.personal||{};const sub=u.subscription||{};
+  const active=sub.sub_status==="true"||sub.sub_status===true;
+  const exp=sub.expiry_date?(typeof sub.expiry_date==="number"?sub.expiry_date:new Date(sub.expiry_date).getTime()):null;
+  const expStr=exp?new Date(exp).toLocaleDateString():"—";
+  const left=exp?getLeft(exp):"—";
+  const soonExp=active&&exp&&(exp-Date.now())<3*24*60*60*1000;
+  return `<tr>
+    <td><div class="user-cell"><div class="tbl-avatar">${(p.full_name||"U").charAt(0)}</div><div class="user-cell-info"><div class="user-cell-name">${xe(p.full_name||p.username||"—")}</div><div class="user-cell-email">${xe(p.email||u.uid)}</div></div></div></td>
+    <td style="font-size:11px;">${sub.plan_tier||"—"}</td>
+    <td><span class="badge ${active?"active":"inactive"}">${active?"✓ Active":"✗ Inactive"}</span></td>
+    <td style="font-size:11px;font-family:var(--mono);">${expStr}</td>
+    <td><span class="badge ${soonExp?"warn":active?"active":"inactive"}">${left}</span></td>
+    <td style="font-size:11px;">${sub.video_quality||"SD"}</td>
+    <td style="font-size:11px;">${sub.max_screens||1}</td>
+    <td><div class="tbl-actions">
+      <div class="ta green" onclick="openQuickSub('${u.uid}')" title="Manage"><i class="fa fa-star"></i></div>
+      <div class="ta red" onclick="deactivateSubUser('${u.uid}')" title="Deactivate"><i class="fa fa-ban"></i></div>
+    </div></td>
+  </tr>`;
+}
+
+function getLeft(exp){
+  const d=exp-Date.now();if(d<=0)return "Expired";
+  const m=Math.floor(d/60000);if(m<60)return m+"m";
+  const h=Math.floor(m/60);if(h<24)return h+"h";
+  return Math.ceil(h/24)+"d";
+}
+
+/* ═══════════════════════════════════════
+   WALLET PAGE
+═══════════════════════════════════════ */
+function loadWalletPage(){filterWalletUsers("");}
+window.filterWalletUsers=function(q){
+  const lower=q.toLowerCase();
+  const list=allUsers.filter(u=>{
+    if(!lower) return true;
+    const p=u.personal||{};
+    return (p.full_name||"").toLowerCase().includes(lower)||(p.email||"").toLowerCase().includes(lower);
+  });
+  document.getElementById("wallets-body").innerHTML=list.map(u=>{
+    const p=u.personal||{};const w=u.wallet||{};
+    const bal=Number(w.balance||0);
+    return `<tr>
+      <td><div class="user-cell"><div class="tbl-avatar">${(p.full_name||"U").charAt(0)}</div><div class="user-cell-info"><div class="user-cell-name">${xe(p.full_name||p.username||"—")}</div><div class="user-cell-email">${xe(p.email||u.uid)}</div></div></div></td>
+      <td style="font-size:11px;">${p.country||"—"}</td>
+      <td><span class="badge blue">${w.currency||"NGN"}</span></td>
+      <td style="font-family:var(--mono);font-size:13px;font-weight:700;color:${bal>0?"var(--green)":"var(--mt)"};">${w.symbol||"₦"}${bal.toLocaleString()}</td>
+      <td><div class="tbl-actions">
+        <div class="ta green" onclick="openWalletCredit('${u.uid}')" title="Credit Wallet"><i class="fa fa-plus"></i></div>
+        <div class="ta red" onclick="openWalletDebit('${u.uid}')" title="Debit Wallet"><i class="fa fa-minus"></i></div>
+      </div></td>
+    </tr>`;
+  }).join("");
+};
+
+/* ═══════════════════════════════════════
+   TRANSACTIONS
+═══════════════════════════════════════ */
+async function loadTransactions(){
+  document.getElementById("tx-body").innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mt);">Loading…</td></tr>';
+  try{
+    const snap=await _db.ref("transactions").once("value");
+    const txs=[];
+    snap.forEach(userTx=>{
+      const uid=userTx.key;
+      const u=allUsers.find(x=>x.uid===uid)||{};
+      const p=u.personal||{};
+      userTx.forEach(tx=>{
+        txs.push({uid,name:p.full_name||p.email||uid,...tx.val()});
+      });
+    });
+    txs.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    document.getElementById("tx-count").textContent=`${txs.length} records`;
+    document.getElementById("tx-body").innerHTML=txs.slice(0,200).map(tx=>{
+      const status=tx.status||"pending";
+      return `<tr>
+        <td style="font-size:12px;">${xe(tx.name)}</td>
+        <td style="font-size:12px;">${xe(tx.title||"—")}</td>
+        <td style="font-family:var(--mono);font-size:12px;">${tx.currency||"NGN"} ${Number(tx.amount||0).toLocaleString()}</td>
+        <td style="font-size:11px;">${tx.payment_method||"—"}</td>
+        <td><span class="badge ${status==="success"?"active":status==="pending"?"warn":"inactive"}">${status}</span></td>
+        <td style="font-size:11px;font-family:var(--mono);">${tx.timestamp?new Date(tx.timestamp).toLocaleString():"—"}</td>
+      </tr>`;
+    }).join("")||'<tr><td colspan="6" style="text-align:center;color:var(--mt);">No transactions</td></tr>';
+  }catch(e){toast("Error loading transactions","err");}
+}
+
+/* ═══════════════════════════════════════
+   EDIT USER MODAL
+═══════════════════════════════════════ */
+window.openEditUser=function(uid){
+  const u=allUsers.find(x=>x.uid===uid); if(!u) return;
+  editUID=uid; editUserData=u;
+  const p=u.personal||{};const sub=u.subscription||{};const w=u.wallet||{};const pref=u.preferences||{};
+
+  // Personal fields
+  ["full_name","username","email","phone","city","language","timezone","device_id","profile_url","bio","msg_for_user"].forEach(k=>{
+    const el=document.getElementById(`ep-${k}`);if(el) el.value=p[k]||"";
+  });
+  buildCountrySel("ep-country",p.country||"");
+  document.getElementById("ep-gender").value=p.gender||"";
+  document.getElementById("ep-is_verified").value=String(p.is_verified||false);
+
+  // Subscription fields
+  document.getElementById("es-sub_status").value=String(sub.sub_status||"false");
+  ["plan_id","plan_tier","currency","payment_method","cancel_reason"].forEach(k=>{
+    const el=document.getElementById(`es-${k}`);if(el) el.value=sub[k]||"";
+  });
+  document.getElementById("es-billing_cycle").value=sub.billing_cycle||"";
+  document.getElementById("es-video_quality").value=sub.video_quality||"SD";
+  document.getElementById("es-max_screens").value=sub.max_screens||1;
+  document.getElementById("es-trial_status").value=sub.trial_status||"none";
+  document.getElementById("es-watch_access").value=String(sub.watch_access||false);
+  document.getElementById("es-ads_enabled").value=String(sub.ads_enabled!==false);
+  document.getElementById("es-offline_access").value=String(sub.offline_access||false);
+  document.getElementById("es-auto_renew").value=String(sub.auto_renew||false);
+  if(sub.expiry_date){
+    const dt=new Date(typeof sub.expiry_date==="number"?sub.expiry_date:sub.expiry_date);
+    const local=new Date(dt.getTime()-dt.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    document.getElementById("es-expiry_date").value=local;
+  }else{document.getElementById("es-expiry_date").value="";}
+
+  // Wallet
+  document.getElementById("ew-balance").value=w.balance||0;
+  document.getElementById("ew-currency").value=w.currency||"NGN";
+  document.getElementById("ew-symbol").value=w.symbol||"₦";
+
+  // Preferences
+  document.getElementById("pref-data_saver").value=String(pref.data_saver||false);
+  document.getElementById("pref-theme").value=pref.theme||"dark";
+  document.getElementById("pref-notif").value=String(pref.notifications!==false);
+  document.getElementById("pref-autoplay").value=String(pref.autoplay!==false);
+
+  // Admin
+  const isAdmin=u.is_admin===true;
+  document.getElementById("is-admin-sw").className="sw"+(isAdmin?" on":"");
+  document.getElementById("is-verified-sw").className="sw"+(p.is_verified?" on":"");
+  document.getElementById("admin-note").value=u.admin_note||"";
+
+  // Switch to personal tab
+  switchEditTab("personal",document.querySelector("#edit-tabs .mt.active"));
+  openModal("edit-user-modal");
+};
+
+window.switchEditTab=function(tab,el){
+  document.querySelectorAll(".modal-tab-pane").forEach(p=>p.classList.remove("active"));
+  document.getElementById(`edit-tab-${tab}`).classList.add("active");
+  document.querySelectorAll("#edit-tabs .mt").forEach(m=>m.classList.remove("active"));
+  if(el) el.classList.add("active");
+};
+
+// Subscription duration picker in edit modal
+let editSubDur=1;
+window.selectDur=function(months,el){
+  editSubDur=months;
+  document.querySelectorAll("#sub-dur-grid .dur-pill").forEach(p=>p.classList.remove("sel"));
+  el.classList.add("sel");
+  document.getElementById("sub-custom-date").value="";
+};
+
+window.activateSubNow=async function(){
+  if(!editUID) return;
+  const btn=document.getElementById("activate-sub-btn");
+  btn.innerHTML='<span class="spin"></span> Activating…'; btn.disabled=true;
+  try{
+    let expMs;
+    const custom=document.getElementById("sub-custom-date").value;
+    if(custom){expMs=new Date(custom).getTime();}
+    else{
+      const now=Date.now();
+      expMs=editSubDur===0?now+60*60*1000:now+editSubDur*30*24*60*60*1000;
+    }
+    const tier=editSubDur===0?"1-Hour Pass":`${editSubDur}-Month Plan`;
+    const cycle=editSubDur===0?"hourly":"monthly";
+    await _db.ref(`users/${editUID}/subscription`).update({
+      sub_status:"true",expiry_date:expMs,plan_tier:tier,plan_id:String(editSubDur),
+      billing_cycle:cycle,watch_access:true,
+      video_quality:document.getElementById("es-video_quality").value||"HD",
+      max_screens:Number(document.getElementById("es-max_screens").value||1)
+    });
+    // Notification to user
+    const nk=_db.ref(`notifications/${editUID}`).push().key;
+    await _db.ref(`notifications/${editUID}/${nk}`).set({type:"subscription",emoji:"✅",title:"Subscription Activated!",body:`Your ${tier} has been activated by admin. Expires: ${new Date(expMs).toLocaleString()}`,timestamp:firebase.database.ServerValue.TIMESTAMP,read:false});
+    await refreshUsers(); toast(`✓ Subscription activated (${tier})`,"ok");
+    closeModal("edit-user-modal");
+  }catch(e){toast("Error: "+e.message,"err");}
+  btn.innerHTML='<i class="fa fa-check-circle"></i> Activate Subscription'; btn.disabled=false;
+};
+
+window.deactivateSub=async function(){
+  if(!editUID||!confirm("Deactivate this subscription?")) return;
+  await _db.ref(`users/${editUID}/subscription`).update({sub_status:"false",watch_access:false});
+  await refreshUsers(); toast("Subscription deactivated","info");
+  closeModal("edit-user-modal");
+};
+
+window.saveUserEdits=async function(){
+  if(!editUID||!editUserData) return;
+  const btn=document.getElementById("save-user-btn");
+  btn.innerHTML='<span class="spin"></span> Saving…'; btn.disabled=true;
+  try{
+    // Personal
+    const pUpdates={};
+    ["full_name","username","phone","city","language","timezone","device_id","profile_url","bio","msg_for_user"].forEach(k=>{
+      pUpdates[k]=document.getElementById(`ep-${k}`).value;
+    });
+    pUpdates.country=document.getElementById("ep-country").value;
+    pUpdates.gender=document.getElementById("ep-gender").value;
+    pUpdates.is_verified=document.getElementById("ep-is_verified").value==="true";
+    await _db.ref(`users/${editUID}/personal`).update(pUpdates);
+
+    // Subscription
+    const sUpdates={};
+    ["plan_id","plan_tier","currency","payment_method","cancel_reason"].forEach(k=>{sUpdates[k]=document.getElementById(`es-${k}`).value;});
+    sUpdates.sub_status=document.getElementById("es-sub_status").value;
+    sUpdates.billing_cycle=document.getElementById("es-billing_cycle").value;
+    sUpdates.video_quality=document.getElementById("es-video_quality").value;
+    sUpdates.max_screens=Number(document.getElementById("es-max_screens").value);
+    sUpdates.trial_status=document.getElementById("es-trial_status").value;
+    sUpdates.watch_access=document.getElementById("es-watch_access").value==="true";
+    sUpdates.ads_enabled=document.getElementById("es-ads_enabled").value==="true";
+    sUpdates.offline_access=document.getElementById("es-offline_access").value==="true";
+    sUpdates.auto_renew=document.getElementById("es-auto_renew").value==="true";
+    const expVal=document.getElementById("es-expiry_date").value;
+    if(expVal) sUpdates.expiry_date=new Date(expVal).getTime();
+    await _db.ref(`users/${editUID}/subscription`).update(sUpdates);
+
+    // Wallet
+    const wUpdates={};
+    wUpdates.balance=Number(document.getElementById("ew-balance").value)||0;
+    wUpdates.currency=document.getElementById("ew-currency").value;
+    wUpdates.symbol=document.getElementById("ew-symbol").value;
+    await _db.ref(`users/${editUID}/wallet`).update(wUpdates);
+
+    // Preferences
+    await _db.ref(`users/${editUID}/preferences`).update({
+      data_saver:document.getElementById("pref-data_saver").value==="true",
+      theme:document.getElementById("pref-theme").value,
+      notifications:document.getElementById("pref-notif").value==="true",
+      autoplay:document.getElementById("pref-autoplay").value==="true"
+    });
+
+    // Admin
+    const isAdminNow=document.getElementById("is-admin-sw").classList.contains("on");
+    await _db.ref(`users/${editUID}`).update({is_admin:isAdminNow,admin_note:document.getElementById("admin-note").value});
+    await _db.ref(`users/${editUID}/personal`).update({is_verified:document.getElementById("is-verified-sw").classList.contains("on")});
+
+    await refreshUsers();
+    closeModal("edit-user-modal");
+    toast("✓ User saved successfully","ok");
+  }catch(e){toast("Save error: "+e.message,"err");}
+  btn.innerHTML='<i class="fa fa-save"></i> Save All Changes'; btn.disabled=false;
+};
+
+// Wallet preview in edit modal
+window.updateWalletPreview=function(){
+  const action=document.getElementById("wallet-action").value;
+  const amount=Number(document.getElementById("wallet-amount").value)||0;
+  const cur=editUserData?.wallet?.balance||0;
+  const sym=editUserData?.wallet?.symbol||"₦";
+  let newBal=cur;
+  if(action==="credit") newBal=cur+amount;
+  else if(action==="debit") newBal=Math.max(0,cur-amount);
+  else if(action==="set") newBal=amount;
+  const preview=document.getElementById("wallet-preview");
+  preview.style.display="block";
+  document.getElementById("wallet-preview-amt").textContent=`${sym}${newBal.toLocaleString()}`;
+};
+
+window.applyWalletChange=async function(){
+  if(!editUID) return;
+  const action=document.getElementById("wallet-action").value;
+  const amount=Number(document.getElementById("wallet-amount").value)||0;
+  const cur=editUserData?.wallet?.balance||0;
+  const sym=editUserData?.wallet?.symbol||"₦";
+  let newBal=cur;
+  if(action==="credit") newBal=cur+amount;
+  else if(action==="debit") newBal=Math.max(0,cur-amount);
+  else if(action==="set") newBal=amount;
+  try{
+    await _db.ref(`users/${editUID}/wallet`).update({balance:newBal,last_updated:firebase.database.ServerValue.TIMESTAMP});
+    document.getElementById("ew-balance").value=newBal;
+    if(editUserData.wallet) editUserData.wallet.balance=newBal;
+    toast(`✓ Wallet updated: ${sym}${newBal.toLocaleString()}`,"ok");
+  }catch(e){toast("Error: "+e.message,"err");}
+};
+
+window.deleteUser=async function(){
+  if(!editUID) return;
+  try{await _db.ref(`users/${editUID}`).remove();await refreshUsers();closeModal("edit-user-modal");toast("User deleted","info");}
+  catch(e){toast("Error: "+e.message,"err");}
+};
+
+window.sendDirectNotif=function(){
+  const u=allUsers.find(x=>x.uid===editUID);
+  if(!u) return;
+  closeModal("edit-user-modal");
+  document.getElementById("notif-target").value="user";
+  onNotifTargetChange("user");
+  document.getElementById("notif-user-input").value=u.personal?.full_name||u.personal?.email||u.uid;
+  document.getElementById("notif-user-uid").value=u.uid;
+  nav("notifications",null);
+};
+
+/* ═══════════════════════════════════════
+   QUICK SUB MODAL
+═══════════════════════════════════════ */
+window.openQuickSub=function(uid){
+  const u=allUsers.find(x=>x.uid===uid);if(!u) return;
+  qsUID=uid;qsUserData=u;qsDur=1;
+  const p=u.personal||{};const sub=u.subscription||{};
+  const active=sub.sub_status==="true"||sub.sub_status===true;
+  document.getElementById("qs-av").textContent=(p.full_name||"U").charAt(0);
+  document.getElementById("qs-name").textContent=p.full_name||p.username||"—";
+  document.getElementById("qs-email").textContent=p.email||uid;
+  document.getElementById("qs-status").innerHTML=`<span class="badge ${active?"active":"inactive"}">${active?"Active":"Inactive"}</span>`;
+  // default select 1 month
+  document.querySelectorAll("#qs-dur-grid .dur-pill").forEach((p,i)=>{p.classList.toggle("sel",i===1);});
+  document.getElementById("qs-custom-date").value="";
+  document.getElementById("qs-quality").value=sub.video_quality||"HD";
+  document.getElementById("qs-screens").value=String(sub.max_screens||1);
+  document.getElementById("qs-plan-name").value="Premium Plan";
+  openModal("quick-sub-modal");
+};
+
+window.selectQsDur=function(months,el){
+  qsDur=months;
+  document.querySelectorAll("#qs-dur-grid .dur-pill").forEach(p=>p.classList.remove("sel"));
+  el.classList.add("sel");
+  document.getElementById("qs-custom-date").value="";
+};
+
+window.qs_activate=async function(){
+  const btn=document.getElementById("qs-activate-btn");
+  btn.innerHTML='<span class="spin"></span>'; btn.disabled=true;
+  try{
+    let expMs;
+    const custom=document.getElementById("qs-custom-date").value;
+    if(custom) expMs=new Date(custom).getTime();
+    else expMs=qsDur===0?Date.now()+60*60*1000:Date.now()+qsDur*30*24*60*60*1000;
+    const tier=document.getElementById("qs-plan-name").value||`${qsDur}-Month Plan`;
+    await _db.ref(`users/${qsUID}/subscription`).update({
+      sub_status:"true",expiry_date:expMs,plan_tier:tier,plan_id:String(qsDur),
+      billing_cycle:qsDur===0?"hourly":"monthly",watch_access:true,
+      video_quality:document.getElementById("qs-quality").value,
+      max_screens:Number(document.getElementById("qs-screens").value)
+    });
+    // Notification
+    const nk=_db.ref(`notifications/${qsUID}`).push().key;
+    await _db.ref(`notifications/${qsUID}/${nk}`).set({type:"subscription",emoji:"🎉",title:"Subscription Activated!",body:`Your ${tier} is now active. Enjoy watching! Expires: ${new Date(expMs).toLocaleString()}`,timestamp:firebase.database.ServerValue.TIMESTAMP,read:false});
+    await refreshUsers();closeModal("quick-sub-modal");
+    toast(`✓ Activated: ${tier}`,"ok");
+  }catch(e){toast("Error: "+e.message,"err");}
+  btn.innerHTML='<i class="fa fa-check-circle"></i> Activate'; btn.disabled=false;
+};
+
+window.qs_deactivate=async function(){
+  if(!qsUID||!confirm("Deactivate subscription?")) return;
+  await _db.ref(`users/${qsUID}/subscription`).update({sub_status:"false",watch_access:false});
+  await refreshUsers();closeModal("quick-sub-modal");toast("Deactivated","info");
+};
+
+window.deactivateSubUser=async function(uid){
+  if(!confirm("Deactivate this subscription?")) return;
+  await _db.ref(`users/${uid}/subscription`).update({sub_status:"false",watch_access:false});
+  await refreshUsers();loadSubsPage();toast("Deactivated","info");
+};
+
+/* ═══════════════════════════════════════
+   WALLET CREDIT MODAL
+═══════════════════════════════════════ */
+window.openWalletCredit=function(uid){
+  const u=allUsers.find(x=>x.uid===uid);if(!u) return;
+  wcUID=uid;wcUserData=u;
+  const p=u.personal||{};const w=u.wallet||{};
+  document.getElementById("wc-av").textContent=(p.full_name||"U").charAt(0);
+  document.getElementById("wc-name").textContent=p.full_name||p.username||"—";
+  document.getElementById("wc-email").textContent=p.email||uid;
+  document.getElementById("wc-current-bal").textContent=`${w.symbol||"₦"}${Number(w.balance||0).toLocaleString()}`;
+  document.getElementById("wc-action").value="credit";
+  document.getElementById("wc-amount").value="";
+  document.getElementById("wc-note").value="";
+  document.getElementById("wc-prev-cur").textContent=`${w.symbol||"₦"}${Number(w.balance||0).toLocaleString()}`;
+  document.getElementById("wc-prev-new").textContent="—";
+  openModal("wallet-credit-modal");
+};
+
+window.openWalletDebit=function(uid){openWalletCredit(uid);document.getElementById("wc-action").value="debit";};
+
+window.updateWcPreview=function(){
+  const action=document.getElementById("wc-action").value;
+  const amount=Number(document.getElementById("wc-amount").value)||0;
+  const w=wcUserData?.wallet||{};
+  const cur=Number(w.balance||0);
+  const sym=w.symbol||"₦";
+  let n=cur;
+  if(action==="credit") n=cur+amount;
+  else if(action==="debit") n=Math.max(0,cur-amount);
+  else if(action==="set") n=amount;
+  document.getElementById("wc-prev-cur").textContent=`${sym}${cur.toLocaleString()}`;
+  document.getElementById("wc-prev-new").textContent=`${sym}${n.toLocaleString()}`;
+};
+
+window.applyWalletCredit=async function(){
+  if(!wcUID) return;
+  const btn=document.getElementById("wc-apply-btn");
+  btn.innerHTML='<span class="spin"></span>'; btn.disabled=true;
+  try{
+    const action=document.getElementById("wc-action").value;
+    const amount=Number(document.getElementById("wc-amount").value)||0;
+    const note=document.getElementById("wc-note").value||"Admin adjustment";
+    const w=wcUserData?.wallet||{};const cur=Number(w.balance||0);const sym=w.symbol||"₦";
+    let newBal=cur;
+    if(action==="credit") newBal=cur+amount;
+    else if(action==="debit") newBal=Math.max(0,cur-amount);
+    else if(action==="set") newBal=amount;
+    await _db.ref(`users/${wcUID}/wallet`).update({balance:newBal,last_updated:firebase.database.ServerValue.TIMESTAMP});
+    // Log transaction
+    const tk=_db.ref(`transactions/${wcUID}`).push().key;
+    await _db.ref(`transactions/${wcUID}/${tk}`).set({title:note,status:"success",amount,currency:w.currency||"NGN",payment_method:"Admin Credit",plan_tier:"Wallet Adjustment",timestamp:firebase.database.ServerValue.TIMESTAMP});
+    // Notify user
+    const nk=_db.ref(`notifications/${wcUID}`).push().key;
+    const emoji=action==="credit"?"💰":action==="debit"?"💸":"💳";
+    await _db.ref(`notifications/${wcUID}/${nk}`).set({type:"wallet",emoji,title:`Wallet ${action==="credit"?"Credited":"Updated"}`,body:`${note}: ${sym}${amount.toLocaleString()}. New balance: ${sym}${newBal.toLocaleString()}`,timestamp:firebase.database.ServerValue.TIMESTAMP,read:false});
+    await refreshUsers();closeModal("wallet-credit-modal");
+    toast(`✓ Wallet ${action}ed: ${sym}${newBal.toLocaleString()}`,"ok");
+  }catch(e){toast("Error: "+e.message,"err");}
+  btn.innerHTML='<i class="fa fa-check"></i> Apply'; btn.disabled=false;
+};
+
+/* ═══════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════ */
+window.onNotifTargetChange=function(val){
+  document.getElementById("notif-user-sel").style.display=val==="user"?"block":"none";
+};
+
+let notifUserSearch=null;
+window.searchNotifUser=function(q){
+  const drop=document.getElementById("notif-user-dropdown");
+  if(!q){drop.innerHTML="";return;}
+  const matches=allUsers.filter(u=>{const p=u.personal||{};return (p.full_name||"").toLowerCase().includes(q.toLowerCase())||(p.email||"").toLowerCase().includes(q.toLowerCase());}).slice(0,6);
+  drop.innerHTML=`<div style="position:absolute;top:2px;left:0;right:0;background:var(--card2);border:1px solid var(--b3);border-radius:var(--r);z-index:50;overflow:hidden;">${matches.map(u=>`<div style="padding:8px 12px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:8px;" onmousedown="selectNotifUser('${u.uid}','${xe(u.personal?.full_name||u.personal?.email||u.uid).replace(/'/g,"&#39;")}')"><div class="tbl-avatar" style="width:24px;height:24px;font-size:9px;">${(u.personal?.full_name||"U").charAt(0)}</div><div><div style="font-weight:700;">${xe(u.personal?.full_name||u.personal?.username||"—")}</div><div style="font-size:10px;color:var(--t2);">${xe(u.personal?.email||u.uid)}</div></div></div>`).join("")||'<div style="padding:10px 12px;font-size:12px;color:var(--mt);">No users found</div>'}</div>`;
+};
+window.selectNotifUser=function(uid,name){
+  document.getElementById("notif-user-uid").value=uid;
+  document.getElementById("notif-user-input").value=name;
+  document.getElementById("notif-user-dropdown").innerHTML="";
+};
+
+window.sendNotification=async function(){
+  const btn=document.getElementById("notif-send-btn");
+  const target=document.getElementById("notif-target").value;
+  const emoji=document.getElementById("notif-emoji").value||"📢";
+  const title=document.getElementById("notif-title").value.trim();
+  const body=document.getElementById("notif-body").value.trim();
+  if(!title||!body){toast("Fill in title and message","err");return;}
+  btn.innerHTML='<span class="spin"></span> Sending…'; btn.disabled=true;
+  try{
+    const payload={emoji,title,body,timestamp:firebase.database.ServerValue.TIMESTAMP,read:false};
+    if(target==="global"){
+      const k=_db.ref("push_messages/global").push().key;
+      await _db.ref(`push_messages/global/${k}`).set(payload);
+      toast(`✓ Global notification sent to all users`,"ok");
+    }else{
+      const uid=document.getElementById("notif-user-uid").value;
+      if(!uid){toast("Select a user first","err");btn.innerHTML='<i class="fa fa-paper-plane"></i> Send Now';btn.disabled=false;return;}
+      const k=_db.ref(`push_messages/users/${uid}`).push().key;
+      await _db.ref(`push_messages/users/${uid}/${k}`).set(payload);
+      const nk=_db.ref(`notifications/${uid}`).push().key;
+      await _db.ref(`notifications/${uid}/${nk}`).set(payload);
+      toast(`✓ Notification sent`,"ok");
+    }
+    document.getElementById("notif-title").value="";
+    document.getElementById("notif-body").value="";
+    loadSentNotifs();
+  }catch(e){toast("Error: "+e.message,"err");}
+  btn.innerHTML='<i class="fa fa-paper-plane"></i> Send Now'; btn.disabled=false;
+};
+
+window.loadSentNotifs=async function(){
+  const el=document.getElementById("sent-notifs");
+  el.innerHTML='<div style="color:var(--mt);font-size:12px;text-align:center;padding:20px;">Loading…</div>';
+  try{
+    const snap=await _db.ref("push_messages/global").orderByChild("timestamp").limitToLast(30).once("value");
+    const msgs=[];snap.forEach(c=>msgs.unshift({key:c.key,...c.val()}));
+    if(!msgs.length){el.innerHTML='<div style="color:var(--mt);font-size:12px;text-align:center;padding:20px;">No notifications sent yet.</div>';return;}
+    el.innerHTML='<div class="notif-list">'+msgs.map(m=>`
+      <div class="notif-item">
+        <div class="notif-emoji">${m.emoji||"📢"}</div>
+        <div class="notif-content">
+          <div class="notif-title">${xe(m.title||"")}</div>
+          <div class="notif-body">${xe(m.body||"")}</div>
+          <div class="notif-time">${m.timestamp?new Date(m.timestamp).toLocaleString():""}</div>
+        </div>
+        <span class="notif-type-badge global">Global</span>
+        <div class="ta red" onclick="deleteGlobalNotif('${m.key}')" title="Delete"><i class="fa fa-trash"></i></div>
+      </div>`).join("")+'</div>';
+  }catch(e){el.innerHTML='<div style="color:var(--red);font-size:12px;">Error loading.</div>';}
+};
+
+window.deleteGlobalNotif=async function(key){
+  if(!confirm("Delete this notification?")) return;
+  await _db.ref(`push_messages/global/${key}`).remove();
+  loadSentNotifs();toast("Deleted","info");
+};
+
+window.openDirectNotif=function(uid){
+  document.getElementById("notif-target").value="user";
+  onNotifTargetChange("user");
+  const u=allUsers.find(x=>x.uid===uid);
+  if(u){
+    document.getElementById("notif-user-input").value=u.personal?.full_name||u.personal?.email||uid;
+    document.getElementById("notif-user-uid").value=uid;
+  }
+  nav("notifications",null);
+};
+
+/* ═══════════════════════════════════════
+   ADS
+═══════════════════════════════════════ */
+window.loadAds=async function(){
+  const grid=document.getElementById("ads-grid");
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--mt);">Loading…</div>';
+  try{
+    const snap=await _db.ref("ads").once("value");
+    const ads=[];snap.forEach(c=>ads.push({key:c.key,...c.val()}));
+    if(!ads.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mt);">No ads yet. Create your first ad!</div>';return;}
+    grid.innerHTML=ads.map(ad=>`
+      <div class="ad-card">
+        <div class="ad-img">
+          ${ad.image_url?`<img src="${xe(ad.image_url)}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex';"/><div class="ad-no-img" style="display:none;"><i class="fa fa-image"></i></div>`:`<div class="ad-no-img"><i class="fa fa-image"></i></div>`}
+          <div class="ad-status-dot ${ad.active!==false?"live":"off"}"></div>
+        </div>
+        <div class="ad-info">
+          <div class="ad-title">${xe(ad.title||"Untitled Ad")}</div>
+          <div class="ad-desc">${xe(ad.description||"No description")}</div>
+          <div class="ad-meta">
+            <span class="ad-dur"><i class="fa fa-clock" style="font-size:9px;"></i> ${ad.duration||10}s · skip@${ad.skip_after||5}s</span>
+            <div class="ad-actions">
+              <div class="ta" onclick="editAd('${ad.key}')" title="Edit"><i class="fa fa-pen"></i></div>
+              <div class="ta" onclick="toggleAdStatus('${ad.key}',${ad.active!==false})" title="Toggle"><i class="fa fa-${ad.active!==false?"pause":"play"}"></i></div>
+              <div class="ta red" onclick="deleteAd('${ad.key}')" title="Delete"><i class="fa fa-trash"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>`).join("");
+  }catch(e){grid.innerHTML='<div style="grid-column:1/-1;color:var(--red);text-align:center;padding:20px;">Error loading ads.</div>';}
+};
+
+window.openAdModal=function(key){
+  selectedAdKey=key||null;
+  document.getElementById("ad-modal-title").textContent=key?"Edit Ad":"New Advertisement";
+  if(!key){
+    ["ad-title","ad-desc","ad-image","ad-link"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("ad-duration").value="10";
+    document.getElementById("ad-skip").value="5";
+    document.getElementById("ad-priority").value="1";
+    document.getElementById("ad-active").value="true";
+    document.getElementById("ad-img-preview").style.display="none";
+  }
+  openModal("ad-modal");
+};
+
+window.editAd=async function(key){
+  const snap=await _db.ref(`ads/${key}`).once("value");
+  const ad=snap.val();if(!ad)return;
+  selectedAdKey=key;
+  document.getElementById("ad-modal-title").textContent="Edit Ad";
+  document.getElementById("ad-title").value=ad.title||"";
+  document.getElementById("ad-desc").value=ad.description||"";
+  document.getElementById("ad-image").value=ad.image_url||"";
+  document.getElementById("ad-link").value=ad.link_url||"";
+  document.getElementById("ad-duration").value=ad.duration||10;
+  document.getElementById("ad-skip").value=ad.skip_after||5;
+  document.getElementById("ad-priority").value=ad.priority||1;
+  document.getElementById("ad-active").value=String(ad.active!==false);
+  previewAd();
+  openModal("ad-modal");
+};
+
+window.previewAd=function(){
+  const url=document.getElementById("ad-image").value;
+  const wrap=document.getElementById("ad-img-preview");
+  if(url){wrap.style.display="block";document.getElementById("ad-prev-img").src=url;}
+  else wrap.style.display="none";
+};
+
+window.saveAd=async function(){
+  const btn=document.getElementById("save-ad-btn");
+  btn.innerHTML='<span class="spin"></span>'; btn.disabled=true;
+  try{
+    const payload={
+      title:document.getElementById("ad-title").value.trim(),
+      description:document.getElementById("ad-desc").value.trim(),
+      image_url:document.getElementById("ad-image").value.trim(),
+      link_url:document.getElementById("ad-link").value.trim(),
+      duration:Number(document.getElementById("ad-duration").value)||10,
+      skip_after:Number(document.getElementById("ad-skip").value)||5,
+      priority:Number(document.getElementById("ad-priority").value)||1,
+      active:document.getElementById("ad-active").value==="true",
+      updated_at:firebase.database.ServerValue.TIMESTAMP
+    };
+    if(!payload.title){toast("Title is required","err");btn.innerHTML='<i class="fa fa-save"></i> Save Ad';btn.disabled=false;return;}
+    if(selectedAdKey) await _db.ref(`ads/${selectedAdKey}`).update(payload);
+    else{payload.created_at=firebase.database.ServerValue.TIMESTAMP;await _db.ref("ads").push(payload);}
+    closeModal("ad-modal");loadAds();
+    toast(`✓ Ad ${selectedAdKey?"updated":"created"}`,"ok");
+  }catch(e){toast("Error: "+e.message,"err");}
+  btn.innerHTML='<i class="fa fa-save"></i> Save Ad'; btn.disabled=false;
+};
+
+window.toggleAdStatus=async function(key,isActive){
+  await _db.ref(`ads/${key}`).update({active:!isActive});
+  loadAds();toast(`Ad ${isActive?"paused":"activated"}`,"info");
+};
+
+window.deleteAd=async function(key){
+  if(!confirm("Delete this ad permanently?")) return;
+  await _db.ref(`ads/${key}`).remove();loadAds();toast("Ad deleted","info");
+};
+
+/* ═══════════════════════════════════════
+   BULK SUB
+═══════════════════════════════════════ */
+window.openBulkSubModal=function(){
+  document.getElementById("bulk-target-count").textContent="selected";
+  openModal("bulk-sub-modal");
+};
+
+window.selectBulkDur=function(months,el){
+  bulkDur=months;
+  document.querySelectorAll("#bulk-sub-modal .dur-pill").forEach(p=>p.classList.remove("sel"));
+  el.classList.add("sel");
+};
+
+window.executeBulkSub=async function(){
+  if(!confirm(`Activate subscriptions for ${document.getElementById("bulk-target").value} users?`)) return;
+  const btn=document.getElementById("bulk-sub-exec-btn");
+  btn.innerHTML='<span class="spin"></span> Processing…'; btn.disabled=true;
+  const target=document.getElementById("bulk-target").value;
+  const tier=document.getElementById("bulk-plan-name").value||`${bulkDur}-Month Plan`;
+  const expMs=Date.now()+bulkDur*30*24*60*60*1000;
+  let count=0;
+  const targets=target==="all"?allUsers:allUsers.filter(u=>{const s=u.subscription||{};return !(s.sub_status==="true"||s.sub_status===true);});
+  for(const u of targets){
+    try{
+      await _db.ref(`users/${u.uid}/subscription`).update({sub_status:"true",expiry_date:expMs,plan_tier:tier,billing_cycle:"monthly",watch_access:true});
+      count++;
+    }catch(e){}
+  }
+  await refreshUsers();closeModal("bulk-sub-modal");
+  toast(`✓ Activated ${count} subscriptions`,"ok");
+  btn.innerHTML='<i class="fa fa-bolt"></i> Activate All'; btn.disabled=false;
+};
+
+window.openBulkCreditModal=function(){toast("Use individual wallet credits for now","info");};
+
+/* ═══════════════════════════════════════
+   ADMIN SETTINGS
+═══════════════════════════════════════ */
+window.grantAdmin=async function(){
+  const val=document.getElementById("grant-uid").value.trim();
+  if(!val){toast("Enter UID or email","err");return;}
+  // Search by email
+  let uid=val;
+  const byEmail=allUsers.find(u=>u.personal?.email===val);
+  if(byEmail) uid=byEmail.uid;
+  try{
+    await _db.ref(`users/${uid}`).update({is_admin:true});
+    await refreshUsers();toast("✓ Admin granted","ok");
+  }catch(e){toast("Error: "+e.message,"err");}
+};
+
+window.revokeAdmin=async function(){
+  const val=document.getElementById("grant-uid").value.trim();
+  if(!val){toast("Enter UID or email","err");return;}
+  let uid=val;
+  const byEmail=allUsers.find(u=>u.personal?.email===val);
+  if(byEmail) uid=byEmail.uid;
+  if(!confirm("Revoke admin access?")) return;
+  try{
+    await _db.ref(`users/${uid}`).update({is_admin:false});
+    await refreshUsers();toast("Admin revoked","info");
+  }catch(e){toast("Error: "+e.message,"err");}
+};
+
+window.bulkDeactivateExpired=async function(){
+  let count=0;
+  for(const u of allUsers){
+    const sub=u.subscription||{};
+    const active=sub.sub_status==="true"||sub.sub_status===true;
+    if(!active) continue;
+    const exp=sub.expiry_date?(typeof sub.expiry_date==="number"?sub.expiry_date:new Date(sub.expiry_date).getTime()):0;
+    if(exp&&Date.now()>exp){
+      await _db.ref(`users/${u.uid}/subscription`).update({sub_status:"false",watch_access:false});
+      count++;
+    }
+  }
+  await refreshUsers();toast(`✓ Deactivated ${count} expired subs`,"ok");
+};
+
+window.saveAppConfig=async function(){
+  try{
+    await _db.ref("app_config").update({
+      m3u_source:document.getElementById("cfg-m3u").value.trim(),
+      pricing:{ngn_hourly:Number(document.getElementById("cfg-ngn-hour").value),usd_hourly:Number(document.getElementById("cfg-usd-hour").value),ngn_monthly:Number(document.getElementById("cfg-ngn-month").value),usd_monthly:Number(document.getElementById("cfg-usd-month").value)}
+    });
+    toast("✓ Config saved","ok");
+  }catch(e){toast("Error: "+e.message,"err");}
+};
+
+/* ═══════════════════════════════════════
+   CURRENCY RATES
+═══════════════════════════════════════ */
+async function loadRates(){
+  try{
+    const r=await fetch("https://open.er-api.com/v6/latest/NGN");
+    if(!r.ok) throw new Error("API error");
+    const d=await r.json();
+    liveRates=d.rates||{};
+    renderRates();
+    buildConvSels();
+  }catch(e){
+    try{
+      const r2=await fetch("https://api.exchangerate-api.com/v4/latest/NGN");
+      const d2=await r2.json();
+      liveRates=d2.rates||{};
+      renderRates();buildConvSels();
+    }catch(e2){
+      liveRates={USD:0.00065,GBP:0.00053,EUR:0.00062,GHS:0.0072,KES:0.087};
+      renderRates();
+    }
+  }
+}
+
+function renderRates(){
+  const el=document.getElementById("rates-body");
+  if(!el) return;
+  const keys=["USD","GBP","EUR","GHS","KES","ZAR","JPY","INR","AUD","CAD","AED","SAR","BRL","MXN"];
+  el.innerHTML=`<div style="font-size:10px;color:var(--mt);margin-bottom:12px;font-family:var(--mono);">Base: 1 NGN = X currency (live)</div>`+
+    keys.map(k=>`<div class="rate-row"><span class="rate-country">${k}</span><span class="rate-val">${(liveRates[k]||0).toFixed(6)}</span></div>`).join("");
+}
+
+function buildConvSels(){
+  const currs=[{code:"NGN",name:"Nigerian Naira"},{code:"USD",name:"US Dollar"},{code:"GBP",name:"British Pound"},{code:"EUR",name:"Euro"},{code:"GHS",name:"Ghanaian Cedi"},{code:"KES",name:"Kenyan Shilling"},{code:"ZAR",name:"South African Rand"},{code:"JPY",name:"Japanese Yen"},{code:"INR",name:"Indian Rupee"},{code:"AUD",name:"Australian Dollar"},{code:"CAD",name:"Canadian Dollar"},{code:"AED",name:"UAE Dirham"},{code:"SAR",name:"Saudi Riyal"},{code:"BRL",name:"Brazilian Real"}];
+  ["conv-from","conv-to"].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const cur=el.value;
+    el.innerHTML=currs.map(c=>`<option value="${c.code}"${cur===c.code?" selected":""}>${c.code} – ${c.name}</option>`).join("");
+  });
+}
+
+window.convertCurrency=function(){
+  const amount=Number(document.getElementById("conv-amount").value)||0;
+  const from=document.getElementById("conv-from").value;
+  const to=document.getElementById("conv-to").value;
+  const result=document.getElementById("conv-result");
+  if(!liveRates[from]||!liveRates[to]){result.innerHTML='<div style="color:var(--red);font-size:12px;">Rate not available</div>';return;}
+  // Convert via NGN as base
+  let inNgn=from==="NGN"?amount:amount/liveRates[from];
+  let converted=to==="NGN"?inNgn:inNgn*liveRates[to];
+  result.innerHTML=`<div class="curr-info" style="display:block;"><div class="ci-row"><span class="ci-label">${amount} ${from} =</span></div><div class="ci-amount" style="margin-top:6px;">${converted.toFixed(4)} ${to}</div></div>`;
+};
+
+/* ═══════════════════════════════════════
+   ACTIVITY LOG
+═══════════════════════════════════════ */
+window.loadActivity=async function(){
+  const el=document.getElementById("activity-log-body");
+  if(!el) return;
+  const logs=[];
+  allUsers.slice(0,50).forEach(u=>{
+    const p=u.personal||{};
+    const sub=u.subscription||{};
+    const name=p.full_name||p.email||u.uid;
+    if(p.last_login) logs.push({time:p.last_login,text:`${name} signed in`,type:"blue"});
+    if(p.joined_date) logs.push({time:new Date(p.joined_date).getTime(),text:`${name} created account (${p.country||"Unknown"})`,type:"green"});
+    const active=sub.sub_status==="true"||sub.sub_status===true;
+    if(active&&sub.expiry_date) logs.push({time:sub.expiry_date,text:`${name} — ${sub.plan_tier||"Plan"} expires`,type:"orange"});
+  });
+  logs.sort((a,b)=>b.time-a.time);
+  el.innerHTML=logs.slice(0,100).map(l=>`
+    <div class="log-item">
+      <div class="log-dot ${l.type}"></div>
+      <div class="log-text">${xe(l.text)}</div>
+      <div class="log-time">${l.time?new Date(l.time).toLocaleString():""}</div>
+    </div>`).join("")||'<div style="color:var(--mt);font-size:12px;text-align:center;padding:40px;">No activity logged.</div>';
+};
+
+/* ═══════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════ */
+window.openModal=function(id){document.getElementById(id).classList.add("open");};
+window.closeModal=function(id){document.getElementById(id).classList.remove("open");};
+document.querySelectorAll(".modal-ov").forEach(ov=>{ov.addEventListener("click",function(e){if(e.target===this) this.classList.remove("open");});});
+document.addEventListener("keydown",e=>{if(e.key==="Escape") document.querySelectorAll(".modal-ov.open").forEach(m=>m.classList.remove("open"));});
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+let _tt;
+window.toast=function(msg,type){
+  const el=document.getElementById("toast");
+  el.className=`toast ${type||"info"} show`;
+  el.innerHTML=`<i class="fa fa-${type==="ok"?"check-circle":type==="err"?"circle-exclamation":"info-circle"}"></i> ${msg}`;
+  clearTimeout(_tt);_tt=setTimeout(()=>el.className="toast",3800);
+};
+
+/* ═══════════════════════════════════════
+   UTIL
+═══════════════════════════════════════ */
+function xe(s){const d=document.createElement("div");d.textContent=String(s||"");return d.innerHTML;}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE GRID FIXES
+═══════════════════════════════════════ */
+function fixGrids(){
+  const w=window.innerWidth;
+  document.querySelectorAll(".dash-two,.notif-two").forEach(el=>{
+    el.style.gridTemplateColumns=w<900?"1fr":"";
+  });
+}
+fixGrids();
+window.addEventListener("resize",fixGrids);
+</script>
+</body>
+</html>

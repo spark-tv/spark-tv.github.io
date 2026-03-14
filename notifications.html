@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Notifications – Spark TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-database.js"></script>
+<style>
+:root{
+  --spark:#ff4d00;--spark2:#ff7b2e;--sg:rgba(255,77,0,.22);
+  --accent:#00c8ff;--gold:#f5c842;
+  --bg:#080b14;--bg2:#10141f;--bg3:#181d2d;
+  --card:#141926;--card2:#1c2236;--card3:#232c42;
+  --b2:rgba(255,255,255,.07);
+  --t1:#eef1fc;--t2:#8e9abf;--mt:#4a5278;--mt2:#222840;
+  --green:#00e676;--red:#ff3d3d;--sh:rgba(0,0,0,.7);
+  --nh:60px;--bh:60px;--r:14px;
+}
+[data-theme="light"]{
+  --bg:#f2f4fb;--bg2:#e6eaf6;--card:#fff;--card2:#f4f6fb;--card3:#eaecf6;
+  --b2:rgba(0,0,0,.07);--t1:#0d0f1a;--t2:#3a4060;--mt:#8a94b8;--mt2:#d0d4e8;--sh:rgba(0,0,30,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t1);font-size:15px;line-height:1.55;}
+h1,h2,h3{font-family:'Syne',sans-serif;}
+a{color:inherit;text-decoration:none;}
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:var(--mt2);border-radius:2px;}
+
+/* NAV */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nh);background:rgba(8,11,20,.95);border-bottom:1px solid var(--b2);display:flex;align-items:center;padding:0 16px;gap:10px;backdrop-filter:blur(20px);}
+[data-theme="light"] .topnav{background:rgba(242,244,251,.97);}
+.back-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--b2);background:var(--card2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:14px;transition:all .18s;flex-shrink:0;}
+.back-btn:hover{border-color:var(--spark);color:var(--spark);}
+.nav-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;flex:1;}
+.nb{width:34px;height:34px;border-radius:50%;border:1px solid var(--b2);background:var(--card2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:13px;transition:all .18s;}
+.nb:hover{border-color:var(--spark);color:var(--spark);}
+
+/* BOT NAV */
+.bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;height:var(--bh);background:rgba(8,11,20,.97);border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:space-around;backdrop-filter:blur(20px);}
+[data-theme="light"] .bot-nav{background:rgba(242,244,251,.97);}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--mt);transition:color .18s;flex:1;padding:6px 0;text-decoration:none;min-width:0;}
+.bn.active{color:var(--spark);}
+.bn i{font-size:17px;}
+.bn span{font-size:8.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90%;}
+
+/* MAIN */
+.main{padding:calc(var(--nh)+16px) 14px calc(var(--bh)+20px);max-width:600px;margin:0 auto;}
+
+/* FILTERS */
+.filter-row{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:2px;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fc{padding:5px 13px;border-radius:16px;font-size:11px;font-weight:700;border:1px solid var(--b2);background:var(--card2);color:var(--t2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.fc:hover{border-color:var(--spark);color:var(--spark);}
+.fc.active{background:var(--spark);border-color:var(--spark);color:#fff;}
+
+/* NOTIF CARD */
+.notif-card{background:var(--card);border:1px solid var(--b2);border-radius:var(--r);padding:14px 15px;margin-bottom:10px;display:flex;gap:12px;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;}
+.notif-card:hover{border-color:rgba(255,77,0,.35);transform:translateX(3px);}
+.notif-card.unread{border-color:rgba(0,200,255,.3);background:linear-gradient(135deg,rgba(0,200,255,.04),transparent);}
+.notif-card.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:var(--r) 0 0 var(--r);}
+.notif-emoji{font-size:28px;line-height:1;flex-shrink:0;margin-top:2px;}
+.notif-body{flex:1;min-width:0;}
+.notif-title{font-size:13px;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.notif-title .new-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.notif-text{font-size:12px;color:var(--t2);line-height:1.5;}
+.notif-time{font-size:10px;color:var(--mt);font-weight:600;margin-top:5px;}
+.notif-type-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:auto;flex-shrink:0;align-self:flex-start;}
+.type-payment{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.type-system{background:rgba(0,200,255,.12);color:var(--accent);border:1px solid rgba(0,200,255,.3);}
+.type-expiry{background:rgba(255,61,61,.12);color:var(--red);border:1px solid rgba(255,61,61,.3);}
+.type-push{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.3);}
+.type-profile_update{background:rgba(255,77,0,.12);color:var(--spark);border:1px solid rgba(255,77,0,.3);}
+
+/* MARK ALL */
+.mark-all-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mark-all-btn{font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;background:none;border:none;font-family:'Nunito',sans-serif;padding:0;}
+.notif-count-label{font-size:12px;color:var(--mt);font-weight:600;}
+
+/* EMPTY / LOADING */
+.empty{text-align:center;padding:60px 20px;color:var(--mt);}
+.empty i{font-size:48px;margin-bottom:12px;display:block;color:var(--accent);opacity:.4;}
+.empty h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t2);margin-bottom:6px;}
+.empty p{font-size:12px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(80px);z-index:800;padding:9px 18px;border-radius:26px;font-size:12px;font-weight:700;background:var(--card3);border:1px solid var(--b2);box-shadow:0 8px 26px var(--sh);opacity:0;transition:all .26s;pointer-events:none;white-space:nowrap;max-width:90vw;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(0,230,118,.3);color:var(--green);}
+.toast.info{border-color:rgba(0,200,255,.3);color:var(--accent);}
+
+/* LOADING SCREEN */
+.loading-screen{position:fixed;inset:0;z-index:900;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .4s;}
+.loading-screen.hidden{opacity:0;pointer-events:none;}
+.loading-logo{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--spark),var(--spark2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+
+@media(max-width:400px){.bn span{font-size:7.5px;}}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-logo">S</div>
+</div>
+
+<nav class="topnav">
+  <a class="back-btn" href="index.html"><i class="fa fa-arrow-left"></i></a>
+  <div class="nav-title"><i class="fa fa-bell" style="color:var(--accent);margin-right:6px;"></i>Notifications</div>
+  <div class="nb" id="theme-toggle" title="Toggle Theme"><i class="fa fa-moon" id="th-ic"></i></div>
+</nav>
+
+<div class="main" id="main">
+  <div id="page-content">
+    <div class="empty"><i class="fa fa-bell"></i><h3>Loading…</h3></div>
+  </div>
+</div>
+
+<nav class="bot-nav">
+  <a class="bn" href="index.html"><i class="fa fa-house"></i><span>Home</span></a>
+  <a class="bn" href="movies.html"><i class="fa fa-film"></i><span>Movies</span></a>
+  <a class="bn" href="news.html"><i class="fa fa-newspaper"></i><span>News</span></a>
+  <a class="bn" href="weather.html"><i class="fa fa-cloud-sun"></i><span>Weather</span></a>
+  <a class="bn" href="more.html"><i class="fa fa-grid-2"></i><span>More</span></a>
+  <a class="bn" href="index.html"><i class="fa fa-circle-user"></i><span>Profile</span></a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FB_CFG = {
+  apiKey:"AIzaSyDAnOaWAy-bC435Fu0suYKIAmH4A3j-I_Y",
+  authDomain:"spark-tv-4ce3f.firebaseapp.com",
+  databaseURL:"https://spark-tv-4ce3f-default-rtdb.firebaseio.com",
+  projectId:"spark-tv-4ce3f",
+  storageBucket:"spark-tv-4ce3f.firebasestorage.app",
+  messagingSenderId:"1041124519612",
+  appId:"1:1041124519612:web:00a37105e3def9ef14aab9"
+};
+firebase.initializeApp(FB_CFG);
+const _auth = firebase.auth();
+const _db   = firebase.database();
+
+let isDark = localStorage.getItem("sparktv-theme") !== "light";
+applyTheme(isDark);
+function applyTheme(d){
+  isDark=d;
+  document.documentElement.setAttribute("data-theme",d?"dark":"light");
+  document.getElementById("th-ic").className=d?"fa fa-sun":"fa fa-moon";
+  localStorage.setItem("sparktv-theme",d?"dark":"light");
+}
+document.getElementById("theme-toggle").addEventListener("click",()=>applyTheme(!isDark));
+
+let allNotifs = [];
+let currentFilter = "All";
+const FILTERS = ["All","Payment","System","Expiry","Push","Profile"];
+
+_auth.onAuthStateChanged(async user=>{
+  document.getElementById("loading-screen").classList.add("hidden");
+  if(!user||user.isAnonymous){
+    document.getElementById("page-content").innerHTML=`
+      <div class="empty">
+        <i class="fa fa-lock"></i>
+        <h3>Sign In Required</h3>
+        <p>Please sign in to view your notifications.</p>
+        <a href="index.html" style="display:inline-block;margin-top:14px;padding:9px 22px;border-radius:10px;background:linear-gradient(135deg,var(--spark),var(--spark2));color:#fff;font-weight:700;font-size:13px;">Go to Sign In</a>
+      </div>`;
+    return;
+  }
+  await loadNotifications(user);
+  _db.ref(`notifications/${user.uid}`).on("child_added",snap=>{
+    const exists = allNotifs.find(n=>n.key===snap.key);
+    if(!exists){
+      allNotifs.unshift({key:snap.key,...snap.val()});
+      renderPage();
+      toast("🔔 New notification","info");
+    }
+  });
+});
+
+async function loadNotifications(user){
+  try{
+    const snap = await _db.ref(`notifications/${user.uid}`).orderByChild("timestamp").once("value");
+    allNotifs = [];
+    snap.forEach(c=>allNotifs.unshift({key:c.key,...c.val()}));
+    renderPage();
+  }catch(e){
+    document.getElementById("page-content").innerHTML=`<div class="empty"><i class="fa fa-exclamation-triangle"></i><h3>Error</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function renderPage(){
+  const filtered = currentFilter==="All"
+    ? allNotifs
+    : allNotifs.filter(n=>(n.type||"system").toLowerCase().includes(currentFilter.toLowerCase()));
+  const unreadCount = allNotifs.filter(n=>!n.read).length;
+
+  let html = `
+    <div class="filter-row">
+      ${FILTERS.map(f=>`<div class="fc${currentFilter===f?" active":""}" onclick="setFilter('${f}')">${f}${f==="All"?` <span style="opacity:.6;font-size:9px;">${allNotifs.length}</span>`:""}</div>`).join("")}
+    </div>
+    <div class="mark-all-row">
+      <div class="notif-count-label">${unreadCount} unread · ${filtered.length} total</div>
+      ${unreadCount>0?`<button class="mark-all-btn" onclick="markAllRead()"><i class="fa fa-check-double"></i> Mark all read</button>`:""}
+    </div>`;
+
+  if(!filtered.length){
+    html+=`<div class="empty"><i class="fa fa-bell-slash"></i><h3>No notifications</h3><p>${currentFilter==="All"?"You're all caught up!":"No "+currentFilter.toLowerCase()+" notifications."}</p></div>`;
+  }else{
+    filtered.forEach(n=>{
+      const time = n.timestamp ? timeAgo(n.timestamp) : "";
+      const type = (n.type||"system").toLowerCase().replace(/\s/g,"_");
+      const typelabel = type.replace("_"," ");
+      html+=`<div class="notif-card${n.read?"":" unread"}" onclick="markRead('${n.key}',this)">
+        <div class="notif-emoji">${n.emoji||"📌"}</div>
+        <div class="notif-body">
+          <div class="notif-title">
+            ${xe(n.title||"Notification")}
+            ${!n.read?'<span class="new-dot"></span>':''}
+          </div>
+          <div class="notif-text">${xe(n.body||"")}</div>
+          ${time?`<div class="notif-time"><i class="fa fa-clock" style="margin-right:3px;"></i>${time}</div>`:""}
+        </div>
+        <span class="notif-type-badge type-${type}">${typelabel}</span>
+      </div>`;
+    });
+  }
+  document.getElementById("page-content").innerHTML=html;
+}
+
+window.setFilter=function(f){currentFilter=f;renderPage();};
+
+window.markRead=function(key,el){
+  if(!el.classList.contains("unread")) return;
+  el.classList.remove("unread");
+  el.querySelector(".new-dot")?.remove();
+  const n=allNotifs.find(n=>n.key===key);
+  if(n) n.read=true;
+  _auth.currentUser&&_db.ref(`notifications/${_auth.currentUser.uid}/${key}/read`).set(true);
+  const unread=allNotifs.filter(n=>!n.read).length;
+  const lbl=document.querySelector(".mark-all-row .notif-count-label");
+  if(lbl) lbl.textContent=`${unread} unread · ${document.querySelectorAll(".notif-card").length} total`;
+  if(unread===0) document.querySelector(".mark-all-btn")?.remove();
+};
+
+window.markAllRead=async function(){
+  const user=_auth.currentUser; if(!user) return;
+  allNotifs.forEach(n=>n.read=true);
+  renderPage();
+  toast("✓ All marked as read","ok");
+  try{
+    const updates={};
+    allNotifs.forEach(n=>{updates[`notifications/${user.uid}/${n.key}/read`]=true;});
+    await _db.ref().update(updates);
+  }catch(e){}
+};
+
+function timeAgo(ts){
+  const diff=Date.now()-ts;
+  const m=Math.floor(diff/60000);
+  if(m<1) return "Just now";
+  if(m<60) return `${m}m ago`;
+  const h=Math.floor(m/60);
+  if(h<24) return `${h}h ago`;
+  const d=Math.floor(h/24);
+  if(d<7) return `${d}d ago`;
+  return new Date(ts).toLocaleDateString();
+}
+
+let _tt;
+function toast(msg,type){
+  const el=document.getElementById("toast");
+  el.className=`toast ${type||"info"} show`;el.textContent=msg;
+  clearTimeout(_tt);_tt=setTimeout(()=>{el.className="toast";},3500);
+}
+function xe(s){const d=document.createElement("div");d.textContent=String(s||"");return d.innerHTML;}
+</script>
+</body>
+</html>
